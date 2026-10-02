@@ -81,7 +81,9 @@ export function loadDotEnv(dir = __dirname) {
 /** Mint one short-lived ticket bound to this boot's secret. */
 export function createTicket(secret, ttlMs = TICKET_TTL_MS) {
   const payload = `${randomUUID()}|${Date.now() + ttlMs}`;
-  const signature = createHmac("sha256", secret).update(payload).digest("base64url");
+  const signature = createHmac("sha256", secret)
+    .update(payload)
+    .digest("base64url");
   return {
     ticket: `${Buffer.from(payload).toString("base64url")}.${signature}`,
     expiresAt: new Date(Date.now() + ttlMs).toISOString(),
@@ -98,7 +100,9 @@ export function verifyTicket(secret, ticket) {
   } catch {
     return false;
   }
-  const expected = createHmac("sha256", secret).update(payload).digest("base64url");
+  const expected = createHmac("sha256", secret)
+    .update(payload)
+    .digest("base64url");
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return false;
@@ -115,7 +119,11 @@ function classifyUpstreamClose(code, reason) {
   const text = String(reason ?? "");
   if (code === 429 || /quota|resource.?exhausted|rate.?limit/i.test(text))
     return "rate_limited";
-  if (code === 1008 || code === 1007 || /api key|permission|unauthor/i.test(text))
+  if (
+    code === 1008 ||
+    code === 1007 ||
+    /api key|permission|unauthor/i.test(text)
+  )
     return "auth_rejected";
   if (code === 1011 || /internal|unavailable|overload/i.test(text))
     return "upstream_error";
@@ -131,7 +139,9 @@ function classifyUpstreamClose(code, reason) {
  * of requests.
  */
 export function pipeToGemini(client, apiKey, label = "voice-relay") {
-  const upstream = new WebSocket(`${UPSTREAM_URL}?key=${encodeURIComponent(apiKey)}`);
+  const upstream = new WebSocket(
+    `${UPSTREAM_URL}?key=${encodeURIComponent(apiKey)}`,
+  );
   const pending = [];
   let closed = false;
 
@@ -208,9 +218,12 @@ const sendJson = (res, status, body) => {
  */
 export function startStandaloneRelay(options = {}) {
   const apiKey = options.apiKey ?? process.env.GEMINI_API_KEY;
-  const port = Number(options.port ?? process.env.RELAY_PORT ?? process.env.PORT ?? 8080);
-  const hostname = options.hostname ?? process.env.HOSTNAME ?? "0.0.0.0";
-  const secret = options.secret ?? process.env.GEMINI_TICKET_SECRET ?? randomUUID();
+  const port = Number(
+    options.port ?? process.env.RELAY_PORT ?? process.env.PORT ?? 8080,
+  );
+  const hostname = options.hostname ?? "0.0.0.0";
+  const secret =
+    options.secret ?? process.env.GEMINI_TICKET_SECRET ?? randomUUID();
   const token = (options.token ?? process.env.VOICE_RELAY_TOKEN ?? "").trim();
   const allowedOrigin = (
     options.allowedOrigin ??
@@ -219,7 +232,10 @@ export function startStandaloneRelay(options = {}) {
   ).trim();
 
   const server = createServer((req, res) => {
-    const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+    const url = new URL(
+      req.url ?? "/",
+      `http://${req.headers.host ?? "localhost"}`,
+    );
 
     if (req.method === "GET" && url.pathname === "/health") {
       sendJson(res, 200, { ok: true, voice: Boolean(apiKey) });
@@ -260,7 +276,10 @@ export function startStandaloneRelay(options = {}) {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (req, socket, head) => {
-    const { pathname, searchParams } = new URL(req.url ?? "/", "http://localhost");
+    const { pathname, searchParams } = new URL(
+      req.url ?? "/",
+      "http://localhost",
+    );
 
     if (pathname !== LIVE_PATH) {
       socket.destroy();
@@ -282,7 +301,9 @@ export function startStandaloneRelay(options = {}) {
       return;
     }
 
-    wss.handleUpgrade(req, socket, head, (client) => pipeToGemini(client, apiKey));
+    wss.handleUpgrade(req, socket, head, (client) =>
+      pipeToGemini(client, apiKey),
+    );
   });
 
   server.listen(port, hostname, () => {
@@ -303,7 +324,10 @@ export function startStandaloneRelay(options = {}) {
 }
 
 // Run as a program only when executed directly, never when imported.
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   loadDotEnv();
   startStandaloneRelay();
 }
