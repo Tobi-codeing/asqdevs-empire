@@ -36,8 +36,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "message_required" }, { status: 400 });
   }
 
-  const origin = new URL(request.url).origin;
-
   const result = await runTurn(
     {
       text,
@@ -57,7 +55,6 @@ export async function POST(request: Request) {
         ? body.offeredPropertyIds.filter((id): id is string => typeof id === "string")
         : [],
       sentLinks: Array.isArray(body.sentLinks) ? body.sentLinks : [],
-      origin,
     },
     process.env.GEMINI_API_KEY ?? "",
   );

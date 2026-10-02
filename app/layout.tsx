@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'ASQDEVS EMPIRE — Digital Systems for Real Estate',
     template: '%s — ASQDEVS EMPIRE',

@@ -124,15 +124,36 @@ export function getPropertiesByIds(ids: string[]): Property[] {
 
 const normalise = (value: string) => value.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 
-/** How strongly free text resembles a property name. Higher is a closer match. */
+/**
+ * How strongly free text resembles a property name. Higher is a closer match.
+ *
+ * Matching is done on whole words, never on substrings. A substring test looks
+ * harmless until you notice that "hi" is inside "Rohini Enclave": a plain
+ * greeting was being read as naming a property, so the assistant dropped a
+ * listing on the customer before it knew anything about their requirement. Word
+ * matching also stops a locality like "Dwarka" from silently picking one of
+ * several listings in that locality — a stated area is qualification input, not
+ * a property name.
+ */
 function nameSimilarity(name: string, query: string): number {
   const a = normalise(name);
   const b = normalise(query);
   if (!a || !b) return 0;
   if (a === b) return 10;
-  if (a.includes(b) || b.includes(a)) return 8;
-  const words = new Set(a.split(' '));
-  const overlap = b.split(' ').filter((word) => words.has(word));
+
+  const nameWords = a.split(' ');
+  const queryWords = b.split(' ');
+  const nameSet = new Set(nameWords);
+  const querySet = new Set(queryWords);
+
+  // The query contains the whole name — "tell me about rohini enclave".
+  if (nameWords.every((word) => querySet.has(word))) return 8;
+  // The name contains the whole query, but only when the query is more than one
+  // word, so a single generic word can never stand in for a full listing name.
+  if (queryWords.length >= 2 && queryWords.every((word) => nameSet.has(word)))
+    return 8;
+
+  const overlap = queryWords.filter((word) => nameSet.has(word));
   return overlap.length * 3;
 }
 

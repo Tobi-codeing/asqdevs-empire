@@ -37,18 +37,26 @@ const COOLDOWN_MS = 60_000;
  * the script engine: free-tier quota is per model, so whichever flash model the
  * key has exhausted returns `429` on every turn while its siblings on the very
  * same key answer normally. Gemini's own "latest" aliases also drift, so the
- * list is ordered newest-first and the code walks it until one answers. This is
- * the same `GEMINI_API_KEY` the voice call uses — only the model id differs,
- * because a Live session and a `generateContent` turn are different endpoints.
+ * code walks the list until one answers. This is the same `GEMINI_API_KEY` the
+ * voice call uses — only the model id differs, because a Live session and a
+ * `generateContent` turn are different endpoints.
+ *
+ * The order is by *first-response speed and availability*, not by version
+ * number. That distinction is the whole point: the newest flash model is
+ * frequently overloaded (`503 ... high demand`), and because the list is walked
+ * in order, a flaky head made every single turn wait through a failed request
+ * before a healthy sibling answered — the difference between a reply that feels
+ * instant and one that takes ten seconds. The fastest reliable models lead; the
+ * heavy ones stay as fallbacks.
  */
 const DEFAULT_TEXT_MODELS = [
-  "gemini-3.8-flash",
-  "gemini-3.7-flash",
-  "gemini-3.5-flash",
-  "gemini-3.1-flash-lite",
-  "gemini-flash-lite-latest",
   "gemini-3-flash-preview",
+  "gemini-flash-lite-latest",
+  "gemini-3.1-flash-lite",
+  "gemini-3.8-flash",
   "gemini-flash-latest",
+  "gemini-3.5-flash",
+  "gemini-3.7-flash",
 ] as const;
 
 /** `GEMINI_TEXT_MODEL`, when set, is preferred and tried before the defaults. */
@@ -242,11 +250,19 @@ export async function generateTurn(
 }
 
 
+/*
+ * A single attempt is capped well below the turn's overall budget (see
+ * `MODEL_BUDGET_MS` in `lib/whatsapp/turn`). The cap is what lets the list walk
+ * do its job: a model that stalls is abandoned while there is still time for the
+ * next candidate to answer, instead of one hung request consuming the whole
+ * turn. 6s sits comfortably above the ~1–4s a healthy model takes on a full
+ * prompt, so it only ever fires on a genuinely wedged request.
+ */
 function callOnce(url: string, body: string) {
   return fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    signal: AbortSignal.timeout(20_000),
+    signal: AbortSignal.timeout(6_000),
     body,
   });
 }

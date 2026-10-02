@@ -111,6 +111,26 @@ export const TRANSFER_NOTE =
  * Only genuinely missing fields are listed as still needed. Settled fields are
  * marked as settled explicitly, so the model has no excuse to re-ask them.
  */
+/** True once at least one core field is known, so state injection starts early. */
+export function hasSettledCore(lead: Lead): boolean {
+  return missingFields(lead).length < CORE_FIELDS.length;
+}
+
+/**
+ * The state message to push, or undefined when it is identical to the last one.
+ *
+ * Keeping this pure means the "never spam the session with the same state" rule
+ * is testable without a live call.
+ */
+export function stateMessageIfChanged(
+  lead: Lead,
+  today: string,
+  lastSent: string,
+): string | undefined {
+  const message = buildStateMessage(lead, today);
+  return message === lastSent ? undefined : message;
+}
+
 export function buildStateMessage(lead: Lead, today: string): string {
   const settled = (input?: string | number | null) =>
     input == null || input === ''

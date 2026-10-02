@@ -172,6 +172,26 @@ function parseIntent(text: string): Intent | undefined {
   if (/\bsell\b|\bsale\b|bechna|sell karna|sell karna|sell karne/i.test(lower))
     return "Sell";
 
+  /*
+   * Hinglish demand, e.g. "2 BHK chahiye Rohini mein, budget 90L". The plain
+   * Buy patterns need an explicit English verb, so this most natural way of
+   * stating a requirement in Delhi was leaving the intent empty — and an empty
+   * intent is exactly what stops the search, so a complete requirement sat
+   * unmatched while the assistant asked a question the customer had answered.
+   *
+   * It only fires alongside a property noun, so a bare "kuch chahiye" stays
+   * unqualified, and Rent/Sell are matched above and therefore win when the
+   * customer actually said "rent" or "sell".
+   */
+  const hinglishWants =
+    /\b(?:chahiye|chaahiye|chahie|chaiye|lena\s+hai|leni\s+hai|dhoond\s+raha|dhoondh\s+raha|dekh\s+raha)\b/i.test(
+      lower,
+    ) &&
+    /\b(?:flat|apartment|property|home|house|ghar|makaan|bhk|villa|studio|penthouse|place|jagah)\b/i.test(
+      lower,
+    );
+  if (hinglishWants) return "Buy";
+
   if (
     /\b(?:buy|purchase|kharid|kharidna|lena|leni|want to buy|want a home|need a home|looking to buy|looking for a home|interested in buying|need to buy|want a flat|need a flat|looking for flat|looking for property|want.*property)\b|\b(?:want|need|looking for|interested in)\b.*(?:flat|property|home|apartment|villa|2\s*bhk|3\s*bhk)/i.test(
       text,
@@ -186,7 +206,13 @@ function parseIntent(text: string): Intent | undefined {
 }
 
 export function parseTimeline(text: string): string | undefined {
-  const t = text.toLowerCase();
+  /*
+   * En/em dashes are what the quick-reply buttons and phone keyboards actually
+   * send. Fold them before matching, otherwise "1–3 months" never hits the
+   * 1–3 pattern and falls through to the bare `3 months` in the 3–6 pattern.
+   */
+  const source = text.replace(/[–—]/g, "-");
+  const t = source.toLowerCase();
 
   /*
    * "I don't know the area" is an answer about the *location*, not a timeline.
@@ -216,34 +242,45 @@ export function parseTimeline(text: string): string | undefined {
 
   if (
     /(\b1\s*year|one year|next year|agle saal|agla saal|ek saal|ek saal me|in a year|within a year|within 1 year|after 1 year|probably in a year|around a year|probably next year|in the next year)/i.test(
-      text,
+      source,
     )
   )
     return "12 months";
 
   if (
-    /(\b6\s*months|6 mahine|after 6 months|in 6 months|around 6 months|maybe 6 months|about 6 months|6\s*\+|more than 6|over 6|6\s*(?:-|to)\s*12)/i.test(
-      text,
+    /*
+     * `(?<![-\d])` stops the bare `6 months` alternative matching inside a
+     * range like "3-6 months" — without it, a customer who said "3–6 months"
+     * was filed as "6–12 months".
+     */
+    /((?<![-\d])6\s*months|6 mahine|after 6 months|in 6 months|around 6 months|maybe 6 months|about 6 months|6\s*\+|more than 6|over 6|6\s*(?:-|to)\s*12)/i.test(
+      source,
     )
   )
     return "6–12 months";
 
-  if (
-    /3\s*(?:-|to)\s*6|teen se chhe|within\s+\d+\s*(?:month|mahine)|next\s+\d+\s*(?:month|mahine)|3\s*months|3 mahine/i.test(
-      text,
-    )
-  )
-    return "3–6 months";
-
+  /*
+   * The 1–3 bucket is checked BEFORE 3–6 on purpose. The 3–6 pattern contains a
+   * bare `3 months` alternative, which matched inside "1-3 months" and filed a
+   * customer who said "1–3 months" as "3–6 months". The range is the more
+   * specific reading, so it has to win.
+   */
   if (
     /1\s*(?:-|to)\s*3|1\s*-\s*2|2\s*(?:-|to)\s*3|ek\s*-?\s*do|agle mahine|next month|in a month|1 month/i.test(
-      text,
+      source,
     )
   )
     return "1–3 months";
 
-  if (/\b(\d+)\s*months?\b/i.test(text)) {
-    const match = text.match(/\b(\d+)\s*months?\b/i);
+  if (
+    /3\s*(?:-|to)\s*6|teen se chhe|within\s+\d+\s*(?:month|mahine)|next\s+\d+\s*(?:month|mahine)|3\s*months|3 mahine/i.test(
+      source,
+    )
+  )
+    return "3–6 months";
+
+  if (/\b(\d+)\s*months?\b/i.test(source)) {
+    const match = source.match(/\b(\d+)\s*months?\b/i);
     if (!match) return undefined;
     const months = Number(match[1]);
     if (months <= 3) return "1–3 months";
@@ -252,8 +289,8 @@ export function parseTimeline(text: string): string | undefined {
     return "12 months";
   }
 
-  if (/after\s+(?:a |\d+)\s*year/i.test(text)) {
-    const m = text.match(/after\s+(?:a |)(\d+)\s*year/i);
+  if (/after\s+(?:a |\d+)\s*year/i.test(source)) {
+    const m = source.match(/after\s+(?:a |)(\d+)\s*year/i);
     const years = m ? Number(m[1]) : 1;
     return years <= 1 ? "12 months" : "12 months";
   }
@@ -523,7 +560,12 @@ export function detectAction(raw: string): DetectedAction | undefined {
     )
   )
     return "moreOptions";
-  if (/^\s*change my requirements\s*$/i.test(raw)) return "restart";
+  /*
+   * "Change my requirements" used to be treated as a full restart, which wiped
+   * everything the customer had already told us. Editing one field is not the
+   * same as starting over — the WhatsApp engine handles it as an edit, so no
+   * action is raised here (and the chat client no longer restarts on it).
+   */
   if (/\bnot now\b|later|no thanks|baad mein/i.test(text)) return "notNow";
   return undefined;
 }

@@ -138,7 +138,15 @@ export const OTHER_LANGUAGES = LANGUAGES.filter((language) => !language.key);
 export const OTHER_LANGUAGES_PROMPT =
   "[The caller pressed 3 for other languages. Say that Hindi and English are available instantly on the keypad, and that the following languages are also fully supported: Punjabi, Gujarati, Marathi, Bengali, Tamil, Telugu, Kannada, Malayalam and Urdu. Ask them to tap the language they would like on screen, then continue in that language.]";
 
-/** Prompt sent when a language is chosen, so the model actually switches. */
+/**
+ * Prompt sent when the caller explicitly chooses a language, so the model
+ * actually switches — and then holds it.
+ *
+ * This is the only sanctioned language change on a call. The wording is
+ * deliberately emphatic about staying put afterwards: the model otherwise drifts
+ * back to a mix a turn or two later, which is exactly what makes the
+ * receptionist sound unstable.
+ */
 export function languageSwitchPrompt(language: Language): string {
-  return `[The caller has selected ${language.label} (${language.native}). ${language.instruction} Keep the same single female receptionist voice and natural speaking style; change only the spoken language. Continue the property conversation from here without repeating anything already established.]`;
+  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single female receptionist voice and the same natural speaking style — change only the spoken language. This is the last language change on this call: from now on stay fully in ${language.label} and do not drift back or mix in another language. Continue the property conversation from here without repeating anything already established.]`;
 }

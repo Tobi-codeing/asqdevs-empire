@@ -122,10 +122,10 @@ export default function CallScreen({
 
         {live && !language && (
           <p className="mt-4 max-w-xl text-base leading-relaxed text-[#f5f3f0]/75 sm:text-lg">
-            Welcome to Delhi Homes. Please select your preferred language.
+            Speak naturally — Hindi, English or a mix.
             <span className="mt-1 block text-[#f5f3f0]/50">
-              Press 1 for Hindi · Press 2 for English · Press 3 for another
-              language
+              The receptionist answers in the same language and keeps the same
+              tone throughout the call.
             </span>
           </p>
         )}

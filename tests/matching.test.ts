@@ -5,6 +5,7 @@ import {
   searchForLead,
 } from "@/lib/leads/match";
 import { applyExtraction } from "@/lib/leads/update";
+import { findPropertyByName } from "@/lib/properties/search";
 import { emptyLead, type Lead } from "@/lib/leads/types";
 
 const qualify = (patch: Parameters<typeof applyExtraction>[1]): Lead =>
@@ -53,6 +54,26 @@ describe("property matching", () => {
     expect(
       canMatchLead(qualify({ intent: "Buy", location: "Dwarka", bhk: "2" })),
     ).toBe(false);
+  });
+
+  it("never reads a greeting as a property name", () => {
+    // "hi" is a substring of "Rohini Enclave", so a substring test made a plain
+    // hello look like a request for that listing — the assistant dropped a
+    // property card on the customer before it knew anything about them.
+    expect(findPropertyByName("hi")).toBeUndefined();
+    expect(findPropertyByName("hello")).toBeUndefined();
+    // A bare locality is qualification input, not a listing name — two Rohini
+    // properties exist, so naming one from the word "Rohini" would be a guess.
+    expect(findPropertyByName("Rohini")).toBeUndefined();
+    expect(findPropertyByName("Delhi")).toBeUndefined();
+  });
+
+  it("still resolves a listing that is genuinely named", () => {
+    expect(findPropertyByName("Rohini Enclave")?.id).toBe("rohini-enclave");
+    expect(findPropertyByName("Dwarka Heights")?.id).toBe("dwarka-heights");
+    expect(findPropertyByName("tell me more about Dwarka Heights")?.id).toBe(
+      "dwarka-heights",
+    );
   });
 
   it("broadens honestly when nothing matches, naming what it relaxed", () => {

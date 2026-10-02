@@ -7,6 +7,7 @@ import {
 } from "@/lib/leads/match";
 import type { Lead } from "@/lib/leads/types";
 import { findNearMisses } from "@/lib/properties/search";
+import { absoluteUrl } from "@/lib/site";
 import { toSentLink, type SentLink } from "@/lib/whatsapp/messages";
 
 /** Never send more than this in one message unless the customer asks again. */
@@ -71,9 +72,15 @@ export function inventoryContext(
   };
 }
 
-/** Absolute detail-page link, built from the record so it can never be wrong. */
-export function sentLinkFor(property: Property, origin: string): SentLink {
-  return { ...toSentLink(property), url: `${origin}${property.detailPageUrl}` };
+/**
+ * Absolute detail-page link, built from the record so it can never be wrong.
+ *
+ * The origin comes from `lib/site`, never from the incoming request: a request
+ * origin meant the link depended on whichever host answered, so a local or
+ * preview host leaked `localhost:3000/...` into messages sent to customers.
+ */
+export function sentLinkFor(property: Property): SentLink {
+  return { ...toSentLink(property), url: absoluteUrl(property.detailPageUrl) };
 }
 
 /** The canonical budget band a lead was matched against, for the recap. */

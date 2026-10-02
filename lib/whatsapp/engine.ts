@@ -18,13 +18,7 @@ import {
   type Lead,
 } from "@/lib/leads/types";
 import { budgetSummaryText } from "@/lib/leads/format";
-import {
-  AFTER_HANDOFF,
-  MATCH_FOLLOWUPS,
-  NO_MATCH_ACTIONS,
-  RESTART_REPLIES,
-  suggestedReplies,
-} from "@/lib/whatsapp/options";
+import { RESTART_REPLIES, suggestedReplies } from "@/lib/whatsapp/options";
 import {
   additionalMatchesMessage,
   broadenedMessage,
@@ -112,6 +106,121 @@ function mergeLinks(existing: SentLink[], incoming: SentLink[]): SentLink[] {
   return Array.from(byId.values());
 }
 
+/* -------------------------------------------------------------------------
+ * Conversation state.
+ *
+ * The stage is DERIVED from the canonical lead each turn rather than stored: a
+ * stateless turn already receives the lead, the shown property ids and the sent
+ * links, so deriving keeps one source of truth and cannot drift from the record
+ * the admin panel shows. The point of naming the stage explicitly is that an
+ * action, once completed, is terminal — it is never offered again.
+ * ----------------------------------------------------------------------- */
+
+export type ConversationStage =
+  | "QUALIFYING"
+  | "SHOWING_MATCHES"
+  | "CHOOSING_VISIT_TIME"
+  | "VISIT_REQUESTED"
+  | "ADVISOR_REQUESTED"
+  | "CALLBACK_REQUESTED"
+  | "COMPLETED";
+
+/** Actions the customer has already completed — never offered a second time. */
+export type CompletedActions = {
+  siteVisit: boolean;
+  advisor: boolean;
+  callback: boolean;
+};
+
+export function completedActions(lead: Lead): CompletedActions {
+  return {
+    siteVisit: Boolean(lead.siteVisit),
+    advisor: Boolean(lead.advisorRequested),
+    callback: Boolean(lead.callbackRequested),
+  };
+}
+
+/** Where the conversation is, read off the lead — never guessed by the model. */
+export function conversationStage(
+  lead: Lead,
+  offeredPropertyIds: string[],
+): ConversationStage {
+  const done = completedActions(lead);
+  if (done.advisor) return "ADVISOR_REQUESTED";
+  if (done.callback) return "CALLBACK_REQUESTED";
+  if (isVisitTimePending(lead)) return "CHOOSING_VISIT_TIME";
+  if (done.siteVisit) return "VISIT_REQUESTED";
+  if (lead.recapSent) return "COMPLETED";
+  if (offeredPropertyIds.length) return "SHOWING_MATCHES";
+  return "QUALIFYING";
+}
+
+/** True while the customer has asked for a visit but not yet said when. */
+export function isVisitTimePending(lead: Lead): boolean {
+  return Boolean(lead.siteVisit) && /time to confirm/i.test(lead.siteVisit ?? "");
+}
+
+/**
+ * Read a bare time-of-day answer ("Afternoon") as the visit time the assistant
+ * just asked for. Kept deliberately narrow: a long sentence that happens to
+ * contain "morning" is a new request, not an answer to the pending question.
+ */
+export function visitTimeSelection(text: string): string | undefined {
+  const value = text.trim().toLowerCase();
+  if (!value || value.length > 24) return undefined;
+  if (/\bmorning\b|\bsubah\b/.test(value)) return "Morning";
+  if (/\bafternoon\b|\bdopahar\b/.test(value)) return "Afternoon";
+  if (/\bevening\b|\bshaam\b|\bsham\b/.test(value)) return "Evening";
+  return undefined;
+}
+
+/** Fold a chosen time-of-day into the visit request, keeping any date already set. */
+export function withVisitTime(lead: Lead, chosen: string): Lead {
+  const raw = lead.siteVisit ?? "";
+  const datePart = raw.replace(/\s*[—-]\s*time to confirm\s*$/i, "").trim();
+  const hasDate =
+    Boolean(datePart) && !/^(?:visit requested|requested)$/i.test(datePart);
+  return {
+    ...lead,
+    siteVisit: hasDate
+      ? `${datePart}, ${chosen} — requested`
+      : `${chosen} visit requested — to confirm`,
+  };
+}
+
+/**
+ * The actions still open, given what is already done.
+ *
+ * This is the rule that breaks the loop: after a visit has been arranged, the
+ * "Schedule a site visit" button simply is not built any more.
+ */
+export function nextActionButtons(completed: CompletedActions): string[] {
+  const buttons: string[] = [];
+  if (!completed.siteVisit) buttons.push("Schedule a site visit");
+  if (!completed.advisor) buttons.push("Talk to an advisor");
+  buttons.push("Done");
+  return buttons;
+}
+
+export function matchButtons(
+  completed: CompletedActions,
+  hasMatches: boolean,
+): string[] {
+  const buttons: string[] = [];
+  if (!completed.siteVisit) buttons.push("Schedule a site visit");
+  if (!completed.advisor) buttons.push("Talk to an advisor");
+  if (hasMatches) buttons.push("Show more options");
+  if (!buttons.length) buttons.push("Done");
+  return buttons.slice(0, 3);
+}
+
+/** The honest ways out of a no-match, minus any handoff already made. */
+export function noMatchButtons(completed: CompletedActions): string[] {
+  const buttons = ["Broaden search", "Adjust budget"];
+  if (!completed.advisor) buttons.push("Talk to an advisor");
+  return buttons;
+}
+
 /**
  * The WhatsApp conversation starts empty.
  *
@@ -128,8 +237,14 @@ export function openingMessages(
   if (source === "Phone") {
     return [
       assistant(
-        "Welcome to Delhi Homes. Please select your preferred language. Press 1 for Hindi. Press 2 for English. Press 3 for another language.",
-        { quickReplies: ["1 · Hindi", "2 · English", "3 · Another language"] },
+        "Namaste! Delhi Homes se Priya bol rahi hoon — bataiye, main aapki kaise madad kar sakti hoon?",
+        {
+          quickReplies: [
+            "2 BHK chahiye Dwarka me",
+            "I want to buy a flat",
+            "Sirf price jaanna hai",
+          ],
+        },
       ),
     ];
   }
@@ -142,7 +257,7 @@ export function openingMessages(
  * "what next". Used to close with a recap instead of another question.
  */
 const isWrapUp = (text: string) =>
-  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done for now|anything else|what next|whats next|next step)\b/i.test(
+  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done|anything else|what next|whats next|next step)\b/i.test(
     text,
   );
 
@@ -194,6 +309,20 @@ export function respond(state: EngineState, userText: string): EngineReply {
   const text = userText.trim();
   const messages: ChatMessage[] = [customer(text)];
 
+  /*
+   * "Change my requirements" is an EDIT, not a reset. The customer says what is
+   * different and the next message updates only that field; wiping the lead and
+   * starting again is exactly the behaviour this used to have and must not.
+   */
+  if (/change\s+(?:my\s+|the\s+)?requirements?/i.test(text)) {
+    messages.push(
+      assistant(
+        "Of course — tell me what's changed (area, size, budget or timeline) and I'll update it.",
+      ),
+    );
+    return { messages, state };
+  }
+
   // Restart
   if (detectAction(text) === "restart") {
     const fresh = createEngineState(state.lead.source);
@@ -203,18 +332,33 @@ export function respond(state: EngineState, userText: string): EngineReply {
 
   const action = detectAction(text);
   const before = state.lead;
+  const completed = completedActions(before);
   let lead = applyExtraction(before, extractLeadFields(text));
 
   // Explicit actions take priority over further qualification.
   if (action === "advisor") {
-    lead = recompute({ ...lead, advisorRequested: true });
+    if (completed.advisor) {
+      // Terminal: a hand-off that already happened is never made again.
+      messages.push(
+        assistant(
+          "You're already connected with an advisor — they'll be in touch. Anything else I can help with?",
+          { quickReplies: ["Done"] },
+        ),
+      );
+      return { messages, state: { ...state, lead } };
+    }
+    lead = recompute({
+      ...lead,
+      advisorRequested: true,
+      nextAction: "human_handoff",
+    });
     messages.push(
       assistant(
-        "Of course — I'll connect you with a property advisor who can take this further. I've passed on everything you've shared.",
-        { quickReplies: AFTER_HANDOFF },
+        "Done — I've passed your requirement to a property advisor. They have everything you've shared, so you won't need to repeat it.",
+        { quickReplies: nextActionButtons({ ...completed, advisor: true }) },
       ),
     );
-    return finish(state, lead, messages);
+    return { messages, state: { ...state, lead, finished: true } };
   }
 
   if (action === "adjustBudget") {
@@ -243,41 +387,99 @@ export function respond(state: EngineState, userText: string): EngineReply {
   }
 
   if (action === "callback") {
-    lead = recompute({ ...lead, callbackRequested: true });
+    lead = recompute({
+      ...lead,
+      callbackRequested: true,
+      nextAction: "callback",
+    });
     messages.push(
       assistant(
         "Noted — I'll have an advisor call you back. They'll already have your requirements.",
-        { quickReplies: AFTER_HANDOFF },
+        { quickReplies: nextActionButtons({ ...completed, callback: true }) },
       ),
     );
-    return finish(state, lead, messages);
+    return { messages, state: { ...state, lead, finished: true } };
   }
 
   if (action === "siteVisit") {
     /*
      * The requested slot is resolved from what the customer actually said and
      * stored as requested — never as booked, and never swapped for a different
-     * day or time. Hard-coding a convenient slot here would make the assistant
-     * quietly move an appointment the customer agreed to, which is exactly what
-     * a real assistant must never do.
+     * day or time. When no time was given we ask for it AND remember that an
+     * answer is pending, so the next "morning / afternoon / evening" resumes
+     * the visit instead of falling back to a generic question (the old loop).
      */
     const slot = resolveDate(text)?.label;
     const time = resolveTime(text);
-    const requested = slot && time ? `${slot}, ${time}` : (slot ?? "Date requested");
+
+    if (slot && time) {
+      lead = recompute({
+        ...lead,
+        siteVisit: `${slot}, ${time} — requested`,
+        nextAction: "site_visit",
+      });
+      messages.push(
+        assistant(
+          `Perfect — I've requested a site visit for ${slot}, ${time}. Our team will confirm the exact slot with you shortly.`,
+          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
+        ),
+      );
+      return { messages, state: { ...state, lead, finished: true } };
+    }
+
+    if (time) {
+      lead = recompute({
+        ...withVisitTime(lead, time),
+        nextAction: "site_visit",
+      });
+      messages.push(
+        assistant(
+          `Perfect — I've noted ${time}. I'll pass your requirement to the property team so they can confirm the exact slot.`,
+          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
+        ),
+      );
+      return { messages, state: { ...state, lead, finished: true } };
+    }
+
     lead = recompute({
       ...lead,
-      siteVisit: time ? `${requested} — requested` : `${requested} — time to confirm`,
+      siteVisit: slot
+        ? `${slot} — time to confirm`
+        : "Visit requested — time to confirm",
+      nextAction: "site_visit",
     });
     messages.push(
       assistant(
-        time
-          ? `Perfect, I've requested a site visit for ${requested}. Our advisor will confirm the time with you shortly.`
-          : `Perfect, I've noted you'd like to visit ${requested}. What time would suit you?`,
-        { quickReplies: time ? AFTER_HANDOFF : ["Morning", "Afternoon", "Evening"] },
+        slot
+          ? `Great — I've noted ${slot}. What time works better for you: morning, afternoon, or evening?`
+          : "Great — what time works better for you: morning, afternoon, or evening?",
+        { quickReplies: ["Morning", "Afternoon", "Evening"] },
       ),
     );
-    if (time) return finish(state, lead, messages);
     return { messages, state: { ...state, lead } };
+  }
+
+  /*
+   * A pending visit time. "Morning / Afternoon / Evening" is the answer to the
+   * question the assistant just asked, so it has to move the visit forward — not
+   * fall through to a generic "what next?" that re-offers the action the
+   * customer already chose. This is the fix for the loop after "Afternoon".
+   */
+  if (isVisitTimePending(before) && !action) {
+    const chosen = visitTimeSelection(text);
+    if (chosen) {
+      lead = recompute(
+        { ...withVisitTime(lead, chosen), nextAction: "site_visit" },
+        { keepMatches: true },
+      );
+      messages.push(
+        assistant(
+          `Perfect — I've noted an ${chosen.toLowerCase()} visit preference. I'll pass your requirement to the property team so they can confirm the exact slot.`,
+          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
+        ),
+      );
+      return { messages, state: { ...state, lead, finished: true } };
+    }
   }
 
   if (action === "notNow") {
@@ -303,7 +505,7 @@ export function respond(state: EngineState, userText: string): EngineReply {
       const sentLinks = mergeLinks(state.sentLinks, [toSentLink(top)]);
       const { text: copy, link } = propertyLinkMessage(top);
       messages.push(
-        assistant(copy, { quickReplies: MATCH_FOLLOWUPS, links: [link] }),
+        assistant(copy, { quickReplies: matchButtons(completed, true), links: [link] }),
       );
       return {
         messages,
@@ -332,7 +534,7 @@ export function respond(state: EngineState, userText: string): EngineReply {
                 // property actions for a listing we could not find.
                 hasSelectedProperty: false,
               })
-            : MATCH_FOLLOWUPS,
+            : matchButtons(completed, true),
         },
       ),
     );
@@ -456,6 +658,60 @@ export function respond(state: EngineState, userText: string): EngineReply {
    */
   const searchable = canMatchLead(lead);
 
+  /*
+   * A requirement can be complete enough to search while an optional field is
+   * still open — intent, area, size and budget are what the inventory needs, and
+   * the timeline is not one of them. On that turn the homes are what the
+   * customer is waiting for, so they are shown now and the remaining question
+   * follows, rather than holding the listings back until every last field is
+   * filled and making the customer ask for them a second time.
+   */
+  const justBecameSearchable =
+    searchable && !canMatchLead(before) && matches.length > 0;
+
+  /*
+   * The turn the requirement first becomes searchable is the turn the customer
+   * has been waiting for. Making them sit through one more question (the
+   * timeline, which matching does not use) before they see a single home is how
+   * a complete, one-line requirement like "2 BHK chahiye Rohini mein, budget
+   * 90L" got answered with nothing but another question. The homes go out now,
+   * and the one field still open is asked for alongside them, so the lead still
+   * completes without a second round.
+   */
+  if (justBecameSearchable) {
+    const offered = matches.slice(0, MATCH_LIMIT);
+    const links = offered.map(toSentLink);
+    messages.push(
+      assistant(
+        withAck(
+          "Based on what you've told me, these look like the closest matches in what I have available:",
+        ),
+        { propertyIds: offered.map((property) => property.id), links },
+      ),
+    );
+    messages.push(
+      missing.length
+        ? assistant(questionFor[missing[0]], { quickReplies: buttonsFor(false) })
+        : assistant(
+            "Would you like to arrange a site visit, or speak with an advisor?",
+            { quickReplies: matchButtons(completed, true) },
+          ),
+    );
+    return {
+      messages,
+      state: {
+        ...state,
+        lead,
+        offeredMatches: true,
+        offeredPropertyIds: mergeIds(
+          state.offeredPropertyIds,
+          offered.map((property) => property.id),
+        ),
+        sentLinks: mergeLinks(state.sentLinks, links),
+      },
+    };
+  }
+
   if (
     missing.length &&
     action !== "broaden" &&
@@ -482,9 +738,10 @@ export function respond(state: EngineState, userText: string): EngineReply {
     );
     const built = fresh.length ? broadenedMessage(fresh, widened.relaxed) : undefined;
 
-    if (built) return offer(fresh, built.links, built.text, MATCH_FOLLOWUPS);
+    if (built)
+      return offer(fresh, built.links, built.text, matchButtons(completed, true));
 
-    messages.push(assistant(NO_EXACT_MATCH, { quickReplies: NO_MATCH_ACTIONS }));
+    messages.push(assistant(NO_EXACT_MATCH, { quickReplies: noMatchButtons(completed) }));
     return { messages, state: { ...state, lead, offeredMatches: true } };
   }
 
@@ -505,7 +762,7 @@ export function respond(state: EngineState, userText: string): EngineReply {
     messages.push(
       assistant(
         "Would you like to arrange a site visit, or speak with an advisor?",
-        { quickReplies: MATCH_FOLLOWUPS },
+        { quickReplies: matchButtons(completed, true) },
       ),
     );
     return {
@@ -535,7 +792,7 @@ export function respond(state: EngineState, userText: string): EngineReply {
     const links = offered.map(toSentLink);
     messages.push(
       assistant("Here are the closest matches I have for what you shared:", {
-        quickReplies: MATCH_FOLLOWUPS,
+        quickReplies: matchButtons(completed, true),
         propertyIds: offered.map((property) => property.id),
         links,
       }),
@@ -563,27 +820,52 @@ export function respond(state: EngineState, userText: string): EngineReply {
         getPropertiesByIds(extra.links.map((link) => link.propertyId)),
         extra.links,
         extra.text,
-        MATCH_FOLLOWUPS,
+        matchButtons(completed, true),
       );
 
     messages.push(
       assistant(
         "That's everything I have matching your requirement right now. An advisor may know of options I can't see \u2014 would you like me to arrange that?",
-        { quickReplies: ["Talk to an advisor", "Schedule a site visit"] },
+        { quickReplies: nextActionButtons(completed) },
       ),
     );
     return { messages, state: { ...state, lead } };
   }
 
+  /*
+   * The conversation is already complete and nothing further was recognised.
+   * Every real branch (matches, more options, a named property, broaden) has
+   * run by now, so this only catches stray messages — and it stays closed
+   * instead of re-offering a CTA the customer already finished.
+   */
+  if (state.finished) {
+    messages.push(
+      assistant(
+        "I've noted that. If anything changes, just tell me and I'll pick it right back up.",
+        { quickReplies: RESTART_REPLIES },
+      ),
+    );
+    return { messages, state: { ...state, lead, finished: true } };
+  }
+
+  /*
+   * Nothing left to qualify and no recognised request. This is the one place
+   * that used to repeat the "arrange a site visit?" CTA forever, so the buttons
+   * are built from what is actually still open — a completed action is never
+   * offered again.
+   */
+  const hasMatches = state.offeredPropertyIds.length > 0;
   messages.push(
     isQuestion(text)
       ? assistant(
           "That's a detail I can't confirm from here without guessing \u2014 an advisor can check it properly. Would you like me to arrange that?",
-          { quickReplies: ["Talk to an advisor", "Schedule a site visit"] },
+          { quickReplies: matchButtons(completed, hasMatches) },
         )
       : assistant(
-          "I've noted that. Would you like to arrange a site visit, or speak with an advisor?",
-          { quickReplies: MATCH_FOLLOWUPS },
+          completed.advisor
+            ? "Got it — I've added that to the notes for your advisor."
+            : "Noted. Would you like to arrange a site visit, or speak with an advisor?",
+          { quickReplies: matchButtons(completed, hasMatches) },
         ),
   );
   return { messages, state: { ...state, lead } };

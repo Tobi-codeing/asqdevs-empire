@@ -7,6 +7,9 @@ import {
 import { emptyLead } from "@/lib/leads/types";
 import { runTurn } from "@/lib/whatsapp/turn";
 import { classifyError } from "@/lib/realtime/live-events";
+import { PRODUCTION_SITE_URL, absoluteUrl } from "@/lib/site";
+import { finalRecapMessage } from "@/lib/whatsapp/messages";
+import { PROPERTIES } from "@/lib/data/properties";
 
 const assistantMessages = (messages: ChatMessage[]) =>
   messages.filter((message) => message.side === "assistant");
@@ -31,20 +34,26 @@ describe("deterministic fallback engine", () => {
     // Timeline was never mentioned — that is the only thing worth asking for.
     expect(turn.state.lead.timeline).toBeUndefined();
 
-    const reply = assistantMessages(turn.messages)[0]?.text ?? "";
+    const assistant = assistantMessages(turn.messages);
+    const reply = assistant.map((message) => message.text).join(" ");
+    // The homes go out on the turn the requirement becomes searchable, and the
+    // one open field is asked for alongside them rather than a turn later.
+    expect(assistant[0]?.propertyIds).toContain("dwarka-heights");
     expect(reply).toMatch(/when are you hoping/i);
     // It must not re-ask for anything already given.
     expect(reply.toLowerCase()).not.toMatch(/which area|how many bedroom|budget/);
   });
 
-  it("shows real matches once the timeline completes the requirement", () => {
+  it("shows real matches as soon as the requirement can be searched", () => {
     const state = createEngineState("WhatsApp");
     const first = respond(state, "I want to buy a 2BHK in Dwarka around 90 lakh.");
-    const second = respond(first.state, "Probably next year.");
 
-    expect(second.state.lead.timeline).toBe("12 months");
-    const ids = second.messages.flatMap((message) => message.propertyIds ?? []);
+    const ids = first.messages.flatMap((message) => message.propertyIds ?? []);
     expect(ids).toContain("dwarka-heights");
+
+    // The timeline is still collected afterwards, so the lead completes.
+    const second = respond(first.state, "Probably next year.");
+    expect(second.state.lead.timeline).toBe("12 months");
   });
 
   it("sends real detail links when asked to see something after matches", () => {
@@ -129,7 +138,6 @@ describe("Gemini-unavailable WhatsApp turn", () => {
         history: [],
         offeredPropertyIds: [],
         sentLinks: [],
-        origin: "http://localhost:3000",
       },
       "", // no API key — the deterministic path
     );
@@ -138,6 +146,33 @@ describe("Gemini-unavailable WhatsApp turn", () => {
     expect(result.lead.bhk).toBe("2 BHK");
     expect(result.lead.location).toBe("Dwarka");
     expect(result.lead.budget).toBe(9_000_000);
+  });
+});
+
+/**
+ * Every link the customer receives has to be an absolute URL on the real
+ * domain. A missing `NEXT_PUBLIC_SITE_URL` used to produce `localhost:3000`
+ * links (and, before that, bare paths) in messages sent to actual customers.
+ */
+describe("customer-facing property links", () => {
+  it("uses the canonical production origin, never localhost", () => {
+    const recap = finalRecapMessage(
+      { ...emptyLead("WhatsApp"), matchedPropertyIds: [PROPERTIES[0].id] },
+      [PROPERTIES[0]],
+    );
+
+    expect(recap.text).toContain(PRODUCTION_SITE_URL);
+    expect(recap.text).not.toMatch(/localhost|127\.0\.0\.1/);
+    expect(recap.links[0]?.url.startsWith(PRODUCTION_SITE_URL)).toBe(true);
+    expect(recap.links[0]?.url).toBe(
+      absoluteUrl(PROPERTIES[0].detailPageUrl),
+    );
+  });
+
+  it("always yields an absolute URL from a site-relative path", () => {
+    expect(absoluteUrl("/demo/properties/dwarka-heights")).toBe(
+      `${PRODUCTION_SITE_URL}/demo/properties/dwarka-heights`,
+    );
   });
 });
 

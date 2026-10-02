@@ -39,6 +39,29 @@ export type LiveEvent =
 
 type LiveEventHandler = (event: LiveEvent) => void;
 
+/**
+ * Build the WebSocket URL for the relay.
+ *
+ * Defaults to the page's own origin (the embedded relay in `server.mjs`). When
+ * the app is deployed somewhere that cannot hold a socket (Vercel), the server
+ * hands back a `relayUrl` for the standalone relay and that host is used
+ * instead. `http(s)` becomes `ws(s)` so the socket always matches the page's
+ * security level.
+ */
+export function resolveSocketUrl(
+  connection: { path: string; ticket: string; relayUrl?: string },
+  origin: { protocol: string; host: string },
+): string {
+  const base = connection.relayUrl
+    ? connection.relayUrl
+        .trim()
+        .replace(/^https:\/\//i, "wss://")
+        .replace(/^http:\/\//i, "ws://")
+        .replace(/\/+$/, "")
+    : `${origin.protocol === "https:" ? "wss" : "ws"}://${origin.host}`;
+  return `${base}${connection.path}?ticket=${encodeURIComponent(connection.ticket)}`;
+}
+
 /** Pull the sample rate out of `audio/pcm;rate=24000`. */
 function parseSampleRate(
   mimeType: string | undefined,
@@ -65,11 +88,10 @@ export class GeminiLiveSession {
    * inherits the page's TLS and cannot be opened from another site.
    */
   async connect(
-    connection: { path: string; ticket: string },
+    connection: { path: string; ticket: string; relayUrl?: string },
     config: SessionConfig,
   ): Promise<void> {
-    const scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const url = `${scheme}://${window.location.host}${connection.path}?ticket=${encodeURIComponent(connection.ticket)}`;
+    const url = resolveSocketUrl(connection, window.location);
 
     await new Promise<void>((resolve, reject) => {
       let settled = false;
@@ -256,14 +278,30 @@ export class GeminiLiveSession {
    * Ask the model to take the first turn.
    *
    * The Live API only responds to input, so a phone call needs this to make the
-   * receptionist greet the caller and read the language menu before anyone
-   * speaks.
+   * receptionist greet the caller before anyone speaks.
    */
   sendText(text: string) {
     this.send({
       clientContent: {
         turns: [{ role: "user", parts: [{ text }] }],
         turnComplete: true,
+      },
+    });
+  }
+
+  /**
+   * Add context to the conversation without asking the model to answer.
+   *
+   * Unlike `sendText`, `turnComplete: false` means the server folds the text
+   * into the session's context and does NOT start a reply. That is what lets the
+   * application hand the receptionist the settled lead state silently, so it
+   * never re-asks a question the caller already answered.
+   */
+  sendContext(text: string) {
+    this.send({
+      clientContent: {
+        turns: [{ role: "user", parts: [{ text }] }],
+        turnComplete: false,
       },
     });
   }

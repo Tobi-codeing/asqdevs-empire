@@ -61,22 +61,50 @@ function budgetOptions(lead: Lead): string[] {
  * once there is something concrete to show, the buttons switch to actions on
  * that content rather than more qualification.
  */
+/** The actions the customer has already completed, so they are not re-offered. */
+function completedFrom(lead: Lead) {
+  return {
+    siteVisit: Boolean(lead.siteVisit),
+    advisor: Boolean(lead.advisorRequested),
+    callback: Boolean(lead.callbackRequested),
+  };
+}
+
 export function suggestedReplies(
   lead: Lead,
   options: { hasMatches: boolean; hasSelectedProperty: boolean; finished?: boolean },
 ): string[] {
-  if (options.finished) return AFTER_HANDOFF;
+  const done = completedFrom(lead);
+
+  if (options.finished) return ["Done"];
 
   if (options.hasSelectedProperty) {
-    return ["Amenities", "Location", "Book a site visit", "Show more options"];
+    const actions: string[] = [];
+    if (!done.siteVisit) actions.push("Book a site visit");
+    if (!done.advisor) actions.push("Talk to an advisor");
+    return Array.from(
+      new Set([...actions, "Amenities", "Location", "Show more options"]),
+    ).slice(0, 4);
   }
 
-  if (options.hasMatches) return MATCH_FOLLOWUPS;
+  if (options.hasMatches) {
+    const replies: string[] = [];
+    if (!done.siteVisit) replies.push("Schedule a site visit");
+    if (!done.advisor) replies.push("Talk to an advisor");
+    replies.push("Show more options");
+    return replies.slice(0, 4);
+  }
 
   const field = nextCoreField(lead);
   // Everything is known and still nothing matched, so the useful next moves are
   // the honest ones — never another round of the same qualification.
-  if (!field) return NO_MATCH_ACTIONS;
+  if (!field) {
+    const replies: string[] = [];
+    if (!done.siteVisit) replies.push("Schedule a site visit");
+    if (!done.advisor) replies.push("Talk to an advisor");
+    replies.push("Broaden search", "Adjust budget");
+    return replies.slice(0, 4);
+  }
   if (field === "budget") return budgetOptions(lead);
   return OPTIONS[field];
 }
@@ -112,10 +140,41 @@ export function reconcileReplies(
     );
   };
 
+  const done = completedFrom(lead);
+
+  /*
+   * A completed action is never offered again. The model is free to suggest a
+   * button, but it cannot put the assistant back in a loop the customer already
+   * left — a site visit or a hand-off that has happened is filtered out here.
+   */
+  const isCompletedAction = (reply: string) => {
+    const value = reply.toLowerCase();
+    if (done.advisor && /advisor|human|agent|insaan/.test(value)) return true;
+    if (done.siteVisit && /\bvisit\b|dekhne|milne|mil sakt/.test(value)) return true;
+    if (done.callback && /\bcallback\b|call back/.test(value)) return true;
+    return false;
+  };
+
+  /*
+   * While the assistant is still qualifying, the buttons ARE the question, so
+   * they come from the canonical set only. Letting the model's passing
+   * suggestions in here is how a greeting ended up offering "Dwarka" and
+   * "Rohini" as buttons while the one answer that mattered — Sell — was pushed
+   * off the end of the row. Once there is something concrete to act on
+   * (matches or a named property) the model's contextual phrasing is allowed
+   * back in, because then it is describing real listings rather than guessing
+   * at a question it was already asked to phrase in the reply.
+   */
+  if (!options.hasMatches && !options.hasSelectedProperty && !options.finished) {
+    const canonical = suggestedReplies(lead, options);
+    if (canonical.length) return canonical.slice(0, 4);
+  }
+
   const kept = (modelReplies ?? [])
     .map((reply) => reply.trim())
     .filter((reply) => reply && reply.length <= 60)
-    .filter((reply) => !isSettled(reply));
+    .filter((reply) => !isSettled(reply))
+    .filter((reply) => !isCompletedAction(reply));
 
   const merged = [
     ...kept,
@@ -124,7 +183,9 @@ export function reconcileReplies(
     ),
   ];
 
-  return Array.from(new Set(merged.map((reply) => reply.trim()))).slice(0, 4);
+  return Array.from(new Set(merged.map((reply) => reply.trim())))
+    .filter((reply) => !isCompletedAction(reply))
+    .slice(0, 4);
 }
 
 /** The fields still open, in the order the assistant should ask about them. */

@@ -10,7 +10,13 @@ import type { Lead } from "@/lib/leads/types";
 import { broadenSearchFor } from "@/lib/leads/match";
 import { nextActionKey } from "@/lib/leads/view";
 import { findPropertyByName, getPropertiesByIds } from "@/lib/properties/search";
-import { respond, type EngineState } from "@/lib/whatsapp/engine";
+import {
+  isVisitTimePending,
+  respond,
+  visitTimeSelection,
+  withVisitTime,
+  type EngineState,
+} from "@/lib/whatsapp/engine";
 import {
   generateTurn,
   providerCoolingDown,
@@ -34,7 +40,6 @@ export type TurnInput = {
   history: HistoryItem[];
   offeredPropertyIds: string[];
   sentLinks: SentLink[];
-  origin: string;
 };
 
 /** One outgoing assistant message. A single turn may send more than one. */
@@ -55,6 +60,36 @@ export type TurnResult = {
   offeredPropertyIds: string[];
   sentLinks: SentLink[];
 };
+
+/**
+ * How long a turn is willing to wait for the model before answering from the
+ * deterministic engine instead.
+ *
+ * A healthy model replies in a second or two, so this is a backstop against a
+ * hung or overloaded provider, not a target — anything the model returns inside
+ * the budget is a real model turn. What it prevents is the worst case: a stalled
+ * request holding the customer's reply for ten or twenty seconds while the
+ * fallback engine was ready immediately. The WhatsApp demo is judged on how
+ * quickly it answers, so the wait has to be bounded.
+ */
+const MODEL_BUDGET_MS = 8_000;
+
+/** Reject once `ms` elapse, so one slow provider cannot eat the whole turn. */
+function withDeadline<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("model_budget_exceeded")), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
 
 /** "Gurugram" everywhere; the inventory and the panel both use that spelling. */
 const normaliseArea = (value: string) => value.replace(/gurgaon/gi, "Gurugram").trim();
@@ -97,22 +132,25 @@ const asksForOptions = (text: string) =>
   );
 
 const isWrapUp = (text: string) =>
-  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done for now|anything else|what next|whats next|next step)\b/i.test(
+  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done|anything else|what next|whats next|next step)\b/i.test(
     text,
   );
 
 export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnResult> {
-  const { text, history, origin } = input;
+  const { text, history } = input;
   const priorLead = safeLead(input.lead);
   const action = detectAction(text);
 
   if (action === "restart") return { restarted: true } as TurnResult;
 
   let lead = applyExtraction(priorLead, localFacts(text));
-  let finished = false;
 
   /* ---------------------------------------------------------------------
    * Explicit actions the application completes itself.
+   *
+   * These are recorded but deliberately do NOT force the closing recap: a
+   * summary after every CTA is what made the assistant look like it was looping
+   * back. The recap is reserved for a genuine wrap-up.
    * ------------------------------------------------------------------- */
 
   if (action === "advisor") {
@@ -121,12 +159,10 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       advisorRequested: true,
       nextAction: "human_handoff",
     });
-    finished = true;
   }
 
   if (action === "callback" && !lead.callbackRequested) {
     lead = recompute({ ...lead, callbackRequested: true, nextAction: "callback" });
-    finished = true;
   }
 
   if (action === "siteVisit" && !lead.siteVisit) {
@@ -135,7 +171,21 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       siteVisit: visitRequestLabel(text),
       nextAction: "site_visit",
     });
-    finished = true;
+  }
+
+  /*
+   * Resume a pending visit-time answer. "Afternoon" is the answer to the
+   * question the assistant just asked, so it is recorded here rather than being
+   * handed to the model as an unrecognised turn.
+   */
+  if (isVisitTimePending(priorLead) && !action) {
+    const chosen = visitTimeSelection(text);
+    if (chosen) {
+      lead = recompute(
+        { ...withVisitTime(lead, chosen), nextAction: "site_visit" },
+        { keepMatches: true },
+      );
+    }
   }
 
   if (action === "adjustBudget") {
@@ -190,7 +240,10 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
 
   if (apiKey && !providerCoolingDown()) {
     try {
-      const turn = await generateTurn(apiKey, text, lead, history, inventory);
+      const turn = await withDeadline(
+        generateTurn(apiKey, text, lead, history, inventory),
+        MODEL_BUDGET_MS,
+      );
       reply = turn.reply;
       modelQuickReplies = turn.quickReplies;
       modelNextStep = parseNextStep(turn.nextStep);
@@ -228,7 +281,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    * canned strings would be a worse demo than an honest fallback.
    */
   if (!modelAvailable) {
-    return localTurn(input, origin, priorLead);
+    return localTurn(input, priorLead);
   }
 
   // "Actually Gurgaon also works" is an addition, not a replacement.
@@ -267,7 +320,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
 
   const sendProperties = (properties: Property[]) => {
     replyPropertyIds = properties.map((property) => property.id);
-    replyLinks = properties.map((property) => sentLinkFor(property, origin));
+    replyLinks = properties.map((property) => sentLinkFor(property));
   };
 
   if (named) {
@@ -293,7 +346,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
         links: more.links
           .map((link) => getPropertiesByIds([link.propertyId])[0])
           .filter((property): property is Property => Boolean(property))
-          .map((property) => sentLinkFor(property, origin)),
+          .map((property) => sentLinkFor(property)),
       };
       replyPropertyIds = more.links.map((link) => link.propertyId);
       replyLinks = listReply.links;
@@ -311,7 +364,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
     if (built) {
       listReply = {
         text: built.text,
-        links: widened.properties.map((property) => sentLinkFor(property, origin)),
+        links: widened.properties.map((property) => sentLinkFor(property)),
       };
       replyPropertyIds = widened.properties.map((property) => property.id);
       replyLinks = listReply.links;
@@ -330,7 +383,8 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    * Recap. Sent once, when the conversation has genuinely served its purpose.
    * ------------------------------------------------------------------- */
 
-  const wrapUp = !priorLead.recapSent && (finished || (lead.status === "Qualified" && isWrapUp(text)));
+  const wrapUp =
+    !priorLead.recapSent && lead.status === "Qualified" && isWrapUp(text);
 
   // The recap restates the requirement and the closest matches in one message,
   // so it replaces this turn's property list rather than following it. A
@@ -344,7 +398,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       links: built.links
         .map((link) => getPropertiesByIds([link.propertyId])[0])
         .filter((property): property is Property => Boolean(property))
-        .map((property) => sentLinkFor(property, origin)),
+        .map((property) => sentLinkFor(property)),
     };
     replyPropertyIds = [];
   }
@@ -414,7 +468,7 @@ function visitRequestLabel(text: string): string {
   const time = resolveTime(text);
   if (date && time) return `${date}, ${time} — requested`;
   if (date) return `${date} — time to confirm`;
-  return "Date requested — to confirm";
+  return "Visit requested — time to confirm";
 }
 
 /**
@@ -443,7 +497,7 @@ function nextActionForTurn(lead: Lead, modelStep: string, hasMatches: boolean): 
  * the model path, so the demo stays usable — the assistant is just less
  * conversational. Returns the identical shape as a normal turn.
  */
-function localTurn(input: TurnInput, origin: string, priorLead: Lead): TurnResult {
+function localTurn(input: TurnInput, priorLead: Lead): TurnResult {
   const state: EngineState = {
     lead: priorLead,
     offeredMatches: input.offeredPropertyIds.length > 0,
@@ -458,17 +512,17 @@ function localTurn(input: TurnInput, origin: string, priorLead: Lead): TurnResul
   // collapsing that to the last line throws the matches away.
   const outgoing = result.messages.filter((message) => message.side === "assistant");
 
-  const withOrigin = (links: SentLink[]): SentLink[] =>
+  const withLinks = (links: SentLink[]): SentLink[] =>
     links
       .map((link) => getPropertiesByIds([link.propertyId])[0])
       .filter((property): property is Property => Boolean(property))
-      .map((property) => sentLinkFor(property, origin));
+      .map((property) => sentLinkFor(property));
 
   const replies: OutgoingMessage[] = outgoing.map((message) => ({
     text: message.text,
     quickReplies: message.quickReplies,
     propertyIds: message.kind === "recap" ? undefined : message.propertyIds,
-    links: withOrigin(message.links ?? []),
+    links: withLinks(message.links ?? []),
     kind: message.kind,
   }));
 

@@ -6,6 +6,7 @@
     "dev": "node server.mjs",
     "build": "next build",
     "start": "node server.mjs",
+    "relay": "node relay.mjs",
     "start:next": "next start",
     "lint": "eslint",
     "test": "vitest run"

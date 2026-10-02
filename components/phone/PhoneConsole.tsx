@@ -25,7 +25,14 @@ const formatDuration = (seconds: number) =>
  */
 export default function PhoneConsole() {
   const [mode, setMode] = useState<Mode>("idle");
-  const [configured, setConfigured] = useState<boolean | null>(null);
+  /**
+   * Whether real voice can start, and — when it cannot — the specific reason,
+   * so the console names the missing piece instead of one vague line.
+   */
+  const [voiceStatus, setVoiceStatus] = useState<{
+    ready: boolean;
+    reason?: string;
+  } | null>(null);
   const [textLead, setTextLead] = useState<Lead>(() => emptyLead("Phone"));
   const [showLead, setShowLead] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -44,13 +51,20 @@ export default function PhoneConsole() {
     let cancelled = false;
     fetch("/api/gemini/session")
       .then((res) => res.json())
-      .then((data: { configured?: boolean; relay?: boolean }) => {
-        // Voice is offered only when both the key exists and the relay that
-        // holds it is actually running; otherwise the text call is the path.
-        if (!cancelled) setConfigured(Boolean(data.configured && data.relay));
-      })
+      .then(
+        (data: { configured?: boolean; relay?: boolean; reason?: string }) => {
+          // Voice is offered only when a relay is actually reachable; otherwise
+          // the text call is the path. `reason` drives the explanatory message.
+          if (!cancelled)
+            setVoiceStatus({
+              ready: Boolean(data.configured && data.relay),
+              reason: data.reason,
+            });
+        },
+      )
       .catch(() => {
-        if (!cancelled) setConfigured(false);
+        if (!cancelled)
+          setVoiceStatus({ ready: false, reason: "relay_unavailable" });
       });
     return () => {
       cancelled = true;
@@ -148,37 +162,36 @@ export default function PhoneConsole() {
                 </h3>
 
                 <p className="type-body mt-5 max-w-xl text-[#f5f3f0]/60">
-                  Speak naturally in Hindi or English. The receptionist greets
-                  you, asks for your preferred language, and only asks for what
-                  it doesn&apos;t already know.
+                  Speak naturally in Hindi, English or a mix. The receptionist
+                  answers like a real advisor in the same language and tone you
+                  use, and only asks for what it doesn&apos;t already know.
                 </p>
 
-                {configured === false && (
+                {voiceStatus?.ready === false && (
                   <div className="mt-7 max-w-xl border border-[#2a2a2a] bg-[#120f0f] p-5 text-left">
                     <p className="type-meta text-[#f5f3f0]/80">
-                      Live voice isn&apos;t available on this deployment —
-                      either no Gemini API key is set on the server, or the
-                      voice relay isn&apos;t running. The text call runs the
-                      same conversation and still produces a lead.
+                      {voiceStatus.reason === "not_configured"
+                        ? "Live voice isn't configured here — no Gemini API key is set on the server. The text call runs the same conversation and still produces a lead."
+                        : "The voice relay isn't reachable. This deployment should point at one with VOICE_RELAY_URL. The text call runs the same conversation and still produces a lead."}
                     </p>
                   </div>
                 )}
 
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                  {configured !== false && (
+                  {voiceStatus?.ready !== false && (
                     <button
                       onClick={startVoice}
-                      disabled={configured === null}
+                      disabled={voiceStatus === null}
                       className="flex items-center gap-3 bg-[#c6ad78] px-8 py-4 text-base font-medium text-[#0a0a0a] transition-colors hover:bg-[#aa925f] disabled:opacity-50"
                     >
                       <Phone className="h-5 w-5" />
-                      {configured === null ? "Checking⬦" : "Start voice call"}
+                      {voiceStatus === null ? "Checking⬦" : "Start voice call"}
                     </button>
                   )}
                   <button
                     onClick={startText}
                     className={`flex items-center gap-3 px-8 py-4 text-base transition-colors ${
-                      configured === false
+                      voiceStatus?.ready === false
                         ? "bg-[#c6ad78] font-medium text-[#0a0a0a] hover:bg-[#aa925f]"
                         : "border border-[#2a2a2a] text-[#f5f3f0] hover:border-[#c6ad78] hover:text-[#c6ad78]"
                     }`}

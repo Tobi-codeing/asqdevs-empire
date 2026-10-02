@@ -1,6 +1,8 @@
 // Fictional demo inventory — the single source of truth for property matching.
 // These are NOT real listings. Replace with real inventory before launch.
 
+import { absoluteUrl } from "@/lib/site";
+
 export type PropertyImage = {
   src: string;
   alt: string;
@@ -392,8 +394,7 @@ export function propertyDetailUrl(property: Pick<Property, "id">): string {
 
 /** Absolute detail-page URL, for anywhere a full link is needed. */
 export function absolutePropertyUrl(property: Pick<Property, "id">): string {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  return `${base}${propertyDetailUrl(property)}`;
+  return absoluteUrl(propertyDetailUrl(property));
 }
 
 export function propertiesByIds(ids: string[]): Property[] {

@@ -185,10 +185,10 @@ export default function WhatsAppWorkbench() {
   // "View property" inside the chat sends the real detail link, exactly as the
   // assistant would, and records it against the lead.
   const viewProperty = (property: Property) => {
-    const generated = propertyLinkMessage(property);
-    const url = `${window.location.origin}${property.detailPageUrl}`;
-    const link = { ...generated.link, url };
-    const text = generated.text.replace(generated.link.url, url);
+    // The link is already absolute on the canonical domain (`lib/site`), so the
+    // panel and the assistant send the exact same URL instead of whatever host
+    // the browser happens to be on.
+    const { link, text } = propertyLinkMessage(property);
     setState((prev) => ({
       ...prev,
       lead: { ...prev.lead, selectedPropertyId: property.id },

@@ -57,6 +57,19 @@ describe("extractLeadFields", () => {
     expect(extractLeadFields("looking for a 3bhk on rent").intent).toBe("Rent");
   });
 
+  it("reads Hinglish demand as a buying intent", () => {
+    // "2 BHK chahiye Rohini mein, budget 90L" is how a Delhi customer actually
+    // states a complete requirement. With no intent the search never ran, so a
+    // fully-specified lead sat unmatched.
+    expect(extractLeadFields("2 BHK chahiye Rohini mein, budget 90L").intent).toBe("Buy");
+    expect(extractLeadFields("2 bhk chahiye").intent).toBe("Buy");
+    // "rent" and "sell" still win when they are actually stated.
+    expect(extractLeadFields("1 bhk rent pe chahiye").intent).toBe("Rent");
+    expect(extractLeadFields("flat bechna hai").intent).toBe("Sell");
+    // A bare demand with no property noun is not a requirement yet.
+    expect(extractLeadFields("kuch chahiye").intent).toBeUndefined();
+  });
+
   it("never reads a polite 'please' as a lease", () => {
     // `lease` was not word-bounded, so "please" matched it and silently turned
     // a buyer's lead into a rental.

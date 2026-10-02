@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GeminiLiveSession } from "@/lib/gemini/live-session";
-import { AUTOMATIC_VAD, buildSessionConfig } from "@/lib/gemini/config";
+import {
+  AUTOMATIC_VAD,
+  INJECT_LEAD_STATE,
+  buildSessionConfig,
+} from "@/lib/gemini/config";
 import {
   byCode,
   byKey,
@@ -30,7 +34,9 @@ import {
   TRANSFER_NOTE,
   WRAP_UP_PROMPT,
   evaluateCompletion,
+  hasSettledCore,
   isGoodbye,
+  stateMessageIfChanged,
 } from "@/lib/calls/completion";
 import {
   mergeTranscript,
@@ -45,6 +51,36 @@ export type { Language, LanguageCode } from "@/lib/gemini/languages";
 
 let entryCounter = 0;
 const nextId = () => `t${++entryCounter}`;
+
+/**
+ * Ask the server for a relay ticket, with one backed-off retry.
+ *
+ * Only a 502 (the relay hiccuped or was cold-starting) or a network failure is
+ * retried. A 429, 503 or any other status is a definitive answer and is
+ * returned immediately — retrying a rate-limited or misconfigured request is
+ * exactly the loop that makes a quota problem worse.
+ */
+async function fetchSessionTicket(url: string): Promise<Response> {
+  const attempts = 2;
+  let lastResponse: Response | undefined;
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    if (attempt > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 600 * attempt));
+    }
+    try {
+      const response = await fetch(url, { method: "POST" });
+      if (response.status !== 502) return response;
+      lastResponse = response;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastResponse) return lastResponse;
+  throw lastError ?? new Error("ticket_failed");
+}
 
 /** Grace period after the goodbye line before the session is torn down. */
 const GOODBYE_TAIL_MS = 2200;
@@ -98,6 +134,10 @@ export function useCallSession(
   const leadRef = useRef<Lead>(emptyLead("Phone"));
   /** The receptionist's most recent full line, inspected for a sign-off. */
   const lastAssistantTextRef = useRef("");
+  /** Today's resolved date, fixed at call start (matches the session config). */
+  const todayRef = useRef("");
+  /** The last lead-state message pushed, so identical state is never re-sent. */
+  const lastStateRef = useRef("");
   const onAutoEndRef = useRef<((reason: string) => void) | undefined>(
     undefined,
   );
@@ -207,6 +247,29 @@ export function useCallSession(
     }, GOODBYE_TAIL_MS);
   }, []);
 
+  /**
+   * Hand the receptionist the settled lead state.
+   *
+   * The application owns the lead (see `lib/calls/completion.ts`); the model
+   * only ever *proposes* facts. Pushing the merged state back in is what stops
+   * the receptionist re-asking something the caller already answered. It is sent
+   * only after the model finishes a turn, only when the state actually changed,
+   * and with `turnComplete: false` so it never triggers a reply.
+   */
+  const injectLeadState = useCallback(() => {
+    if (!INJECT_LEAD_STATE) return;
+    const current = leadRef.current;
+    if (!hasSettledCore(current)) return;
+    const message = stateMessageIfChanged(
+      current,
+      todayRef.current,
+      lastStateRef.current,
+    );
+    if (!message) return;
+    lastStateRef.current = message;
+    sessionRef.current?.sendContext(message);
+  }, []);
+
   /** Read structured facts out of what the caller just said. */
   const applyUtterance = useCallback((text: string) => {
     const patch = patchFromUtterance(text);
@@ -280,7 +343,7 @@ export function useCallSession(
           if (!greetedRef.current) {
             greetedRef.current = true;
             sessionRef.current?.sendText(
-              "[Call connected. Greet the caller and read the language menu now.]",
+              "[Call connected. Give your one short warm opening line now — who you are, where you are from, and an open invitation to say what they need. Do not offer or read any language menu, and do not tell them to press anything.]",
             );
           }
           break;
@@ -350,6 +413,7 @@ export function useCallSession(
           } else {
             // Assistant output must never be echoed back as new input.
             checkCompletion();
+            injectLeadState();
           }
           lastAssistantTextRef.current = "";
           break;
@@ -386,6 +450,7 @@ export function useCallSession(
       sealBubble,
       checkCompletion,
       endAfterGoodbye,
+      injectLeadState,
     ],
   );
 
@@ -496,6 +561,13 @@ export function useCallSession(
     setAutoEnding(false);
     clearAutoEnd();
     leadRef.current = emptyLead("Phone");
+    lastStateRef.current = "";
+    todayRef.current = new Date().toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
     setStatus("connecting");
 
     try {
@@ -511,7 +583,7 @@ export function useCallSession(
 
       // 1. Ask our server for a short-lived relay ticket. The API key itself
       //    never leaves the server.
-      const tokenRes = await fetch("/api/gemini/session", { method: "POST" });
+      const tokenRes = await fetchSessionTicket("/api/gemini/session");
       if (callId !== callIdRef.current) return;
       if (!tokenRes.ok) {
         const body = (await tokenRes.json().catch(() => ({}))) as {
@@ -537,6 +609,7 @@ export function useCallSession(
       const connection = (await tokenRes.json()) as {
         ticket?: string;
         path?: string;
+        relayUrl?: string;
         model?: string;
         voice?: string;
       };
@@ -606,18 +679,19 @@ export function useCallSession(
       });
       sessionRef.current = session;
       await session.connect(
-        { path: connection.path, ticket: connection.ticket },
+        {
+          path: connection.path,
+          ticket: connection.ticket,
+          // Present only on hosts that cannot embed the relay (Vercel): the
+          // socket then opens against the standalone relay instead.
+          relayUrl: connection.relayUrl,
+        },
         // The server resolves today's date into the instructions, so relative
         // dates spoken by the caller always land on the right calendar day.
         buildSessionConfig(
           connection.model,
           connection.voice ?? "Aoede",
-          new Date().toLocaleDateString("en-GB", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
+          todayRef.current,
         ),
       );
       if (callId !== callIdRef.current) return;

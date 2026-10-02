@@ -113,6 +113,29 @@ GEMINI_API_KEY=...
 - Without a key: `GET /api/gemini/session` reports `{ configured: false }` and the
   UI presents the text demo instead. Nothing fails silently.
 
+### Voice on Vercel (standalone relay)
+
+Vercel's serverless functions cannot hold a WebSocket, so `server.mjs` cannot run
+there — real voice needs the relay running somewhere that can. The same
+implementation is available as a standalone service:
+
+```bash
+npm run relay        # node relay.mjs — listens on RELAY_PORT (default 8080)
+```
+
+1. Deploy `relay.mjs` to a WebSocket-capable host (Railway, Render, Fly.io) with
+   `GEMINI_API_KEY`, a shared `VOICE_RELAY_TOKEN`, and
+   `VOICE_ALLOWED_ORIGIN=https://asqdevs-empire.vercel.app`.
+2. On the Vercel app set `VOICE_RELAY_URL=https://<relay-host>` and the same
+   `VOICE_RELAY_TOKEN`.
+3. Redeploy. `GET /api/gemini/session` now reports `relay: true`; the browser
+   connects to the relay instead of its own origin.
+
+The relay mints tickets at `POST /ticket` (guarded by `VOICE_RELAY_TOKEN`) and
+bridges the Live socket at `/api/gemini/live`. `GEMINI_API_KEY` never leaves the
+relay host. Local development is unchanged: `server.mjs` embeds the same relay
+on `localhost:3000` and ignores `VOICE_RELAY_URL`.
+
 ### Swapping the voice provider
 
 All provider-specific code sits behind two modules:
@@ -133,7 +156,8 @@ app/
   api/gemini/ticket/route.ts   # HMAC ticket for the relay
   api/tools/route.ts           # controlled property/lead functions
   page.tsx, contact/, project/[id]/
-server.mjs                     # custom server: Next + Gemini Live WS relay
+server.mjs                     # custom server: Next + Gemini Live WS relay (embedded)
+relay.mjs                      # same relay as a standalone service (for Vercel)
 components/
   whatsapp/   # workbench, message bubble, composer
   phone/      # console, call screen, keypad, transcript, useGeminiCall hook
@@ -214,8 +238,18 @@ The "Send via WhatsApp" button builds a formatted message from the form and open
 
 ## Deploy
 
-Any Node host (Vercel fits best). Set `NEXT_PUBLIC_SITE_URL` and, for real voice,
-`GEMINI_API_KEY`. Social image: `app/opengraph-image.tsx`; favicon: `app/favicon.ico`.
+`NEXT_PUBLIC_SITE_URL` defaults to `https://asqdevs-empire.vercel.app`
+(`lib/site.ts`), so property links in the WhatsApp demo work with no extra
+config; set it to override. Social image: `app/opengraph-image.tsx`; favicon:
+`app/favicon.ico`.
+
+- **Node host (Railway / Render / Fly / a VPS):** `npm run build && npm run start`
+  runs `server.mjs`, which embeds the voice relay. Set `GEMINI_API_KEY` and real
+  voice works on the app's own origin.
+- **Vercel:** the site and the WhatsApp demo deploy normally, but the WebSocket
+  relay cannot run there. Set `VOICE_RELAY_URL` (+ `VOICE_RELAY_TOKEN`) to the
+  standalone relay from the section above; otherwise the receptionist honestly
+  offers the text call.
 
 ## Notes
 

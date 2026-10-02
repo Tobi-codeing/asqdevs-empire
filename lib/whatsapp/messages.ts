@@ -1,4 +1,5 @@
 import { formatPriceBand, type Property } from "@/lib/data/properties";
+import { SITE_URL } from "@/lib/site";
 import type { Lead } from "@/lib/leads/types";
 import {
   formatBudgetDisplay,
@@ -28,7 +29,8 @@ export type SentLink = {
   label: string;
 };
 
-const linkBase = () => process.env.NEXT_PUBLIC_SITE_URL ?? "";
+/** Absolute base for property links — the canonical origin, never a bare path. */
+const linkBase = () => SITE_URL;
 
 /** Build a SentLink straight from the structured property record. */
 export function toSentLink(property: Property): SentLink {
