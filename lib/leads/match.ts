@@ -10,6 +10,11 @@ import { searchProperties } from "@/lib/properties/search";
  * re-implemented per channel.
  */
 
+/** Same locality name, allowing for casing and the city/locality overlap. */
+const sameText = (a: string, b: string) =>
+  a.toLowerCase().includes(b.toLowerCase()) ||
+  b.toLowerCase().includes(a.toLowerCase());
+
 /**
  * The areas worth searching for a lead.
  *
@@ -17,15 +22,40 @@ import { searchProperties } from "@/lib/properties/search";
  * flexible — or genuinely does not know the area — searches the whole known
  * inventory, which is the only way "I don't know where" can ever produce
  * results.
+ *
+ * Two ordering rules matter here. The most recently stated area is the primary
+ * one, so it is searched first — a customer who refined "Delhi" to "Dwarka"
+ * must see Dwarka results before anything else. And a broad city is not a
+ * locality: once a stated locality belongs to it (Dwarka is in Delhi), the bare
+ * city is dropped, because keeping it silently pulls in every other locality in
+ * the city — the buyer asked for Dwarka and gets Rohini. A city stated on its
+ * own survives, since then it is the whole requirement.
  */
 export function searchAreasFor(lead: Lead): string[] {
   const stated = Array.from(
-    new Set([...lead.preferredLocations, ...(lead.location ? [lead.location] : [])]),
+    new Set([...(lead.location ? [lead.location] : []), ...lead.preferredLocations]),
   ).filter(Boolean);
 
-  if (stated.length) return stated.slice(0, 5);
-  if (lead.budgetFlexible === true) return KNOWN_LOCATIONS.slice(0, 5);
-  return [];
+  if (!stated.length) {
+    return lead.budgetFlexible === true ? KNOWN_LOCATIONS.slice(0, 5) : [];
+  }
+
+  // An exact locality name, not a substring: "South Delhi" contains "Delhi",
+  // but "Delhi" is still a broad city rather than a locality in its own right.
+  const isLocality = (area: string) =>
+    KNOWN_LOCATIONS.some(
+      (location) => location.toLowerCase() === area.trim().toLowerCase(),
+    );
+  const citiesOfStated = new Set(
+    PROPERTIES.filter((property) =>
+      stated.some((area) => sameText(area, property.location)),
+    ).map((property) => property.city.toLowerCase()),
+  );
+  const narrowed = stated.filter(
+    (area) => isLocality(area) || !citiesOfStated.has(area.toLowerCase()),
+  );
+
+  return (narrowed.length ? narrowed : stated).slice(0, 5);
 }
 
 /**

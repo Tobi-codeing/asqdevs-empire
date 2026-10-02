@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { detectAction, extractLeadFields, parseTimeline } from "@/lib/ai/extract";
+import {
+  asksForPropertyList,
+  detectAction,
+  extractLeadFields,
+  parseTimeline,
+} from "@/lib/ai/extract";
 
 /**
  * Free-text extraction. The assistant must understand what a customer actually
@@ -52,10 +57,31 @@ describe("extractLeadFields", () => {
     expect(extractLeadFields("looking for a 3bhk on rent").intent).toBe("Rent");
   });
 
+  it("never reads a polite 'please' as a lease", () => {
+    // `lease` was not word-bounded, so "please" matched it and silently turned
+    // a buyer's lead into a rental.
+    expect(extractLeadFields("please").intent).toBeUndefined();
+    expect(extractLeadFields("show me options please").intent).toBeUndefined();
+  });
+
+  it("does not read 'I don't know the area' as a timeline", () => {
+    expect(parseTimeline("I don't know the area")).toBeUndefined();
+    expect(parseTimeline("not sure about the location yet")).toBeUndefined();
+  });
+
   it("parses timeline buckets directly", () => {
     expect(parseTimeline("1 year")).toBe("12 months");
     expect(parseTimeline("4 months")).toBe("3–6 months");
     expect(parseTimeline("18 months")).toBe("12 months");
+  });
+});
+
+describe("asksForPropertyList", () => {
+  it("recognises the plural phrasings customers actually use", () => {
+    expect(asksForPropertyList("show me options")).toBe(true);
+    expect(asksForPropertyList("send me the listings")).toBe(true);
+    expect(asksForPropertyList("show me 2bhk properties")).toBe(true);
+    expect(asksForPropertyList("what do you have")).toBe(true);
   });
 });
 

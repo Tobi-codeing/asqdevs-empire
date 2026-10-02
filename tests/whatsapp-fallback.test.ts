@@ -74,6 +74,36 @@ describe("deterministic fallback engine", () => {
     expect(second.state.lead.budget).toBe(9_000_000);
   });
 
+  it("closes with a recap once the customer is done", () => {
+    const state = createEngineState("WhatsApp");
+    const first = respond(
+      state,
+      "I want to buy a 2bhk in Dwarka around 90 lakh, next year.",
+    );
+    const second = respond(first.state, "thanks, that's all");
+
+    const recap = assistantMessages(second.messages).find(
+      (message) => message.kind === "recap",
+    );
+    expect(recap).toBeTruthy();
+    expect(recap?.text).toMatch(/closest matches/i);
+    expect(recap?.links?.map((link) => link.propertyId)).toContain(
+      "dwarka-heights",
+    );
+  });
+
+  it("does not replay the exploratory question after 'I don't know the area'", () => {
+    const state = createEngineState("WhatsApp");
+    const first = respond(state, "just exploring");
+    const second = respond(first.state, "I don't know the area");
+
+    const text = assistantMessages(second.messages)
+      .map((message) => message.text)
+      .join(" ");
+    expect(text).not.toMatch(/no pressure at all/i);
+    expect(text).toMatch(/buy or rent/i);
+  });
+
   it("stays honest when nothing in the inventory matches", () => {
     const state = createEngineState("WhatsApp");
     const turn = respond(

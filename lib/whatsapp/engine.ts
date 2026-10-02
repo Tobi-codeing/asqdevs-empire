@@ -1,6 +1,11 @@
-import { detectAction, extractLeadFields, isQuestion } from "@/lib/ai/extract";
+import {
+  asksForPropertyList,
+  detectAction,
+  extractLeadFields,
+  isQuestion,
+} from "@/lib/ai/extract";
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
-import { broadenSearchFor } from "@/lib/leads/match";
+import { broadenSearchFor, canMatchLead } from "@/lib/leads/match";
 import {
   findPropertyByName,
   getPropertiesByIds,
@@ -133,12 +138,11 @@ export function openingMessages(
 }
 
 /**
- * Did the customer explicitly ask to see properties?
- *
- * Requirement-noun form: "show me 2 bhk options", "send me the listings".
+ * The customer is signalling the conversation is done — "thanks, that's all",
+ * "what next". Used to close with a recap instead of another question.
  */
-const asksForProperties = (text: string) =>
-  /\b(?:show|send|share|view|see|give|push|link|forward|browse)\b[^.?]{0,40}\b(?:propert|option|listing|match|result|place|home|flat|apartment)\b|\b(?:more|other|any more|additional)\s+(?:option|propert|listing|choice|match)|details of\b|\bwhat have you got\b|\bwhat do you have\b/i.test(
+const isWrapUp = (text: string) =>
+  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done for now|anything else|what next|whats next|next step)\b/i.test(
     text,
   );
 
@@ -323,7 +327,10 @@ export function respond(state: EngineState, userText: string): EngineReply {
           quickReplies: missing.length
             ? suggestedReplies(lead, {
                 hasMatches: false,
-                hasSelectedProperty: true,
+                // Nothing was resolved, so there is no property to act on — the
+                // buttons must offer the next qualification answer, not
+                // property actions for a listing we could not find.
+                hasSelectedProperty: false,
               })
             : MATCH_FOLLOWUPS,
         },
@@ -337,11 +344,25 @@ export function respond(state: EngineState, userText: string): EngineReply {
   const canonicalBudget = budgetSummaryText(lead);
   const DASH = "\u2014";
 
+  /*
+   * Vary the acknowledgement. Starting every reply with the same word is what
+   * makes a conversation read as a script, so the opener rotates over a small
+   * set keyed on the facts themselves — no per-conversation state needed, and
+   * the same lead always reads back the same way.
+   */
+  const ACKS = ["Got it", "Sure", "Okay", "Perfect", "Noted"];
+  const ack = () => {
+    const seed = learned.join(", ");
+    let hash = 0;
+    for (let i = 0; i < seed.length; i += 1) hash += seed.charCodeAt(i);
+    return ACKS[hash % ACKS.length];
+  };
+
   /** Acknowledge only what is genuinely new, so nothing is ever restated. */
   const learnt = () => {
     if (canonicalBudget && learned.includes(canonicalBudget))
-      return `Got it ${DASH} ${canonicalBudget}.`;
-    if (learned.length) return `Got it ${DASH} ${learned.join(", ")}.`;
+      return `${ack()} ${DASH} ${canonicalBudget}.`;
+    if (learned.length) return `${ack()} ${DASH} ${learned.join(", ")}.`;
     return "";
   };
 
@@ -357,11 +378,29 @@ export function respond(state: EngineState, userText: string): EngineReply {
     });
 
   /*
+   * The customer is wrapping up and there is nothing left to ask. Close with
+   * the one recap of the requirement and the closest matches rather than
+   * another question — the same completion the model path produces.
+   */
+  if (!state.finished && !missing.length && isWrapUp(text)) {
+    return finish(state, lead, messages);
+  }
+
+  /*
    * "Just exploring" is a real answer, not a gap to be pushed on. Someone who
    * has said they are only browsing gets a low-pressure way in rather than
    * being asked to commit to buy or rent.
+   *
+   * It only fires when that is the new fact this turn. Repeating the same
+   * exploratory question on every later message is exactly the loop the
+   * assistant must never fall into.
    */
-  if (lead.timeline === "Just exploring" && !lead.bhk && !lead.budget) {
+  if (
+    lead.timeline === "Just exploring" &&
+    !lead.bhk &&
+    !lead.budget &&
+    learned.includes("Just exploring")
+  ) {
     messages.push(
       assistant(
         `No pressure at all. What kind of home are you curious about ${DASH} a 2 BHK in a particular area, or are you just getting a feel for prices?`,
@@ -382,7 +421,9 @@ export function respond(state: EngineState, userText: string): EngineReply {
    * script: it stops the qualification halfway to push three listings.
    */
   const wantsProperties =
-    action === "moreOptions" || asksForProperties(text) || asksForOptions(text);
+    action === "moreOptions" ||
+    asksForPropertyList(text) ||
+    asksForOptions(text);
   const matches = getPropertiesByIds(lead.matchedPropertyIds);
 
   const offer = (
@@ -407,7 +448,19 @@ export function respond(state: EngineState, userText: string): EngineReply {
     };
   };
 
-  if (missing.length && !wantsProperties && action !== "broaden") {
+  /*
+   * Searching requires enough information to search with. "Show me options"
+   * with nothing known must qualify, not dump the whole inventory as a
+   * "closest match" — so a request to see properties only bypasses the next
+   * qualification question once the lead can actually be matched.
+   */
+  const searchable = canMatchLead(lead);
+
+  if (
+    missing.length &&
+    action !== "broaden" &&
+    (!wantsProperties || !searchable)
+  ) {
     messages.push(
       assistant(withAck(questionFor[missing[0]]), {
         quickReplies: buttonsFor(false),
@@ -421,7 +474,7 @@ export function respond(state: EngineState, userText: string): EngineReply {
    * result: every step reports which of the customer's stated requirements it
    * dropped, so a near miss is never presented as a match.
    */
-  if ((action === "broaden" || wantsProperties) && !matches.length) {
+  if (searchable && (action === "broaden" || wantsProperties) && !matches.length) {
     const widened = broadenSearchFor(lead);
     const fresh = widened.properties.filter(
       (property) =>

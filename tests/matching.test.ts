@@ -29,6 +29,25 @@ describe("property matching", () => {
     expect(ids).not.toContain("rohini-enclave");
   });
 
+  it("drops a broad city once a locality within it is stated", () => {
+    // "Delhi" then "Dwarka": keeping the bare city as a search area pulls in
+    // every other Delhi locality, so a Dwarka buyer was shown Rohini.
+    const first = qualify({
+      intent: "Buy",
+      location: "Delhi",
+      bhk: "2",
+      budget: 9_000_000,
+    });
+    const refined = applyExtraction(first, { location: "Dwarka" });
+    const ids = searchForLead(refined).matches.map((property) => property.id);
+
+    expect(refined.preferredLocations).toEqual(
+      expect.arrayContaining(["Delhi", "Dwarka"]),
+    );
+    expect(ids).toContain("dwarka-heights");
+    expect(ids).not.toContain("rohini-enclave");
+  });
+
   it("refuses to search before the requirement is meaningful", () => {
     expect(canMatchLead(qualify({ location: "Dwarka", bhk: "2" }))).toBe(false);
     expect(

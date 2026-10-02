@@ -162,7 +162,12 @@ function parseBhk(text: string): string | undefined {
 function parseIntent(text: string): Intent | undefined {
   const lower = text.toLowerCase();
 
-  if (/\brent\b|kiraya|kiraye|on rent|renting|lease/i.test(lower))
+  /*
+   * Every keyword here is word-bounded. Without the boundaries, `lease` matched
+   * the "lease" inside "please" — so a polite "please" anywhere in a message
+   * silently flipped a buyer's intent to Rent.
+   */
+  if (/\brent\b|\brenting\b|\blease\b|\bleasing\b|kiraya|kiraye|on rent/i.test(lower))
     return "Rent";
   if (/\bsell\b|\bsale\b|bechna|sell karna|sell karna|sell karne/i.test(lower))
     return "Sell";
@@ -183,7 +188,19 @@ function parseIntent(text: string): Intent | undefined {
 export function parseTimeline(text: string): string | undefined {
   const t = text.toLowerCase();
 
+  /*
+   * "I don't know the area" is an answer about the *location*, not a timeline.
+   * Reading every "don't know" / "not sure" as "Just exploring" made the
+   * assistant replay its exploratory message instead of moving on to the next
+   * genuinely missing fact.
+   */
+  const unsureAboutArea =
+    /(?:don'?t|do not|dont)\s+know\s+(?:the\s+|which\s+|any\s+)?(?:area|location|locality|place|where|kahan)|(?:not|no)\s+sure\s+(?:about|of)?\s*(?:the\s+)?(?:area|location|locality)|(?:pata|maloom)\s+nahi\s+(?:kahan|area|location|jagah)/i.test(
+      t,
+    );
+
   if (
+    !unsureAboutArea &&
     /just exploring|just browsing|only exploring|only browsing|not decided|not sure|abhi nahi|thinking|abhi socha nahi|does not matter|wherever you think|don't know|still deciding|pata nahi|maloom nahi|sirf dekh/i.test(
       t,
     )
@@ -514,4 +531,20 @@ export function detectAction(raw: string): DetectedAction | undefined {
 
 export function isQuestion(raw: string): boolean {
   return /\?|kya|kitna|how much|how many|where|kahan|when|kab/i.test(raw);
+}
+
+/**
+ * Did the customer ask to see properties — "show me options", "send me the
+ * listings", "what do you have"?
+ *
+ * This is the one definition both WhatsApp paths use, so a typed request and a
+ * tapped button resolve identically. The nouns are deliberately matched in
+ * both singular and plural: "show me option**s**" and "show me propert**ies**"
+ * are how customers actually phrase it, and an earlier pattern that only knew
+ * the singular silently fell through to re-asking a qualification question.
+ */
+export function asksForPropertyList(text: string): boolean {
+  return /\b(?:show|send|share|view|see|give|push|link|forward|browse)\b[^.?]{0,40}\b(?:properties|property|options?|listings?|matches?|results?|places?|homes?|flats?|apartments?)\b|\b(?:more|other|any more|additional)\s+(?:options?|properties|listings?|choices?|matches?)|details of\b|\bwhat have you got\b|\bwhat do you have\b/i.test(
+    text,
+  );
 }

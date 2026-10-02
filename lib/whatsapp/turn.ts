@@ -1,4 +1,8 @@
-import { detectAction, extractLeadFields } from "@/lib/ai/extract";
+import {
+  asksForPropertyList,
+  detectAction,
+  extractLeadFields,
+} from "@/lib/ai/extract";
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
 import { KNOWN_LOCATIONS, formatBudget, type Property } from "@/lib/data/properties";
 import { applyExtraction, recompute } from "@/lib/leads/update";
@@ -77,12 +81,6 @@ function localFacts(text: string): ReturnType<typeof extractLeadFields> {
   }
   return facts;
 }
-
-/** The customer explicitly asked to see properties, or more of them. */
-const asksForProperties = (text: string) =>
-  /\b(?:show|send|share|view|see|give|push|link|forward|browse)\b[^.?]{0,40}\b(?:propert|option|listing|match|result|place|home|flat|apartment)\b|\b(?:more|other|any more|additional)\s+(?:option|propert|listing|choice|match)|details of\b/i.test(
-    text,
-  );
 
 /**
  * "Show me something suitable", "show me anything".
@@ -279,7 +277,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
     sendProperties(selected);
   } else if (
     becameSearchable ||
-    asksForProperties(text) ||
+    asksForPropertyList(text) ||
     asksForOptions(text) ||
     modelNextStep === "show_properties"
   ) {
