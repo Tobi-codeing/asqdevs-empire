@@ -1,36 +1,231 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ASQDEVS EMPIRE
 
-## Getting Started
+**Digital systems for modern real-estate businesses.**
 
-First, run the development server:
+A premium, interactive showcase. Rather than describing what the studio builds,
+it lets a real-estate owner *use* it: type a real enquiry into the WhatsApp
+assistant and watch a structured lead form, then call the AI receptionist and
+speak to it.
+
+Built with Next.js (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion +
+Lucide icons.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # optional — see "Real voice" below
+npm run dev                  # http://localhost:3000  (custom server)
+npm run build                # production build + typecheck
+npm run start                # production, custom server
+npm run lint
+npm test                     # unit tests (vitest)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`dev` and `start` run `server.mjs`, a thin custom server that adds the WebSocket
+voice relay described below. `npm run start:next` runs plain `next start` for
+hosts that cannot run a custom server; voice then reports itself unavailable and
+the phone demo offers the text call.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## The two demos
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Both open as a **full-screen studio**: the conversation on the left, a **live
+lead panel** on the right that fills in as the system understands more. On mobile
+the panel becomes a slide-over and the conversation becomes a phone UI.
 
-## Learn More
+### 1. WhatsApp assistant (`components/whatsapp/`)
 
-To learn more about Next.js, take a look at the following resources:
+- The visitor types **anything** — "I need a 2bhk in Dwarka around 95 lakh" — or
+  taps a quick reply.
+- Free typing and quick replies are equal paths: the reply itself is a **Gemini
+text turn** (`lib/whatsapp/gemini.ts`) over the same `GEMINI_API_KEY` the voice
+  call uses, so it answers Hinglish in Hinglish and English in English.
+- Because free-tier quota is **per model**, the turn walks a short list of flash
+  models and skips any that are exhausted, rather than pinning one model that
+  can silently send every turn to the scripted fallback.
+- Information already given is **never asked for again** — the model is told the
+  current lead state and can only propose a patch, which `lib/leads/update.ts`
+  merges and validates. Property facts come only from the inventory.
+- Properties are matched from the demo inventory (hard filters on location, size
+  and budget) — the assistant never invents availability.
+- When the enquiry qualifies, it transitions into an **admin lead summary**
+  (score, temperature, status, matched properties, AI summary, next action).
+- Restart resets the conversation at any time.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. AI phone receptionist (`components/phone/`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Real voice** over the Gemini Live API: the caller speaks, the receptionist
+  answers in voice, interruptions work, and a live transcript streams underneath.
+- Call states: Idle → Connecting → Connected → Listening → Processing →
+  Speaking → Ended. Includes a call timer, live voice-activity meter, mute,
+  keypad and end-call.
+- The receptionist **speaks** the greeting and asks the caller to press **1 for
+  Hindi, 2 for English, 3 for another language**. The keypad is sent to the model
+  as caller input, so the choice genuinely changes the language of the voice
+  conversation.
+- It calls **controlled server-side tools** (`searchProperties`,
+  `getPropertyDetails`, `createLead`, `scheduleVisit`, `requestCallback`) and only
+  recommends properties those tools return. It never invents prices, availability
+  or features.
+- Ending the call (or the receptionist ending it itself) transitions to a **Call
+  Completed** admin summary built from the real conversation: customer,
+  requirement, budget, location, timeline, lead temperature, matched properties,
+  next action, an AI summary, the live transcript and a clearly-labelled demo
+  recording.
+- **Fallback:** if there is no API key, the microphone is denied, the browser is
+  unsupported, the connection drops or the service is rate limited, the console
+  says exactly what happened and offers **"Try text demo"**, which runs the same
+  conversation as a text call and still produces the lead.
 
-## Deploy on Vercel
+## Real voice setup (optional)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The voice path is fully built and activates as soon as a key exists. The Gemini
+Live API has a free tier, so the demo can run at no cost within its limits.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# .env.local — https://aistudio.google.com/apikey
+GEMINI_API_KEY=...
+```
+
+- The **permanent API key stays on the server**. `server.mjs` holds it and relays
+  frames between the browser and Gemini over `/api/gemini/live`.
+- **Why a relay rather than an ephemeral token:** Google's `auth_tokens` endpoint
+  returns a value the Live WebSocket rejects on this key — every documented form
+  (`access_token`, `key`, or a `Token`/`Bearer`-prefixed value) closes with 1008
+  or 1007, while the raw key completes the handshake. A browser WebSocket also
+  cannot set an `Authorization` header, so a credential would have to travel in a
+  URL. The relay keeps the key server-side, which is the actual requirement.
+- Connections are admitted only with a **short-lived HMAC ticket** (60s, signed
+  with a secret generated per boot), so the relay cannot be driven from another
+  site and tickets cannot be replayed.
+- The receptionist **ends the call itself** once the requirement is captured and a
+  next step is agreed — it says goodbye, then the admin overview opens
+  automatically. See `lib/calls/completion.ts`.
+- Turn-taking is Gemini's own **server-side voice activity detection** (see
+  `buildSessionConfig` in `lib/gemini/config.ts`). The browser does not send
+  manual `activityStart` / `activityEnd` signals, because a second, competing
+  turn boundary is what makes a live call feel laggy.
+- Property data is reached only through `app/api/tools/route.ts`, which allow-lists
+  the tool names and executes them server-side.
+- Model and voice can be overridden with `GEMINI_LIVE_MODEL` and
+  `GEMINI_LIVE_VOICE`.
+- Microphone access requires HTTPS or `localhost`.
+- Without a key: `GET /api/gemini/session` reports `{ configured: false }` and the
+  UI presents the text demo instead. Nothing fails silently.
+
+### Swapping the voice provider
+
+All provider-specific code sits behind two modules:
+
+- `lib/gemini/live-session.ts` — the wire protocol (socket, setup, audio frames,
+  tool calls).
+- `lib/calls/useCallSession.ts` — the React state machine that the UI reads.
+
+The phone components only consume `status`, `transcript`, `lead`, `duration`,
+`level` and a few callbacks, so replacing the provider means reimplementing those
+ two modules and leaving `components/phone/*` and `components/admin/*` untouched.
+
+## Architecture
+
+```
+app/
+  api/gemini/session/route.ts  # issues a relay ticket (never the key)
+  api/gemini/ticket/route.ts   # HMAC ticket for the relay
+  api/tools/route.ts           # controlled property/lead functions
+  page.tsx, contact/, project/[id]/
+server.mjs                     # custom server: Next + Gemini Live WS relay
+components/
+  whatsapp/   # workbench, message bubble, composer
+  phone/      # console, call screen, keypad, transcript, useGeminiCall hook
+  admin/      # live lead panel + admin lead summary
+  portfolio/, shared/   # cards, CTA, media, etc.
+lib/
+  gemini/     # config.ts (session shape + tools), live-session.ts (protocol),
+               # audio.ts (PCM capture/playback), completion.ts (auto call end),
+               # summary.ts (post-call outcome)
+  ai/         # extract.ts (NLU, EN + Hinglish), summarize.ts
+  lead/       # types, scoring, update
+  properties/ # search.ts (the only path to inventory)
+  data/       # projects.ts (real portfolio), properties.ts (demo data)
+  demo/       # whatsapp-engine.ts, phone-lead.ts
+```
+
+Voice logic is deliberately separate from UI: `lib/gemini/*` knows nothing about
+React, and `components/phone/*` never touches the wire protocol. Application logic
+owns the lead state; the voice model and the text extractor only propose fields.
+See `lib/lead/update.ts`.
+
+## Edit the content
+
+- `lib/data/projects.ts` — the four real portfolio websites (names, copy, live URLs).
+- `lib/data/properties.ts` — the **fictional** demo inventory used by the WhatsApp
+  and AI-receptionist demos. Keep this separate from the portfolio; it is demo
+  data, never presented as real work.
+- `lib/data.ts` — brand, WhatsApp number, email, service options.
+
+## Portfolio screenshots
+
+The Selected Work imagery is captured from the live sites themselves — no
+mockups or stand-in art. To refresh it after a project ships a change:
+
+```bash
+node scripts/capture-portfolio.mjs            # all four projects
+node scripts/capture-portfolio.mjs azura      # just one
+```
+
+The script drives the locally installed Chrome over the DevTools Protocol, crops
+along real section boundaries on each site, and discards any frame that comes
+back visually flat, so a failed capture is never written to `public/`. It writes
+`cover.jpg`, `hero.jpg`, `01..05.jpg` and `mobile.jpg` into
+`public/projects/<id>/`, which is exactly where `lib/data/projects.ts` points.
+
+## Testing
+
+Application logic is covered by unit tests over the pure `lib/` modules —
+free-text extraction, the one lead merge path, budget and timeline formatting,
+property matching, lead scoring, summary generation, date/appointment
+resolution and the Gemini-unavailable WhatsApp fallback:
+
+```bash
+npm test
+```
+
+Three browser checks drive the real UI (dev server running on :3000):
+
+```bash
+# WhatsApp: several facts in one message, a second area, then "show me
+# something suitable" — asserts the lead record matches the conversation.
+node ~/.codegpt/skills/browser-automation/browser.mjs http://localhost:3000 \
+  --script scripts/qa-whatsapp.mjs
+
+# Phone text call and its admin overview.
+node ~/.codegpt/skills/browser-automation/browser.mjs http://localhost:3000 \
+  --script scripts/qa-phone.mjs
+
+# No horizontal overflow at 375–1440px.
+node ~/.codegpt/skills/browser-automation/browser.mjs http://localhost:3000 \
+  --script scripts/qa-responsive.mjs
+```
+
+## Contact
+
+The "Send via WhatsApp" button builds a formatted message from the form and opens
+`https://wa.me/917404296309` in a new tab. Nothing is sent automatically.
+
+## Deploy
+
+Any Node host (Vercel fits best). Set `NEXT_PUBLIC_SITE_URL` and, for real voice,
+`GEMINI_API_KEY`. Social image: `app/opengraph-image.tsx`; favicon: `app/favicon.ico`.
+
+## Notes
+
+- Respects `prefers-reduced-motion`.
+- Fonts: Playfair Display (serif italic accents) + DM Sans (UI) via `app/globals.css`.
+- Unrouted paths and unknown `/project/<id>` values render `app/not-found.tsx`.
+- `server.mjs` adds a WebSocket relay, so the app must run through it
+  (`npm run dev` / `npm run start`) — plain `next start` has no relay and the
+  phone demo falls back to the text call.
+- Next.js locks the project directory while a server is running, so `npm run dev`
+  and `npm run start` cannot both be up at once. Stop one before starting the other
+  (the lock is keyed on the directory, not the port).
+
