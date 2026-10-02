@@ -162,9 +162,10 @@ export default function PhoneConsole() {
                 </h3>
 
                 <p className="type-body mt-5 max-w-xl text-[#f5f3f0]/60">
-                  Speak naturally in Hindi, English or a mix. The receptionist
-                  answers like a real advisor in the same language and tone you
-                  use, and only asks for what it doesn&apos;t already know.
+                  The receptionist greets you and offers a language — press 1 for
+                  Hindi, 2 for English, 3 for more. Then speak naturally: it
+                  answers like a real advisor in that language and tone, and only
+                  asks for what it doesn&apos;t already know.
                 </p>
 
                 {voiceStatus?.ready === false && (

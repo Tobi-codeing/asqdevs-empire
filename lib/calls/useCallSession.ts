@@ -343,7 +343,7 @@ export function useCallSession(
           if (!greetedRef.current) {
             greetedRef.current = true;
             sessionRef.current?.sendText(
-              "[Call connected. Give your one short warm opening line now — who you are, where you are from, and an open invitation to say what they need. Do not offer or read any language menu, and do not tell them to press anything.]",
+              "[Call connected. Give your opening line now: welcome the caller to Delhi Homes, introduce yourself as Priya, then read the language menu exactly once — press 1 for Hindi, 2 for English, 3 for other languages — and stop. Do not ask any property question in this turn; wait for their language choice.]",
             );
           }
           break;

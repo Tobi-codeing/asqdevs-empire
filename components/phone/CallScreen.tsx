@@ -122,9 +122,9 @@ export default function CallScreen({
 
         {live && !language && (
           <p className="mt-4 max-w-xl text-base leading-relaxed text-[#f5f3f0]/75 sm:text-lg">
-            Speak naturally — Hindi, English or a mix.
+            Choose a language — press 1 for Hindi, 2 for English, 3 for more.
             <span className="mt-1 block text-[#f5f3f0]/50">
-              The receptionist answers in the same language and keeps the same
+              The receptionist then continues in that language and keeps the same
               tone throughout the call.
             </span>
           </p>
