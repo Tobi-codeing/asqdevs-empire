@@ -110,9 +110,11 @@ describe("visit time is not a loop", () => {
     expect(texts(run)).toMatch(/afternoon/i);
     expect(run.lead.siteVisit).toMatch(/afternoon/i);
 
-    // The completed action is no longer offered as a button.
-    expect(buttons(run)).not.toContain("Schedule a site visit");
-    expect(buttons(run)).toContain("Talk to an advisor");
+    // Everything was captured and the visit time was given, so the conversation
+    // closes with the recap instead of looping on the same options again.
+    expect(run.lead.recapSent).toBe(true);
+    expect(texts(run)).toMatch(/here's what I have/i);
+    expect(buttons(run)).toEqual([]);
   });
 
   it("records an explicit visit date and time as one request", async () => {
@@ -130,20 +132,43 @@ describe("visit time is not a loop", () => {
 });
 
 describe("advisor handoff is terminal", () => {
-  it("confirms once, does not repeat the CTA, and does not auto-summarise", async () => {
+  it("confirms once and closes with the recap, offering nothing again", async () => {
     let run = await qualified();
-    run = await step(run, "Schedule a site visit");
-    run = await step(run, "Afternoon");
 
     run = await step(run, "Talk to an advisor");
 
     expect(run.lead.advisorRequested).toBe(true);
     expect(texts(run)).toMatch(/property advisor/i);
-    // No automatic property summary after the CTA…
-    expect(texts(run)).not.toMatch(/here's what I have/i);
-    // …and nothing already done is offered again.
+    // The requirement is captured and the hand-off is agreed, so the recap goes
+    // out once and the enquiry is finished instead of looping.
+    expect(run.lead.recapSent).toBe(true);
+    expect(texts(run)).toMatch(/here's what I have/i);
+    // Nothing already done is offered again.
     expect(buttons(run)).not.toContain("Talk to an advisor");
     expect(buttons(run)).not.toContain("Schedule a site visit");
+  });
+
+  it("stays closed when the customer keeps chatting after a hand-off", async () => {
+    let run = await step(await qualified(), "Talk to an advisor");
+    expect(run.lead.recapSent).toBe(true);
+
+    run = await step(run, "Amenities");
+
+    // No second recap, and the old option loop is never rebuilt.
+    expect(texts(run)).not.toMatch(/here's what I have/i);
+    expect(buttons(run)).not.toContain("Show more options");
+    expect(buttons(run)).not.toContain("Amenities");
+  });
+
+  it("hands over early, with the partial requirement, when a person is asked for", async () => {
+    let run = await step(fresh(), "hi");
+    run = await step(run, "Talk to an advisor");
+
+    // A person was asked for, so the assistant stops qualifying immediately —
+    // it does not keep interrogating the customer to fill the form first.
+    expect(run.lead.advisorRequested).toBe(true);
+    expect(run.lead.recapSent).toBe(true);
+    expect(texts(run)).toMatch(/property advisor/i);
   });
 
   it("does not make the same hand-off twice", async () => {
@@ -156,8 +181,8 @@ describe("advisor handoff is terminal", () => {
   });
 
   it("shows the recap exactly once, on a genuine wrap-up", async () => {
-    let run = await step(await qualified(), "Talk to an advisor");
-    run = await step(run, "thanks");
+    let run = await qualified();
+    run = await step(run, "thanks, that's all");
     expect(texts(run)).toMatch(/here's what I have/i);
     expect(run.lead.recapSent).toBe(true);
 
@@ -272,6 +297,47 @@ describe("a complete requirement is acted on, not interrogated", () => {
 });
 
 describe("buttons during qualification", () => {
+  it("never offers two buttons for the same action", () => {
+    // The reported bug: the matches message offered both "Let's schedule a
+    // visit" (the model's wording) and "Schedule a site visit" (the canonical
+    // one) — two buttons leading to the same place.
+    const lead: Lead = {
+      ...emptyLead("WhatsApp"),
+      intent: "Buy",
+      location: "Dwarka",
+      bhk: "2 BHK",
+      matchedPropertyIds: ["dwarka-heights"],
+    };
+
+    const replies = reconcileReplies(
+      ["Show me Sky Residency", "Let's schedule a visit"],
+      lead,
+      { hasMatches: true, hasSelectedProperty: false },
+    );
+
+    expect(replies.filter((reply) => /visit/i.test(reply))).toHaveLength(1);
+    expect(new Set(replies.map((reply) => reply.toLowerCase())).size).toBe(
+      replies.length,
+    );
+  });
+
+  it("does not offer a button for the property already on screen", () => {
+    const lead: Lead = {
+      ...emptyLead("WhatsApp"),
+      intent: "Buy",
+      location: "Dwarka",
+      bhk: "2 BHK",
+      selectedPropertyId: "dwarka-heights",
+    };
+
+    const replies = reconcileReplies(["Dwarka Heights"], lead, {
+      hasMatches: false,
+      hasSelectedProperty: true,
+    });
+
+    expect(replies).not.toContain("Dwarka Heights");
+  });
+
   it("offers the canonical answers instead of the model's passing guesses", () => {
     // A greeting once shipped with "Dwarka" and "Rohini" as buttons while the
     // one answer being asked for — Sell — was pushed off the end of the row.

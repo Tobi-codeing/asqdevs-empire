@@ -16,11 +16,19 @@ export type CallCompletion = {
   reason: string;
 };
 
-/** Core fields that must all be present before a call may end itself. */
-export const REQUIRED_FIELDS = CORE_FIELDS;
+/**
+ * Core fields that must be present before a call may end itself.
+ *
+ * The timeline is deliberately excluded. It is a nice-to-have the sales team can
+ * ask later, and requiring it was what kept a call open after the visit had
+ * already been booked — the caller had agreed a slot and was still being held on
+ * the line over a question the booking did not depend on.
+ */
+export const REQUIRED_FIELDS = CORE_FIELDS.filter((field) => field !== "timeline");
 
 export function isFullyQualified(lead: Lead): boolean {
-  return missingFields(lead).length === 0;
+  const missing = missingFields(lead);
+  return missing.every((field) => field === "timeline");
 }
 
 /** True when the caller has agreed to a concrete next step. */
@@ -73,16 +81,30 @@ const GOODBYE_PATTERNS = [
   /\bgood bye\b/i,
   /\bbye\b/i,
   /\bthank you for calling\b/i,
+  /\bthanks for calling\b/i,
   /\bhave a (?:great|good|nice) day\b/i,
   /\bwe(?:'| ha)?ll (?:be in touch|call you)\b/i,
   /आपका दिन शुभ/,
-  /धन्यवाद/,
   /शुभ रात्रि/,
+  /अलविदा/,
+  /फिर मिलेंगे|फिर मिलते हैं/,
 ];
 
+/**
+ * A bare thank-you, which is only a sign-off when nothing follows it.
+ *
+ * "शुक्रिया, तो आपका बजट कितना है?" is a receptionist mid-conversation, not a
+ * goodbye — but "ठीक है, शुक्रिया!" is how a Hindi call actually ends, and
+ * without this the call only closed on the wrap-up timer instead of the moment
+ * the receptionist said goodbye.
+ */
+const CLOSING_TAIL = /(?:शुक्रिया|धन्यवाद|thanks|thank you)[\s!.,…]*$/i;
+
 export function isGoodbye(text: string): boolean {
-  if (!text.trim()) return false;
-  return GOODBYE_PATTERNS.some((pattern) => pattern.test(text));
+  const value = text.trim();
+  if (!value) return false;
+  if (GOODBYE_PATTERNS.some((pattern) => pattern.test(value))) return true;
+  return CLOSING_TAIL.test(value);
 }
 
 /**

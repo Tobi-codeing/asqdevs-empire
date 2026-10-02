@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone, PanelRight, MessageSquare, X, Headphones } from "lucide-react";
 import CallScreen from "./CallScreen";
@@ -37,6 +37,8 @@ export default function PhoneConsole() {
   const [showLead, setShowLead] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
+  /** Guards the one-time hand-off of a finished call to the CRM. */
+  const deliveredRef = useRef(false);
 
   const call = useCallSession({
     // When the conversation completes itself, show the admin overview without
@@ -72,14 +74,42 @@ export default function PhoneConsole() {
   }, []);
 
   const startVoice = async () => {
+    deliveredRef.current = false;
     setMode("voice");
     await call.start();
   };
 
   const startText = () => {
+    deliveredRef.current = false;
     setMode("text");
     setTextLead(emptyLead("Phone"));
   };
+
+  /**
+   * Hand the finished call to the configured destination, once.
+   *
+   * The phone call ends in the browser, so it posts the completed lead to
+   * `/api/leads`; the WhatsApp path delivers server-side inside the turn. Both
+   * go through the same `deliverLead`, so the two channels cannot disagree about
+   * what the business receives.
+   */
+  useEffect(() => {
+    if (call.status !== "ended" || deliveredRef.current) return;
+    if (!call.transcript.some((entry) => entry.role !== "system")) return;
+    deliveredRef.current = true;
+    void fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lead: call.lead,
+        propertyIds: call.lead.matchedPropertyIds,
+        transcript: call.transcript.map((entry) => ({
+          role: entry.role,
+          text: entry.text,
+        })),
+      }),
+    }).catch(() => undefined);
+  }, [call.status, call.lead, call.transcript]);
 
   const endCall = async () => {
     const hadConversation = call.transcript.some(

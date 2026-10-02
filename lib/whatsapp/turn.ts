@@ -6,11 +6,13 @@ import {
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
 import { KNOWN_LOCATIONS, formatBudget, type Property } from "@/lib/data/properties";
 import { applyExtraction, recompute } from "@/lib/leads/update";
+import { deliverLead } from "@/lib/leads/delivery";
 import type { Lead } from "@/lib/leads/types";
 import { broadenSearchFor } from "@/lib/leads/match";
 import { nextActionKey } from "@/lib/leads/view";
 import { findPropertyByName, getPropertiesByIds } from "@/lib/properties/search";
 import {
+  isConversationComplete,
   isVisitTimePending,
   respond,
   visitTimeSelection,
@@ -143,6 +145,34 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
 
   if (action === "restart") return { restarted: true } as TurnResult;
 
+  /*
+   * Opt-out is handled before anything else and is terminal: the customer asked
+   * not to be contacted again, so there is no recap, no question and no CTA. The
+   * flag travels with the delivered lead so no follow-up sequence can ignore it.
+   */
+  if (action === "optOut") {
+    const optedOut = recompute({
+      ...priorLead,
+      optOut: true,
+      nextAction: "opted_out",
+    });
+    await deliverLead({
+      lead: optedOut,
+      matches: getPropertiesByIds(optedOut.matchedPropertyIds),
+      transcript: asTurns(history),
+    });
+    return {
+      replies: [
+        {
+          text: "You're unsubscribed — we won't send you any follow-up messages. Message here any time if you'd like help again.",
+        },
+      ],
+      lead: optedOut,
+      offeredPropertyIds: input.offeredPropertyIds,
+      sentLinks: input.sentLinks,
+    };
+  }
+
   let lead = applyExtraction(priorLead, localFacts(text));
 
   /* ---------------------------------------------------------------------
@@ -256,6 +286,20 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       }
       lead = applyExtraction(lead, patch);
       modelAvailable = true;
+
+      /*
+       * The model may decide that a question is outside what it can answer and
+       * ask for a hand-off. That becomes a real recorded action here: an advisor
+       * receives the whole conversation, and the customer stops being offered
+       * options the assistant cannot actually help with.
+       */
+      if (modelNextStep === "human_handoff" && !lead.advisorRequested) {
+        lead = recompute({
+          ...lead,
+          advisorRequested: true,
+          nextAction: "human_handoff",
+        });
+      }
     } catch (error) {
       /*
        * A failure is expected behaviour on a free tier, not an incident. It is
@@ -281,7 +325,9 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    * canned strings would be a worse demo than an honest fallback.
    */
   if (!modelAvailable) {
-    return localTurn(input, priorLead);
+    const result = localTurn(input, priorLead);
+    await deliverIfFinished(priorLead, result.lead, input.history);
+    return result;
   }
 
   // "Actually Gurgaon also works" is an addition, not a replacement.
@@ -383,8 +429,17 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    * Recap. Sent once, when the conversation has genuinely served its purpose.
    * ------------------------------------------------------------------- */
 
+  /*
+   * Completion is a property of the record, not of a turn counter: either an
+   * explicit hand-off (advisor or callback), or every core field captured with a
+   * real next step agreed (a visit with its time). The moment that is true the
+   * closing recap goes out once and the conversation is over — continuing to ask
+   * after that is exactly the loop customers complained about.
+   */
+  const completedThisTurn = isConversationComplete(lead);
   const wrapUp =
-    !priorLead.recapSent && lead.status === "Qualified" && isWrapUp(text);
+    !priorLead.recapSent &&
+    (completedThisTurn || (lead.status === "Qualified" && isWrapUp(text)));
 
   // The recap restates the requirement and the closest matches in one message,
   // so it replaces this turn's property list rather than following it. A
@@ -418,11 +473,19 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
     new Map([...input.sentLinks, ...links].map((link) => [link.propertyId, link])).values(),
   );
 
-  const quickReplies = reconcileReplies(modelQuickReplies, lead, {
-    hasMatches: matches.length > 0 || Boolean(named),
-    hasSelectedProperty: Boolean(named) || Boolean(lead.selectedPropertyId),
-    finished: wrapUp,
-  });
+  /*
+   * Once the recap has gone out the conversation is closed, so no buttons are
+   * built at all — tapping a property option after a hand-off is what kept the
+   * old loop alive. The customer can still type freely, and the assistant
+   * answers in one line.
+   */
+  const quickReplies = priorLead.recapSent
+    ? []
+    : reconcileReplies(modelQuickReplies, lead, {
+        hasMatches: matches.length > 0 || Boolean(named),
+        hasSelectedProperty: Boolean(named) || Boolean(lead.selectedPropertyId),
+        finished: wrapUp,
+      });
 
   lead = recompute(
     {
@@ -448,12 +511,44 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
           },
         ];
 
+  await deliverIfFinished(priorLead, lead, history, matches);
+
   return {
     replies,
     lead,
     offeredPropertyIds,
     sentLinks,
   };
+}
+
+/**
+ * Push a lead to the configured destination on the one turn it becomes worth
+ * pushing: the turn it completes (the recap has just gone out) or the turn the
+ * customer opts out. Both can only happen once, so nothing is delivered twice.
+ *
+ * Awaited deliberately — see `lib/leads/delivery` for why a fire-and-forget
+ * fetch is lost on a serverless host.
+ */
+async function deliverIfFinished(
+  priorLead: Lead,
+  lead: Lead,
+  transcript: HistoryItem[],
+  matches?: Property[],
+) {
+  const justCompleted = !priorLead.recapSent && Boolean(lead.recapSent);
+  const justOptedOut = !priorLead.optOut && Boolean(lead.optOut);
+  if (!justCompleted && !justOptedOut) return;
+
+  await deliverLead({
+    lead,
+    matches: matches ?? getPropertiesByIds(lead.matchedPropertyIds),
+    transcript: asTurns(transcript),
+  });
+}
+
+/** The chat history in the shape a CRM record expects. */
+function asTurns(history: HistoryItem[]) {
+  return history.map((item) => ({ role: item.side, text: item.text }));
 }
 
 /**

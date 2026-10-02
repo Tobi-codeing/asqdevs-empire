@@ -161,6 +161,35 @@ export function isVisitTimePending(lead: Lead): boolean {
 }
 
 /**
+ * True when a promised next step has actually landed.
+ *
+ * A visit with no time yet ("Visit requested — time to confirm") is still open:
+ * the conversation has to keep going so the assistant can collect the time,
+ * rather than closing on an appointment that does not exist.
+ */
+export function hasSettledNextStep(lead: Lead): boolean {
+  return Boolean(
+    (lead.siteVisit && !isVisitTimePending(lead)) ||
+      lead.advisorRequested ||
+      lead.callbackRequested,
+  );
+}
+
+/**
+ * True when the conversation has served its purpose and should close.
+ *
+ * An explicit hand-off (advisor or callback) is terminal the moment it is asked
+ * for — the customer wants a person, so an advisor takes the partial requirement
+ * rather than the assistant interrogating them further. A site visit closes only
+ * once the full requirement is captured, so an early "can I visit?" still gets
+ * the area, size and budget collected before the recap goes out.
+ */
+export function isConversationComplete(lead: Lead): boolean {
+  if (lead.advisorRequested || lead.callbackRequested) return true;
+  return missingFields(lead).length === 0 && hasSettledNextStep(lead);
+}
+
+/**
  * Read a bare time-of-day answer ("Afternoon") as the visit time the assistant
  * just asked for. Kept deliberately narrow: a long sentence that happens to
  * contain "morning" is a new request, not an answer to the pending question.
@@ -335,6 +364,35 @@ export function respond(state: EngineState, userText: string): EngineReply {
   const completed = completedActions(before);
   let lead = applyExtraction(before, extractLeadFields(text));
 
+  /**
+   * Close the conversation once the requirement is captured and the agreed next
+   * step is real. If a core field is still open — or a visit is still waiting on
+   * a time — the confirmation goes out and qualification continues.
+   */
+  const finalised = (): EngineReply =>
+    isConversationComplete(lead)
+      ? finish(state, lead, messages)
+      : { messages, state: { ...state, lead } };
+
+  /*
+   * Opt-out is terminal and honoured before anything else. The customer asked
+   * not to be contacted again, so there is no recap, no question and no CTA —
+   * just the confirmation, and the flag travels with the lead.
+   */
+  if (action === "optOut") {
+    const optedOut = recompute({
+      ...before,
+      optOut: true,
+      nextAction: "opted_out",
+    });
+    messages.push(
+      assistant(
+        "You're unsubscribed — we won't send you any follow-up messages. Message here any time if you'd like help again.",
+      ),
+    );
+    return { messages, state: { ...state, lead: optedOut, finished: true } };
+  }
+
   // Explicit actions take priority over further qualification.
   if (action === "advisor") {
     if (completed.advisor) {
@@ -355,10 +413,9 @@ export function respond(state: EngineState, userText: string): EngineReply {
     messages.push(
       assistant(
         "Done — I've passed your requirement to a property advisor. They have everything you've shared, so you won't need to repeat it.",
-        { quickReplies: nextActionButtons({ ...completed, advisor: true }) },
       ),
     );
-    return { messages, state: { ...state, lead, finished: true } };
+    return finalised();
   }
 
   if (action === "adjustBudget") {
@@ -395,10 +452,9 @@ export function respond(state: EngineState, userText: string): EngineReply {
     messages.push(
       assistant(
         "Noted — I'll have an advisor call you back. They'll already have your requirements.",
-        { quickReplies: nextActionButtons({ ...completed, callback: true }) },
       ),
     );
-    return { messages, state: { ...state, lead, finished: true } };
+    return finalised();
   }
 
   if (action === "siteVisit") {
@@ -421,10 +477,9 @@ export function respond(state: EngineState, userText: string): EngineReply {
       messages.push(
         assistant(
           `Perfect — I've requested a site visit for ${slot}, ${time}. Our team will confirm the exact slot with you shortly.`,
-          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
         ),
       );
-      return { messages, state: { ...state, lead, finished: true } };
+      return finalised();
     }
 
     if (time) {
@@ -435,10 +490,9 @@ export function respond(state: EngineState, userText: string): EngineReply {
       messages.push(
         assistant(
           `Perfect — I've noted ${time}. I'll pass your requirement to the property team so they can confirm the exact slot.`,
-          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
         ),
       );
-      return { messages, state: { ...state, lead, finished: true } };
+      return finalised();
     }
 
     lead = recompute({
@@ -475,11 +529,20 @@ export function respond(state: EngineState, userText: string): EngineReply {
       messages.push(
         assistant(
           `Perfect — I've noted an ${chosen.toLowerCase()} visit preference. I'll pass your requirement to the property team so they can confirm the exact slot.`,
-          { quickReplies: nextActionButtons({ ...completed, siteVisit: true }) },
         ),
       );
-      return { messages, state: { ...state, lead, finished: true } };
+      return finalised();
     }
+  }
+
+  /*
+   * The requirement is captured and a next step is already agreed — close with
+   * the recap rather than conversing on. This is what makes a finished enquiry
+   * actually finish: without it the assistant kept re-offering the same three
+   * options on every later message, which is the loop customers saw.
+   */
+  if (!state.finished && !lead.recapSent && isConversationComplete(lead)) {
+    return finish(state, lead, messages);
   }
 
   if (action === "notNow") {

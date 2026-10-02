@@ -37,9 +37,9 @@ the panel becomes a slide-over and the conversation becomes a phone UI.
 
 - The visitor types **anything** — "I need a 2bhk in Dwarka around 95 lakh" — or
   taps a quick reply.
-- Free typing and quick replies are equal paths: the reply itself is a **Gemini
-text turn** (`lib/whatsapp/gemini.ts`) over the same `GEMINI_API_KEY` the voice
-  call uses, so it answers Hinglish in Hinglish and English in English.
+- Free typing and quick replies are equal paths: the reply itself is a **Gemini  text turn** (`lib/whatsapp/gemini.ts`) over the same `GEMINI_API_KEY` the voice
+  call uses. It understands Hinglish and every other language the customer writes
+  in, but always replies — and always labels its quick-reply buttons — in English.
 - Because free-tier quota is **per model**, the turn walks a short list of flash
   models and skips any that are exhausted, rather than pinning one model that
   can silently send every turn to the scripted fallback.
@@ -48,6 +48,12 @@ text turn** (`lib/whatsapp/gemini.ts`) over the same `GEMINI_API_KEY` the voice
   merges and validates. Property facts come only from the inventory.
 - Properties are matched from the demo inventory (hard filters on location, size
   and budget) — the assistant never invents availability.
+- The conversation closes itself once the requirement is fully captured **and** a
+  next step is agreed (a visit with its time, a callback, or an advisor
+  hand-off): one recap goes out, the conversation is marked done, and no further
+  option buttons are built — a finished enquiry finishes instead of looping.
+- Asking something outside the inventory hands the lead to a human advisor with
+  everything already captured, rather than guessing.
 - When the enquiry qualifies, it transitions into an **admin lead summary**
   (score, temperature, status, matched properties, AI summary, next action).
 - Restart resets the conversation at any time.
@@ -76,6 +82,60 @@ text turn** (`lib/whatsapp/gemini.ts`) over the same `GEMINI_API_KEY` the voice
   unsupported, the connection drops or the service is rate limited, the console
   says exactly what happened and offers **"Try text demo"**, which runs the same
   conversation as a text call and still produces the lead.
+
+## Where the leads go (optional)
+
+A finished lead is POSTed as JSON to one URL — `LEAD_WEBHOOK_URL`:
+
+- the **WhatsApp** lead, inside the turn that completes the conversation;
+- the **phone** lead, once the call ends (`POST /api/leads`).
+
+One webhook rather than a per-provider SDK, because Google Sheets, Airtable,
+HubSpot, Pipedrive, Zapier/Make and Slack all accept a POST: no dependency, no
+OAuth, and changing destination is a new URL instead of a code change. With the
+variable unset, delivery is skipped and nothing else changes; a failing or slow
+destination is logged and never breaks a conversation. The payload also carries
+`optedOutFollowUps`, and the assistant honours **STOP** / "unsubscribe" itself —
+the customer gets one confirmation, no recap, and no further questions.
+
+### Google Sheet in five minutes
+
+1. Create a Sheet → **Extensions → Apps Script** → paste:
+
+```js
+function doPost(e) {
+  const lead = JSON.parse(e.postData.contents);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['capturedAt','source','name','intent','location','propertyType',
+      'bhk','budget','timeline','preferences','requirement','siteVisit',
+      'callbackRequested','advisorRequested','optedOutFollowUps','score',
+      'temperature','status','nextAction','summary']);
+  }
+  sheet.appendRow([
+    lead.capturedAt, lead.source, lead.name, lead.intent, lead.location,
+    lead.propertyType, lead.bhk, lead.budget, lead.timeline,
+    (lead.preferences || []).join(', '), lead.requirement, lead.siteVisit,
+    lead.callbackRequested, lead.advisorRequested, lead.optedOutFollowUps,
+    lead.score, lead.temperature, lead.status, lead.nextAction, lead.summary,
+  ]);
+  // Tell a human the moment a lead is genuinely hot.
+  if (lead.temperature === 'HOT') {
+    MailApp.sendEmail('agent@example.com', 'Hot lead: ' + (lead.name || 'New enquiry'), lead.summary);
+  }
+  return ContentService.createTextOutput('ok');
+}
+```
+
+2. **Deploy → New deployment → Web app**, *Execute as* **Me**, *Who has access*
+   **Anyone** (the server has no Google session, so "Anyone" is what makes the
+   POST work — the URL is unguessable and can be rotated).
+3. Copy the `/exec` URL into `LEAD_WEBHOOK_URL` (locally in `.env.local`, on Vercel
+   in Project → Settings → Environment Variables) and redeploy.
+
+The same URL can notify Slack, or forward a qualified lead to an agent, because
+the payload includes the requirement, score, temperature, next action, matched
+properties and the full transcript.
 
 ## Real voice setup (optional)
 

@@ -1,4 +1,4 @@
-import { KNOWN_LOCATIONS, formatBudget } from "@/lib/data/properties";
+import { KNOWN_LOCATIONS, PROPERTIES, formatBudget } from "@/lib/data/properties";
 import { budgetForMatching } from "@/lib/leads/score";
 import { CORE_FIELDS, missingFields, type CoreField, type Lead } from "@/lib/leads/types";
 
@@ -78,6 +78,13 @@ export function suggestedReplies(
 
   if (options.finished) return ["Done"];
 
+  /*
+   * A hand-off is terminal. Once an advisor or a callback is agreed there is no
+   * qualification left to do, so the property-detail buttons are replaced by a
+   * single way out — this is what used to loop the same three options forever.
+   */
+  if (done.advisor || done.callback) return ["Done"];
+
   if (options.hasSelectedProperty) {
     const actions: string[] = [];
     if (!done.siteVisit) actions.push("Book a site visit");
@@ -110,6 +117,37 @@ export function suggestedReplies(
 }
 
 /**
+ * The action a button performs.
+ *
+ * The model phrases a button its own way ("Let's schedule a visit") while the
+ * canonical set uses its own wording ("Schedule a site visit"). Comparing the
+ * strings kept both, so a single row offered two different buttons for the same
+ * action. Classifying by what the button *does* lets one survive.
+ */
+type ReplyKind =
+  | "visit"
+  | "advisor"
+  | "callback"
+  | "more"
+  | "amenities"
+  | "location"
+  | "details"
+  | "other";
+
+function replyKind(reply: string): ReplyKind {
+  const value = reply.toLowerCase();
+  if (/callback|call back|call me back/.test(value)) return "callback";
+  if (/advisor|agent|human|insaan|\bperson\b/.test(value)) return "advisor";
+  if (/\bvisit\b|dekhne|milne|mil sakt|site tour/.test(value)) return "visit";
+  if (/more option|show more|see more|other option/.test(value)) return "more";
+  if (/amenit/.test(value)) return "amenities";
+  if (/\blocation\b|locality|\bwhere\b/.test(value)) return "location";
+  if (/\bdetail|photo|view property|\bshow me\b|\bprice\b|brochure/.test(value))
+    return "details";
+  return "other";
+}
+
+/**
  * Fold the model's suggested buttons into the canonical set.
  *
  * The model's phrasing is kept where it is genuinely contextual, but anything
@@ -128,6 +166,14 @@ export function reconcileReplies(
   if (lead.timeline) settled.add(lead.timeline.toLowerCase());
   for (const location of lead.preferredLocations) settled.add(location.toLowerCase());
   if (lead.location) settled.add(lead.location.toLowerCase());
+  // The property the conversation is centred on is settled too — offering to
+  // "show" the customer the home they are already looking at is just noise.
+  if (lead.selectedPropertyId) {
+    const selected = PROPERTIES.find(
+      (property) => property.id === lead.selectedPropertyId,
+    );
+    if (selected) settled.add(selected.name.toLowerCase());
+  }
 
   const isSettled = (reply: string) => {
     const value = reply.toLowerCase().trim();
@@ -183,8 +229,24 @@ export function reconcileReplies(
     ),
   ];
 
-  return Array.from(new Set(merged.map((reply) => reply.trim())))
-    .filter((reply) => !isCompletedAction(reply))
+  const seenKinds = new Set<ReplyKind>();
+  return merged
+    .map((reply) => reply.trim())
+    .filter((reply) => reply && !isCompletedAction(reply))
+    // Exact duplicates first, then one button per action. Free-text answers
+    // ("Within 3 months", "Just exploring") are "other" and never collapsed.
+    .filter(
+      (reply, index, all) =>
+        all.findIndex((item) => item.toLowerCase() === reply.toLowerCase()) ===
+        index,
+    )
+    .filter((reply) => {
+      const kind = replyKind(reply);
+      if (kind === "other") return true;
+      if (seenKinds.has(kind)) return false;
+      seenKinds.add(kind);
+      return true;
+    })
     .slice(0, 4);
 }
 

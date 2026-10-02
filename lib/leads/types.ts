@@ -51,6 +51,11 @@ export type Lead = {
    * a bot.
    */
   recapSent?: boolean;
+  /**
+   * The customer asked not to be contacted again ("stop", "unsubscribe").
+   * Travels with the delivered lead so no follow-up sequence can ignore it.
+   */
+  optOut?: boolean;
   score: number;
   temperature: Temperature;
   status: LeadStatus;

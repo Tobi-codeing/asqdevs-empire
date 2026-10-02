@@ -495,11 +495,24 @@ export type DetectedAction =
   | "broaden"
   /** The customer wants to change their budget rather than keep the old one. */
   | "adjustBudget"
+  /** The customer asked not to be contacted again. */
+  | "optOut"
   | "restart";
+
+/**
+ * The stop words that mean "do not contact me again".
+ *
+ * Anchored on the whole short message so the standard "STOP" keyword works
+ * while an ordinary sentence that happens to contain the word — "can I stop by
+ * on Saturday?" — is not mistaken for an opt-out.
+ */
+const OPT_OUT_PATTERN =
+  /^(?:stop|unsubscribe|opt[\s-]?out|remove me|mat bhejo|message na karo|band karo)[.!]?$|^(?:stop|unsubscribe)\s+(?:messaging|messages|sending|contacting|contact|all)\b|\b(?:do not|don'?t)\s+(?:message|contact|call)\b/i;
 
 /** Detect an explicit request so the assistant can act rather than keep asking. */
 export function detectAction(raw: string): DetectedAction | undefined {
   const text = raw.toLowerCase();
+  if (OPT_OUT_PATTERN.test(text.trim())) return "optOut";
   if (/\brestart\b|start over|reset/i.test(text)) return "restart";
   if (
     /advisor|human|agent|insaan|kisi se baat|talk to (?:someone|a person)/i.test(

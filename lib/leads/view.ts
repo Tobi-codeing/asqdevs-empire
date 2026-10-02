@@ -45,6 +45,7 @@ export function nextActionKey(
   lead: Lead,
   options: { hasMatches?: boolean } = {},
 ): string {
+  if (lead.optOut) return "opted_out";
   if (lead.advisorRequested) return "human_handoff";
   if (lead.callbackRequested) return "callback";
   if (lead.siteVisit) return "site_visit";
@@ -68,6 +69,7 @@ const ASK_LABEL: Record<string, string> = {
   site_visit: "Confirm the site visit",
   callback: "Call them back at the agreed time",
   human_handoff: "Assign to a property advisor",
+  opted_out: "No follow-up — the customer opted out",
 };
 
 /**
@@ -92,6 +94,8 @@ export function nextActionLabel(
     return lead.callbackAt
       ? `Call back — ${lead.callbackAt}`
       : "Call back and confirm a time";
+  if (key === "opted_out")
+    return "No follow-up — the customer opted out";
   if (key === "property_question") {
     const property = selectedProperty(lead);
     return property

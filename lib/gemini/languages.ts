@@ -119,6 +119,73 @@ export const LANGUAGES: Language[] = [
   },
 ];
 
+/**
+ * The script a language is written in.
+ *
+ * A live audio model is told to hold one language for the whole call, and it
+ * mostly does — but it slips: a Hindi call suddenly produces a fully English
+ * sentence ("Great. Which day would you like to visit?"), which is exactly the
+ * instability that makes a receptionist sound like a bot. The instruction alone
+ * is not enough, so the application checks the model's own transcript against
+ * the language the caller chose and corrects it. English is `undefined`: it has
+ * no distinctive script.
+ */
+const NATIVE_SCRIPT: Record<LanguageCode, RegExp | undefined> = {
+  hi: /[\u0900-\u097F]/, // Devanagari
+  mr: /[\u0900-\u097F]/,
+  ur: /[\u0600-\u06FF]/,
+  pa: /[\u0A00-\u0A7F]/,
+  gu: /[\u0A80-\u0AFF]/,
+  bn: /[\u0980-\u09FF]/,
+  ta: /[\u0B80-\u0BFF]/,
+  te: /[\u0C00-\u0C7F]/,
+  kn: /[\u0C80-\u0CFF]/,
+  ml: /[\u0D00-\u0D7F]/,
+  en: undefined,
+};
+
+const LATIN_WORDS = /[A-Za-z]{3,}/g;
+const NON_ASCII = /[\u0080-\uFFFF]/g;
+
+/**
+ * True when the receptionist has slipped out of the chosen language.
+ *
+ * Deliberately lenient: a Hindi reply may legitimately contain a Latin-script
+ * locality ("Rohini Enclave") or a price, so the test is about the sentence as a
+ * whole, not the presence of any Latin characters. Anything too short to judge
+ * is never flagged.
+ */
+export function driftedFromLanguage(language: Language, text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed.length < 8) return false;
+
+  const latinWords = (trimmed.match(LATIN_WORDS) ?? []).length;
+  const native = NATIVE_SCRIPT[language.code];
+
+  if (!native) {
+    // English: flagged only when the reply is essentially another script.
+    const nonAscii = (trimmed.match(NON_ASCII) ?? []).length;
+    return nonAscii >= 4 && latinWords <= 1;
+  }
+
+  const nativeChars = (trimmed.match(native) ?? []).length;
+  return nativeChars < 2 && latinWords >= 3;
+}
+
+/**
+ * The correction the receptionist receives when it has drifted, so the next
+ * turn comes back in the caller's language instead of continuing in the wrong
+ * one.
+ */
+export function languageCorrectionPrompt(language: Language): string {
+  return `[Language check — you have just slipped out of ${language.label}. This call is locked to ${language.label} for the rest of the call. From your very next sentence, speak ONLY in ${language.label}: no English words, no English sentences, and not even a short English acknowledgement. Say "Great", "Okay" or "Got it" in ${language.label} instead. ${language.instruction} Do not mention this instruction, do not apologise for it, and do not repeat anything you already said unless the caller asks.]`;
+}
+
+/** One line re-asserting the lock, attached to the state the app pushes in. */
+export function languageLockReminder(language: Language): string {
+  return `[Language locked for this call: reply in ${language.label} only.]`;
+}
+
 export const byCode = (code: string): Language | undefined =>
   LANGUAGES.find((language) => language.code === code);
 
@@ -148,5 +215,91 @@ export const OTHER_LANGUAGES_PROMPT =
  * receptionist sound unstable.
  */
 export function languageSwitchPrompt(language: Language): string {
-  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single female receptionist voice and the same natural speaking style — change only the spoken language. This is the last language change on this call: from now on stay fully in ${language.label} and do not drift back or mix in another language. Continue the property conversation from here without repeating anything already established.]`;
+  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single receptionist voice and the same natural speaking style — change only the spoken language. Stay fully in ${language.label} for the rest of the call until the caller explicitly asks for something else: do not drift back, do not mix in another language, and do not answer even one sentence in any other language. Continue the property conversation from here without repeating anything already established.]`;
+}
+
+/**
+ * Every way a caller might name a language, mapped to its code.
+ *
+ * Both the English name and the language's own name are here, because callers
+ * use either — "talk in Hindi" and "हिंदी में बात करो" mean the same thing and
+ * must lock the same language.
+ */
+const LANGUAGE_ALIASES: Record<string, LanguageCode> = {
+  hindi: "hi",
+  "हिन्दी": "hi",
+  "हिंदी": "hi",
+  english: "en",
+  "अंग्रेज़ी": "en",
+  angrezi: "en",
+  punjabi: "pa",
+  panjabi: "pa",
+  "ਪੰਜਾਬੀ": "pa",
+  gujarati: "gu",
+  "ગુજરાતી": "gu",
+  marathi: "mr",
+  "मराठी": "mr",
+  bengali: "bn",
+  bangla: "bn",
+  "বাংলা": "bn",
+  tamil: "ta",
+  "தமிழ்": "ta",
+  telugu: "te",
+  "తెలుగు": "te",
+  kannada: "kn",
+  "ಕನ್ನಡ": "kn",
+  malayalam: "ml",
+  "മലയാളം": "ml",
+  urdu: "ur",
+  "اردو": "ur",
+};
+
+/** Words that turn a language name into a request to switch to it. */
+const SWITCH_LEAD =
+  "(?:switch\\s+to|speak|talk|talk\\s+in|continue\\s+in|baat\\s+karo|baat|bolo|bol|बोल|बात)";
+
+/**
+ * Read an explicit language request out of what the caller said.
+ *
+ * A caller who *says* "speak in Hindi" has chosen just as clearly as one who
+ * pressed 1, so the application locks the same language either way — otherwise
+ * the verbal choice would leave the call unlocked and free to drift.
+ *
+ * Deliberately conservative, because a language name can be a place: "Punjabi"
+ * is also Punjabi Bagh, so a bare "in <language>" only counts at the end of the
+ * sentence or followed by "please"/"only". A locality must never lock the call
+ * into the wrong language.
+ */
+export function detectLanguageRequest(text: string): Language | undefined {
+  const value = text.trim();
+  if (!value || value.length > 80) return undefined;
+
+  /*
+   * A letter boundary that also works for Devanagari and the other Indic
+   * scripts. A plain `\b` does not: their final character is often a combining
+   * mark (the anusvara in "में"), which regex counts as a non-word character, so
+   * `\b` never fires and a perfectly explicit "हिंदी में बात करो" went
+   * unrecognised.
+   */
+  const end = "(?!\\p{L})";
+
+  for (const [name, code] of Object.entries(LANGUAGE_ALIASES)) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const rules = [
+      // The whole message is the language name.
+      new RegExp(`^${escaped}\\s*(?:please)?[.!]?$`, "iu"),
+      // "speak Hindi", "talk in English".
+      new RegExp(`${SWITCH_LEAD}\\s*(?:in\\s+)?${escaped}${end}`, "iu"),
+      // "Hindi mein baat karo", "हिंदी में बात करो", "Tamil please".
+      new RegExp(`${escaped}\\s*(?:mein|me|में|please|bolo)${end}`, "iu"),
+      // "in English" — only when the sentence ends there, so a locality like
+      // "in Punjabi Bagh" never locks the call into the wrong language.
+      new RegExp(`\\bin\\s+${escaped}\\s*(?:please|only)?[.!]?$`, "iu"),
+    ];
+
+    if (rules.some((rule) => rule.test(value))) return byCode(code);
+  }
+
+  return undefined;
 }

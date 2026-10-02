@@ -10,6 +10,10 @@ import {
 import {
   byCode,
   byKey,
+  detectLanguageRequest,
+  driftedFromLanguage,
+  languageCorrectionPrompt,
+  languageLockReminder,
   languageSwitchPrompt,
   OTHER_LANGUAGES_PROMPT,
   type Language,
@@ -138,6 +142,14 @@ export function useCallSession(
   const todayRef = useRef("");
   /** The last lead-state message pushed, so identical state is never re-sent. */
   const lastStateRef = useRef("");
+  /**
+   * The language the caller chose, as read inside the event handler.
+   *
+   * The state value drives the UI; this ref is what the socket handler checks
+   * the receptionist's own transcript against, so a drift is caught on the turn
+   * it happens rather than only being visible on screen.
+   */
+  const languageRef = useRef<Language | null>(null);
   const onAutoEndRef = useRef<((reason: string) => void) | undefined>(
     undefined,
   );
@@ -267,7 +279,15 @@ export function useCallSession(
     );
     if (!message) return;
     lastStateRef.current = message;
-    sessionRef.current?.sendContext(message);
+    /*
+     * Re-assert the language lock with every state push. It costs one line and
+     * it is the cheapest defence against the model drifting back into English
+     * partway through a Hindi call.
+     */
+    const locked = languageRef.current;
+    sessionRef.current?.sendContext(
+      locked ? `${message}\n${languageLockReminder(locked)}` : message,
+    );
   }, []);
 
   /** Read structured facts out of what the caller just said. */
@@ -343,7 +363,7 @@ export function useCallSession(
           if (!greetedRef.current) {
             greetedRef.current = true;
             sessionRef.current?.sendText(
-              "[Call connected. Give your opening line now: welcome the caller to Delhi Homes, introduce yourself as Priya, then read the language menu exactly once — press 1 for Hindi, 2 for English, 3 for other languages — and stop. Do not ask any property question in this turn; wait for their language choice.]",
+              "[Call connected. Give your opening line now: welcome the caller to Delhi Homes, then read the language menu exactly once — press 1 for Hindi, 2 for English, 3 for other languages — and stop. Do not say your own name, and do not ask any property question in this turn; wait for their language choice.]",
             );
           }
           break;
@@ -396,13 +416,51 @@ export function useCallSession(
           setStatus("listening");
           break;
 
-        case "turnComplete":
+        case "turnComplete": {
+          // Captured before the buffers are cleared, because both the language
+          // choice and the drift check are decisions about this turn.
+          const callerText = inputBuffer.current;
           sealBubble();
           inputBuffer.current = "";
           outputBuffer.current = "";
           setStatus((prev) =>
             prev === "error" || prev === "ended" ? prev : "listening",
           );
+          /*
+           * A caller who *says* "speak in Hindi" has chosen the language just as
+           * clearly as one who pressed 1. Locking it here is what keeps the two
+           * paths identical — and it means the drift guard below protects that
+           * choice rather than arguing with it.
+           */
+          const requested = detectLanguageRequest(callerText);
+          if (requested && requested.code !== languageRef.current?.code) {
+            setLanguage(requested);
+            languageRef.current = requested;
+            setLanguageMenuOpen(false);
+            pushEntry("system", `Language · ${requested.label}`);
+            sessionRef.current?.sendText(languageSwitchPrompt(requested));
+          }
+          /*
+           * Catch a language drift on the turn it happened.
+           *
+           * A live model is instructed to hold one language and mostly does —
+           * but a Hindi call that suddenly produces a fully English sentence
+           * ("Great. Which day would you like to visit?") is the single biggest
+           * tell that the caller is not talking to a person. The instruction is
+           * not trusted to hold by itself, so the model's own transcript is
+           * checked against the caller's chosen language and the correction is
+           * pushed before the next turn is generated.
+           */
+          const lockedLanguage = languageRef.current;
+          if (
+            lockedLanguage &&
+            lastAssistantTextRef.current &&
+            driftedFromLanguage(lockedLanguage, lastAssistantTextRef.current)
+          ) {
+            sessionRef.current?.sendContext(
+              languageCorrectionPrompt(lockedLanguage),
+            );
+          }
           // An explicit receptionist sign-off is the model's signal that the
           // call is over, even if an optional lead field is still missing.
           if (
@@ -417,6 +475,7 @@ export function useCallSession(
           }
           lastAssistantTextRef.current = "";
           break;
+        }
 
         case "goAway":
           pushEntry("system", "Session time limit reached");
@@ -549,6 +608,7 @@ export function useCallSession(
     setTranscript([]);
     setLead(emptyLead("Phone"));
     setLanguage(null);
+    languageRef.current = null;
     setLanguageMenuOpen(false);
     setMuted(false);
     setDuration(0);
@@ -735,6 +795,7 @@ export function useCallSession(
       const chosen = byKey(key);
       if (chosen) {
         setLanguage(chosen);
+        languageRef.current = chosen;
         setLanguageMenuOpen(false);
         sessionRef.current?.sendText(languageSwitchPrompt(chosen));
         return;
@@ -757,6 +818,7 @@ export function useCallSession(
       const chosen = byCode(code);
       if (!chosen) return;
       setLanguage(chosen);
+      languageRef.current = chosen;
       setLanguageMenuOpen(false);
       pushEntry("system", `Language · ${chosen.label}`);
       sessionRef.current?.sendText(languageSwitchPrompt(chosen));

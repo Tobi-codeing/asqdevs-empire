@@ -49,8 +49,9 @@ const knownPropertyId = (value: unknown): string | undefined =>
 
 /** Rehydrate a lead from untrusted client state, dropping anything invalid. */
 export function safeLead(input?: Partial<Lead>): Lead {
-  const lead = emptyLead("WhatsApp");
+  const lead = emptyLead(input?.source === "Phone" ? "Phone" : "WhatsApp");
   if (!input || typeof input !== "object") return lead;
+  lead.source = input.source === "Phone" ? "Phone" : "WhatsApp";
 
   const name = text(input.name, 80);
   if (name) lead.name = name;
@@ -124,6 +125,7 @@ export function safeLead(input?: Partial<Lead>): Lead {
   const nextAction = text(input.nextAction, 80);
   if (nextAction) lead.nextAction = nextAction;
   if (typeof input.recapSent === "boolean") lead.recapSent = input.recapSent;
+  if (typeof input.optOut === "boolean") lead.optOut = input.optOut;
 
   if (Array.isArray(input.matchedPropertyIds)) {
     lead.matchedPropertyIds = Array.from(
