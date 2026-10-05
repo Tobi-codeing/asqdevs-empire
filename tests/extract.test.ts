@@ -40,6 +40,18 @@ describe("extractLeadFields", () => {
     );
   });
 
+  it("recognises flexible or undecided location phrases", () => {
+    expect(
+      extractLeadFields("नहीं, ऐसा भी कुछ रखा तो नहीं बस आसपास स्कूल हो").location,
+    ).toBe("Delhi (Flexible)");
+    expect(
+      extractLeadFields("बोले तो इलाके में कोई सोचा नहीं है").location,
+    ).toBe("Delhi (Flexible)");
+    expect(
+      extractLeadFields("इलाके का कोई आईडिया नहीं").location,
+    ).toBe("Delhi (Flexible)");
+  });
+
   it("reads timelines in plain and Hinglish form", () => {
     expect(extractLeadFields("probably next year").timeline).toBe("12 months");
     expect(extractLeadFields("after 6 months").timeline).toBe("6–12 months");
@@ -77,6 +89,39 @@ describe("extractLeadFields", () => {
     expect(extractLeadFields("show me options please").intent).toBeUndefined();
   });
 
+  it("reads a name from English, Hinglish and Devanagari", () => {
+    expect(extractLeadFields("my name is Priya").name).toBe("Priya");
+    expect(extractLeadFields("Mera naam Manish hai").name).toBe("Manish");
+    // The voice call transcript is in the caller's own script.
+    expect(extractLeadFields("मेरा नाम आशीष है").name).toBe("आशीष");
+  });
+
+  it("reads a Devanagari intent and property type from a phone transcript", () => {
+    expect(extractLeadFields("मुझे प्रॉपर्टी खरीदना").intent).toBe("Buy");
+    expect(extractLeadFields("मुझे फ्लैट चाहिए").propertyType).toBe("Apartment");
+    expect(extractLeadFields("किराये पर लेना है").intent).toBe("Rent");
+    expect(extractLeadFields("घर बेचना है").intent).toBe("Sell");
+  });
+
+  it("reads a contact number in the forms people say it", () => {
+    expect(extractLeadFields("my number is 9876543210").phone).toBe("9876543210");
+    expect(extractLeadFields("+91 98765 43210").phone).toBe("9876543210");
+    expect(extractLeadFields("call me on 98 76 54 32 10").phone).toBe(
+      "9876543210",
+    );
+    // A budget is not a phone number.
+    expect(extractLeadFields("budget 90 lakh").phone).toBeUndefined();
+  });
+
+  it("captures amenities named in Devanagari", () => {
+    const patch = extractLeadFields(
+      "आसपास जिम, स्कूल और मार्केट हो",
+    );
+    expect(patch.preferences).toEqual(
+      expect.arrayContaining(["Gym", "Near school", "Market nearby"]),
+    );
+  });
+
   it("does not read 'I don't know the area' as a timeline", () => {
     expect(parseTimeline("I don't know the area")).toBeUndefined();
     expect(parseTimeline("not sure about the location yet")).toBeUndefined();
@@ -86,6 +131,9 @@ describe("extractLeadFields", () => {
     expect(parseTimeline("1 year")).toBe("12 months");
     expect(parseTimeline("4 months")).toBe("3–6 months");
     expect(parseTimeline("18 months")).toBe("12 months");
+    expect(parseTimeline("कल जब भी टाइम मिले")).toBe("Immediately");
+    expect(parseTimeline("ready to move")).toBe("Immediately");
+    expect(parseTimeline("kal dekhne aa sakte hain")).toBe("Immediately");
   });
 });
 

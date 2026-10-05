@@ -10,7 +10,7 @@ import LeadPanel from "@/components/admin/LeadPanel";
 import LeadCard from "@/components/admin/LeadCard";
 import { buildCallOutcome } from "@/lib/gemini/summary";
 import { emptyLead, type Lead } from "@/lib/leads/types";
-import { getPropertiesByIds } from "@/lib/properties/search";
+import { pickProperties, useInventory } from "@/lib/data/useInventory";
 import { demoCompany } from "@/lib/data";
 
 type Mode = "idle" | "voice" | "text";
@@ -34,6 +34,8 @@ export default function PhoneConsole() {
     reason?: string;
   } | null>(null);
   const [textLead, setTextLead] = useState<Lead>(() => emptyLead("Phone"));
+  // Same shared inventory as WhatsApp — one source of truth for both channels.
+  const inventory = useInventory();
   const [showLead, setShowLead] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
@@ -126,7 +128,7 @@ export default function PhoneConsole() {
     setShowLead(true);
   }, []);
 
-  const matches = getPropertiesByIds(lead.matchedPropertyIds);
+  const matches = pickProperties(inventory, lead.matchedPropertyIds);
 
   // The admin summary is derived from the conversation that actually happened.
   const outcome = buildCallOutcome(lead, matches, call.transcript);

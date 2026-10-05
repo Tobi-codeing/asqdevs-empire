@@ -6,6 +6,7 @@ import {
   normaliseBudget,
   normaliseIntent,
   normaliseLocation,
+  normalisePhone,
   normalisePropertyId,
   normalisePropertyType,
   normaliseText,
@@ -63,6 +64,9 @@ export function applyExtraction(lead: Lead, patch: Extraction): Lead {
   const name = normaliseText(patch.name, 80);
   if (name) next.name = name;
 
+  const phone = normalisePhone(patch.phone);
+  if (phone) next.phone = phone;
+
   const intent = normaliseIntent(patch.intent);
   if (intent) next.intent = intent;
 
@@ -99,6 +103,24 @@ export function applyExtraction(lead: Lead, patch: Extraction): Lead {
     next.preferredLocations = Array.from(
       new Set([...lead.preferredLocations, location]),
     );
+  }
+
+  /*
+   * Preferences are additive, like the preferred areas above. The extractor has
+   * always produced them — a caller listing a gym, a school or a market nearby —
+   * but this merge was missing, so they were silently dropped on the way into
+   * the lead and a call that plainly stated them reached the admin as
+   * "Preferences: None stated yet".
+   */
+  if (patch.preferences?.length) {
+    const preferences = patch.preferences
+      .map((preference) => normaliseText(preference, 80))
+      .filter((preference): preference is string => Boolean(preference));
+    if (preferences.length) {
+      next.preferences = Array.from(
+        new Set([...next.preferences, ...preferences]),
+      );
+    }
   }
 
   return recompute(mergeBudget(next, patch));

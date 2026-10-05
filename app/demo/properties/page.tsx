@@ -5,7 +5,11 @@ import Navigation from "@/components/navigation/Navigation";
 import Footer from "@/components/shared/Footer";
 import ProjectMedia from "@/components/portfolio/ProjectMedia";
 import Reveal from "@/components/shared/Reveal";
-import { PROPERTIES } from "@/lib/data/properties";
+import { getActiveProperties } from "@/lib/data/store";
+
+// The inventory can change from the admin at any time, so this page always
+// reads the live shared set rather than a build-time snapshot.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Demo Properties — Delhi Homes Showcase",
@@ -14,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default function DemoPropertiesPage() {
+  const properties = getActiveProperties();
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0a0a0a]">
       <Navigation />
@@ -42,7 +48,7 @@ export default function DemoPropertiesPage() {
 
         <section className="section-pad">
           <div className="shell grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {PROPERTIES.map((property, i) => (
+            {properties.map((property, i) => (
               <Reveal key={property.id} delay={i * 0.04}>
                 <Link
                   href={property.detailPageUrl}

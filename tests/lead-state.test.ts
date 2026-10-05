@@ -81,6 +81,21 @@ describe("applyExtraction — the one merge path", () => {
     expect(second.bhk).toBe("2 BHK");
   });
 
+  it("keeps the preferences the customer stated", () => {
+    // The reported bug: a caller listing a gym and a school reached the admin
+    // as "Preferences: None stated yet" because this merge was missing.
+    const next = applyExtraction(lead(), {
+      preferences: ["Gym", "Near school", "Market nearby"],
+    });
+    expect(next.preferences).toEqual(["Gym", "Near school", "Market nearby"]);
+  });
+
+  it("adds new preferences without dropping earlier ones", () => {
+    const first = applyExtraction(lead(), { preferences: ["Gym"] });
+    const second = applyExtraction(first, { preferences: ["Near school"] });
+    expect(second.preferences).toEqual(["Gym", "Near school"]);
+  });
+
   it("reports only what is genuinely new", () => {
     const before = applyExtraction(lead(), { intent: "Buy" });
     const after = applyExtraction(before, {

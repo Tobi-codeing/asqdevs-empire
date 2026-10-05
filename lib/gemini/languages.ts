@@ -183,7 +183,7 @@ export function languageCorrectionPrompt(language: Language): string {
 
 /** One line re-asserting the lock, attached to the state the app pushes in. */
 export function languageLockReminder(language: Language): string {
-  return `[Language locked for this call: reply in ${language.label} only.]`;
+  return `[LANGUAGE STRICTLY LOCKED: Speak in ${language.label} (${language.native}) only. Even if the caller speaks English or another language, you MUST respond strictly in ${language.label}. Never switch language.]`;
 }
 
 export const byCode = (code: string): Language | undefined =>
@@ -215,7 +215,7 @@ export const OTHER_LANGUAGES_PROMPT =
  * receptionist sound unstable.
  */
 export function languageSwitchPrompt(language: Language): string {
-  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single receptionist voice and the same natural speaking style — change only the spoken language. Stay fully in ${language.label} for the rest of the call until the caller explicitly asks for something else: do not drift back, do not mix in another language, and do not answer even one sentence in any other language. Continue the property conversation from here without repeating anything already established.]`;
+  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single receptionist voice and the same natural speaking style — change only the spoken language. Stay fully in ${language.label} for the rest of the call: even if the caller speaks English, do not switch, do not mix in another language, and do not answer even one sentence in English. Continue the property conversation from here in ${language.label}.]`;
 }
 
 /**
@@ -229,9 +229,27 @@ const LANGUAGE_ALIASES: Record<string, LanguageCode> = {
   hindi: "hi",
   "हिन्दी": "hi",
   "हिंदी": "hi",
+  "1": "hi",
+  one: "hi",
+  "वन": "hi",
+  "मन": "hi",
+  "एक": "hi",
+  "पहला": "hi",
+  first: "hi",
+  "number 1": "hi",
+  "number one": "hi",
+  "option 1": "hi",
   english: "en",
   "अंग्रेज़ी": "en",
   angrezi: "en",
+  "2": "en",
+  two: "en",
+  "दो": "en",
+  "दूसरा": "en",
+  second: "en",
+  "number 2": "en",
+  "number two": "en",
+  "option 2": "en",
   punjabi: "pa",
   panjabi: "pa",
   "ਪੰਜਾਬੀ": "pa",
@@ -299,6 +317,65 @@ export function detectLanguageRequest(text: string): Language | undefined {
     ];
 
     if (rules.some((rule) => rule.test(value))) return byCode(code);
+  }
+
+  return undefined;
+}
+
+/**
+ * Infer the call's language from early caller speech or assistant speech.
+ *
+ * Catches cases where the caller didn't say "Hindi" but immediately spoke in Devanagari
+ * (e.g. "मुझे प्रॉपर्टी खरीदना है"), or the assistant has already responded in Hindi
+ * (e.g. "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?").
+ * This ensures the call is permanently locked to Hindi on the very first turn.
+ */
+export function inferLanguage(
+  callerText?: string,
+  assistantText?: string,
+): Language | undefined {
+  if (callerText) {
+    const explicit = detectLanguageRequest(callerText);
+    if (explicit) return explicit;
+
+    const trimmed = callerText.trim();
+    if (trimmed) {
+      // Caller spoke Devanagari script: definitely Hindi
+      if (/[\u0900-\u097F]/.test(trimmed)) return byCode("hi");
+      // Other Indic scripts
+      if (/[\u0A00-\u0A7F]/.test(trimmed)) return byCode("pa");
+      if (/[\u0A80-\u0AFF]/.test(trimmed)) return byCode("gu");
+      if (/[\u0980-\u09FF]/.test(trimmed)) return byCode("bn");
+      if (/[\u0B80-\u0BFF]/.test(trimmed)) return byCode("ta");
+      if (/[\u0C00-\u0C7F]/.test(trimmed)) return byCode("te");
+      if (/[\u0C80-\u0CFF]/.test(trimmed)) return byCode("kn");
+      if (/[\u0D00-\u0D7F]/.test(trimmed)) return byCode("ml");
+      if (/[\u0600-\u06FF]/.test(trimmed)) return byCode("ur");
+
+      // Common Hinglish words indicating Hindi preference
+      if (
+        /\b(?:kharidna|khareedna|dekhna|chahiye|karna|bataiye|batao|shukriya|namaste|ghar|makan|flat|jagah)\b/i.test(
+          trimmed,
+        )
+      ) {
+        return byCode("hi");
+      }
+    }
+  }
+
+  if (assistantText) {
+    const trimmed = assistantText.trim();
+    if (trimmed) {
+      if (/[\u0900-\u097F]/.test(trimmed)) return byCode("hi");
+      if (/[\u0A00-\u0A7F]/.test(trimmed)) return byCode("pa");
+      if (/[\u0A80-\u0AFF]/.test(trimmed)) return byCode("gu");
+      if (/[\u0980-\u09FF]/.test(trimmed)) return byCode("bn");
+      if (/[\u0B80-\u0BFF]/.test(trimmed)) return byCode("ta");
+      if (/[\u0C00-\u0C7F]/.test(trimmed)) return byCode("te");
+      if (/[\u0C80-\u0CFF]/.test(trimmed)) return byCode("kn");
+      if (/[\u0D00-\u0D7F]/.test(trimmed)) return byCode("ml");
+      if (/[\u0600-\u06FF]/.test(trimmed)) return byCode("ur");
+    }
   }
 
   return undefined;

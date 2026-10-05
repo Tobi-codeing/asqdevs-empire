@@ -12,6 +12,7 @@ import {
   byKey,
   detectLanguageRequest,
   driftedFromLanguage,
+  inferLanguage,
   languageCorrectionPrompt,
   languageLockReminder,
   languageSwitchPrompt,
@@ -37,12 +38,21 @@ import {
   AUTO_END_NOTE,
   TRANSFER_NOTE,
   WRAP_UP_PROMPT,
+  applyConfirmationReply,
+  confirmationPrompt,
   evaluateCompletion,
+  extractHonorificName,
+  hasNextStep,
   hasSettledCore,
+  hasUnresolvedAction,
   isGoodbye,
+  needsConfirmation,
   stateMessageIfChanged,
+  wrapUpPrompt,
 } from "@/lib/calls/completion";
+import { extractPhone, readName } from "@/lib/leads/confirmation";
 import {
+  isDuplicateQuestion,
   mergeTranscript,
   patchFromUtterance,
   reconcilePatch,
@@ -92,6 +102,19 @@ const GOODBYE_TAIL_MS = 2200;
 /** Backstop if the model never signs off after being asked to. */
 const WRAP_UP_TIMEOUT_MS = 9000;
 
+/** Silence timeout before asking the caller if they are still on the line (15 seconds). */
+const SILENCE_FIRST_TIMEOUT_MS = 15000;
+
+/** Final silence timeout after warning before cutting off the call (12 seconds). */
+const SILENCE_FINAL_TIMEOUT_MS = 12000;
+
+/**
+ * How many times the receptionist may be pulled back into the closing read-back
+ * after trying to sign off. Bounded so a caller who flatly refuses to give a
+ * name or number is not trapped on the line forever.
+ */
+const MAX_CONFIRM_TRIES = 3;
+
 /**
  * Drives one voice call end to end: a short-lived relay ticket, the microphone,
  * the Gemini Live socket, streamed playback, tool execution and lead extraction.
@@ -128,6 +151,11 @@ export function useCallSession(
   const inputBuffer = useRef("");
   const outputBuffer = useRef("");
   const endedRef = useRef(false);
+  const closingRef = useRef(false);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const silenceWarningSentRef = useRef(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
   /** Guards the one-time opening prompt. */
   const greetedRef = useRef(false);
@@ -138,10 +166,27 @@ export function useCallSession(
   const leadRef = useRef<Lead>(emptyLead("Phone"));
   /** The receptionist's most recent full line, inspected for a sign-off. */
   const lastAssistantTextRef = useRef("");
+  /** The receptionist's line from the previous turn, so its question can be read. */
+  const prevAssistantTextRef = useRef("");
   /** Today's resolved date, fixed at call start (matches the session config). */
   const todayRef = useRef("");
   /** The last lead-state message pushed, so identical state is never re-sent. */
   const lastStateRef = useRef("");
+  /** True while the receptionist has been asked to run the closing read-back. */
+  const awaitingConfirmRef = useRef(false);
+  /** The confirmation step last prompted, so it is never repeated verbatim. */
+  const confirmKeyRef = useRef("");
+  /** How many times the closing read-back has been (re)started on a sign-off. */
+  const confirmTriesRef = useRef(0);
+  /**
+   * Which part of the confirmation the caller is answering right now.
+   *
+   * The application — not the model — decides how a reply is read while the
+   * read-back runs: a name answer becomes the name, a number answer becomes the
+   * number, and only a clear yes finishes the call. That is what stops a voice
+   * model silently dropping the name it just asked for.
+   */
+  const confirmStageRef = useRef<"name" | "phone" | "confirm">("name");
   /**
    * The language the caller chose, as read inside the event handler.
    *
@@ -170,6 +215,11 @@ export function useCallSession(
     autoEndTimerRef.current = undefined;
   };
 
+  const clearSilenceTimer = () => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    silenceTimerRef.current = undefined;
+  };
+
   const pushEntry = useCallback(
     (role: TranscriptEntry["role"], text: string) => {
       const trimmed = text.trim();
@@ -194,6 +244,36 @@ export function useCallSession(
         if (last && last.id.startsWith("open-") && last.role === role) {
           return [...prev.slice(0, -1), { ...last, text }];
         }
+
+        // Deduplication for assistant utterances:
+        if (role === "assistant") {
+          // Case 1: Pre-tool duplicate across a system tool entry (assistant -> system -> assistant)
+          if (prev.length >= 2) {
+            const systemEntry = prev[prev.length - 1];
+            const preToolEntry = prev[prev.length - 2];
+            if (
+              systemEntry.role === "system" &&
+              preToolEntry.role === "assistant" &&
+              isDuplicateQuestion(preToolEntry.text, text)
+            ) {
+              const withoutPreTool = prev.filter(
+                (e) => e.id !== preToolEntry.id,
+              );
+              return [
+                ...withoutPreTool,
+                { id: `open-${nextId()}`, role, text },
+              ];
+            }
+          }
+
+          // Case 2: Consecutive assistant bubbles without caller speech in between
+          if (prev.length >= 1 && last && last.role === "assistant") {
+            if (isDuplicateQuestion(last.text, text)) {
+              return [...prev.slice(0, -1), { ...last, text }];
+            }
+          }
+        }
+
         return [...prev, { id: `open-${nextId()}`, role, text }];
       });
     },
@@ -211,9 +291,30 @@ export function useCallSession(
     );
   }, []);
 
+  /**
+   * Permanently lock the call's language. Once locked, it cannot be changed by
+   * the caller speaking another language, ensuring the receptionist stays 100%
+   * in the chosen language.
+   */
+  const lockChosenLanguage = useCallback(
+    (chosen: Language, notifyGemini = true) => {
+      if (languageRef.current?.code === chosen.code) return;
+      setLanguage(chosen);
+      languageRef.current = chosen;
+      setLanguageMenuOpen(false);
+      pushEntry("system", `Language · ${chosen.label}`);
+      if (notifyGemini) {
+        sessionRef.current?.sendContext(languageSwitchPrompt(chosen));
+      }
+    },
+    [pushEntry],
+  );
+
   const end = useCallback(async () => {
     endedRef.current = true;
+    closingRef.current = true;
     if (autoEndTimerRef.current) clearTimeout(autoEndTimerRef.current);
+    clearSilenceTimer();
     cleanupRef.current();
     sealBubble();
     setAutoEnding(false);
@@ -221,43 +322,220 @@ export function useCallSession(
   }, [sealBubble]);
 
   /**
+   * Push the next confirmation prompt, or re-ask the current one.
+   *
+   * The application — not the model — decides which part of the read-back is due
+   * next, so the caller is never left with a lead the record never agreed to.
+   * `force` re-sends the current prompt and is used when the receptionist tries
+   * to close before the confirmation has actually finished.
+   */
+  const startConfirmation = useCallback((force = false): boolean => {
+    const current = leadRef.current;
+    if (!needsConfirmation(current)) return false;
+    if (!force && !hasSettledCore(current)) return false;
+
+    const key = `${current.name ? "name" : ""}|${current.phone ? "phone" : ""}`;
+    if (!force && confirmKeyRef.current === key && awaitingConfirmRef.current) {
+      // Already asked for exactly this — don't repeat it verbatim.
+      return true;
+    }
+    confirmKeyRef.current = key;
+
+    const recentSpoken = `${prevAssistantTextRef.current} ${lastAssistantTextRef.current} ${outputBuffer.current}`.trim();
+    const hasAskedConfirm = /कन्फर्म|कन्फॄम|confirm|जानकारी सही|सब सही|सही है|ठीक है|फाइनल करें|final kare|details correct|all correct/i.test(recentSpoken);
+    const hasAskedPhone = /number|नंबर|फ़ोन|फोन|phone|contact|mobile|मोबाइल|संपर्क/i.test(recentSpoken);
+    const hasAskedName = /नाम|name|naam|who am i speaking with|may i have your name/i.test(recentSpoken);
+
+    if (hasAskedConfirm) {
+      confirmStageRef.current = "confirm";
+    } else if (!current.name && !hasAskedPhone) {
+      confirmStageRef.current = "name";
+    } else if (!current.phone) {
+      confirmStageRef.current = "phone";
+    } else {
+      confirmStageRef.current = "confirm";
+    }
+    awaitingConfirmRef.current = true;
+
+    const stage = confirmStageRef.current;
+    const alreadyAsked =
+      (stage === "name" && hasAskedName) ||
+      (stage === "phone" && hasAskedPhone) ||
+      (stage === "confirm" && hasAskedConfirm);
+
+    if (!force && alreadyAsked) {
+      return true;
+    }
+
+    sessionRef.current?.sendText(
+      confirmationPrompt(current, languageRef.current ?? undefined),
+    );
+    return true;
+  }, []);
+
+  /**
    * Closes the call once the requirement is captured and the promised action
    * has actually completed. Not a turn counter: a short call and a long call
    * are both fine, what matters is whether the caller got somewhere.
    */
   const checkCompletion = useCallback(() => {
-    const result = evaluateCompletion(leadRef.current);
-    if (!result.complete || autoEndingRef.current || endedRef.current) return;
+    if (endedRef.current) return;
+    const current = leadRef.current;
+
+    /*
+     * The read-back may already be running. Keep advancing it regardless of the
+     * qualification gate — the caller is mid-confirmation, and the next field (or
+     * the number re-read) must still go out. This is what made the confirmation
+     * stall after the name was taken: the next prompt only ever fired from a
+     * "ready to close" state that no longer applied.
+     */
+    if (awaitingConfirmRef.current && needsConfirmation(current)) {
+      startConfirmation();
+      return;
+    }
+
+    const result = evaluateCompletion(current);
+
+    /*
+     * A settled next step is enough to move the call to its close. Requiring
+     * every core field first is what let a call end with no confirmation at all:
+     * a caller who would not name an area but did agree a site visit never
+     * reached "fully qualified", so the read-back never fired and the lead
+     * reached the admin with everything blank. Once the caller has committed to
+     * something, the confirmation runs; the read-back itself is where any
+     * missing or wrong detail gets caught. A completed confirmation is likewise
+     * enough on its own: the caller has just agreed the record is right, so the
+     * call may end even if no visit or callback was ever booked.
+     */
+    const readyToClose =
+      result.complete ||
+      (hasNextStep(current) && !hasUnresolvedAction(current)) ||
+      current.confirmation === "done";
+    if (!readyToClose) return;
+
+    /*
+     * The call may not close yet. The receptionist takes the name and number and
+     * reads the whole requirement back for the caller to confirm — the same
+     * end-of-conversation confirmation the WhatsApp assistant runs.
+     */
+    if (needsConfirmation(current)) {
+      startConfirmation();
+      return;
+    }
+
+    // CRITICAL FIX: If the assistant just ended its turn with a question or confirmation prompt,
+    // it is actively waiting for the caller's response!
+    // NEVER send WRAP_UP_PROMPT over an unanswered question!
+    const lastSpoken = (lastAssistantTextRef.current || prevAssistantTextRef.current).trim();
+    if (
+      isGoodbye(lastSpoken) ||
+      /\?\s*$/.test(lastSpoken) ||
+      /(?:सही है|कन्फर्म|बता सकते|बताइए|पसंद करेंगे|चाहेंगे|फाइनल करें)\s*\??\s*$/i.test(lastSpoken)
+    ) {
+      return;
+    }
+
+    if (closingRef.current || autoEndingRef.current) return;
     autoEndingRef.current = true;
     setAutoEnding(true);
 
-    // Let the receptionist close the conversation naturally.
-    sessionRef.current?.sendText(WRAP_UP_PROMPT);
+    // Let the receptionist close the conversation naturally in the locked language.
+    sessionRef.current?.sendText(wrapUpPrompt(languageRef.current ?? undefined));
     clearAutoEnd();
+  }, [startConfirmation]);
+
+  /**
+   * The primary ending: the receptionist's own sign-off. A slow but productive
+   * call is never cut short, and the line closes promptly the moment the goodbye
+   * finishes playing.
+   */
+  const endAfterGoodbye = useCallback(() => {
+    if (endedRef.current) return;
+    if (closingRef.current) return;
+    const reason = "goodbye";
+    closingRef.current = true;
+    autoEndingRef.current = true;
+    setAutoEnding(true);
+    // Cut off the microphone immediately so room noise, coughs, or breaths
+    // cannot trigger barge-in or start a competing Gemini turn during sign-off.
+    micRef.current?.stop();
+    clearAutoEnd();
+    clearSilenceTimer();
+
+    // Query remaining playback time in the audio player buffer so we never cut off
+    // the last spoken syllables of the sign-off, but terminate immediately once finished.
+    const remainingMs = playerRef.current?.remainingPlaybackMs ?? 600;
+    const delay = Math.max(400, Math.min(6000, remainingMs + 350));
+
     autoEndTimerRef.current = setTimeout(() => {
       if (endedRef.current) return;
       pushEntryRef.current("system", AUTO_END_NOTE);
       void endRef.current?.();
-      onAutoEndRef.current?.(result.reason);
-    }, WRAP_UP_TIMEOUT_MS);
+      onAutoEndRef.current?.(reason);
+    }, delay);
   }, []);
 
   /**
-   * The primary ending: the receptionist's own sign-off. A slow but productive
-   * call is never cut short, and the line always closes the way a real call does.
+   * Final disconnect when caller remains silent after the 15-second warning prompt.
    */
-  const endAfterGoodbye = useCallback(() => {
-    if (endedRef.current) return;
-    const reason = autoEndingRef.current ? "completed" : "goodbye";
-    autoEndingRef.current = true;
-    setAutoEnding(true);
+  const handleFinalSilenceCutoff = useCallback(() => {
+    if (closingRef.current || endedRef.current) return;
+    closingRef.current = true;
+    micRef.current?.stop();
     clearAutoEnd();
-    autoEndTimerRef.current = setTimeout(() => {
-      pushEntryRef.current("system", AUTO_END_NOTE);
+    clearSilenceTimer();
+
+    const isHindi =
+      !languageRef.current || languageRef.current.code !== "en";
+    const msg = isHindi
+      ? "आपकी तरफ से कोई जवाब न मिलने के कारण कॉल समाप्त की जा रही है। दिल्ली होम्स में संपर्क करने के लिए धन्यवाद।"
+      : "Due to inactivity, this call is now ending. Thank you for calling Delhi Homes.";
+
+    pushEntryRef.current("assistant", msg);
+    pushEntryRef.current("system", "Call ended — caller inactivity");
+
+    setTimeout(() => {
       void endRef.current?.();
-      onAutoEndRef.current?.(reason);
-    }, GOODBYE_TAIL_MS);
+      onAutoEndRef.current?.("inactivity");
+    }, 1500);
   }, []);
+
+  /**
+   * Warn the caller once after 15 seconds of silence that the call will cut off.
+   */
+  const handleSilenceWarning = useCallback(() => {
+    if (closingRef.current || autoEndingRef.current || endedRef.current) return;
+    silenceWarningSentRef.current = true;
+
+    const isHindi =
+      !languageRef.current || languageRef.current.code !== "en";
+    const warningPrompt = isHindi
+      ? "[The caller has been silent for 15 seconds. Say warmly: 'क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।' and wait.]"
+      : "[The caller has been silent for 15 seconds. Say warmly: 'Are you still on the line? If there is no response shortly, the call will disconnect automatically.' and wait.]";
+
+    sessionRef.current?.sendText(warningPrompt);
+
+    clearSilenceTimer();
+    silenceTimerRef.current = setTimeout(() => {
+      handleFinalSilenceCutoff();
+    }, SILENCE_FINAL_TIMEOUT_MS);
+  }, [handleFinalSilenceCutoff]);
+
+  /**
+   * Schedule the 15-second caller silence timer when the receptionist finishes speaking.
+   */
+  const scheduleSilenceTimer = useCallback(() => {
+    clearSilenceTimer();
+    if (closingRef.current || autoEndingRef.current || endedRef.current) return;
+
+    silenceTimerRef.current = setTimeout(() => {
+      if (silenceWarningSentRef.current) {
+        handleFinalSilenceCutoff();
+      } else {
+        handleSilenceWarning();
+      }
+    }, SILENCE_FIRST_TIMEOUT_MS);
+  }, [handleSilenceWarning, handleFinalSilenceCutoff]);
 
   /**
    * Hand the receptionist the settled lead state.
@@ -270,6 +548,7 @@ export function useCallSession(
    */
   const injectLeadState = useCallback(() => {
     if (!INJECT_LEAD_STATE) return;
+    if (closingRef.current || autoEndingRef.current || endedRef.current) return;
     const current = leadRef.current;
     if (!hasSettledCore(current)) return;
     const message = stateMessageIfChanged(
@@ -302,7 +581,8 @@ export function useCallSession(
   }, []);
 
   const runTools = useCallback(
-    async (calls: ToolCall[]) => {
+    async (calls: ToolCall[], preToolSpeech?: string) => {
+      clearSilenceTimer();
       const responses: { id: string; name: string; response: unknown }[] = [];
 
       for (const call of calls) {
@@ -334,14 +614,49 @@ export function useCallSession(
           leadRef.current = next;
           return next;
         });
+
+        if (typeof result === "object" && result !== null) {
+          const resObj = result as Record<string, unknown>;
+
+          // Enforce the locked language instruction directly in the tool response!
+          const locked = languageRef.current;
+          if (locked) {
+            resObj.language_instruction = `CRITICAL: You MUST respond strictly in ${locked.label} (${locked.native}). Even if the property details or caller's speech are in English, your spoken response MUST be in ${locked.label}. Do NOT speak English.`;
+            if (typeof resObj.note === "string") {
+              resObj.note = `${resObj.note} Speak ONLY in ${locked.label} (${locked.native}). Never switch to English.`;
+            }
+          }
+
+          // If the model spoke dialogue right before invoking this tool, tell it explicitly what it said
+          // so it strictly avoids repeating the same question or utterance in its post-tool response!
+          if (preToolSpeech && preToolSpeech.length > 0) {
+            const askedForPhone =
+              /नंबर|फ़ोन|फोन|phone|mobile|contact|number/i.test(preToolSpeech);
+            const askedForArea =
+              /इलाका|एरिया|area|locality/i.test(preToolSpeech);
+
+            if (call.name === "scheduleVisit" && askedForPhone) {
+              resObj.note = `Visit booked. CRITICAL: You ALREADY asked the caller for their phone number right before calling scheduleVisit ("${preToolSpeech}"). DO NOT ask for their phone number again! Acknowledge briefly and wait for them to give their number.`;
+              resObj.already_asked_phone = true;
+            } else if (call.name === "searchProperties" && askedForArea) {
+              resObj.note = `CRITICAL: You ALREADY asked about location right before searching. DO NOT ask again! Present the search results cleanly.`;
+            }
+            resObj.already_spoken = `You already said right before calling this tool: "${preToolSpeech}". DO NOT repeat this or re-ask what you just asked!`;
+          }
+        }
+
         responses.push({ id: call.id, name: call.name, response: result });
       }
 
       sessionRef.current?.sendToolResponse(responses);
-      // A tool call frequently captures the final requirement or the next step.
-      checkCompletion();
+      /*
+       * Deliberately no completion check here. `sendToolResponse` already makes
+       * the model continue its turn, and pushing a prompt on top of that gave it
+       * two inputs at once — which is how the receptionist ended up saying the
+       * same line twice. The check runs once, when that turn completes.
+       */
     },
-    [pushEntry, checkCompletion],
+    [pushEntry],
   );
 
   const handleEvent = useCallback(
@@ -373,7 +688,11 @@ export function useCallSession(
           setStatus("speaking");
           break;
 
-        case "inputTranscript":
+        case "inputTranscript": {
+          if (closingRef.current || endedRef.current) break;
+          // Caller spoke: reset silence timer and inactivity warning
+          clearSilenceTimer();
+          silenceWarningSentRef.current = false;
           // The caller's audio is already streaming through realtimeInput, so
           // no clientContent is sent here — that would create a second, competing
           // user turn and make the model answer itself.
@@ -384,23 +703,57 @@ export function useCallSession(
           );
           pushStreaming("user", inputBuffer.current);
           applyUtterance(inputBuffer.current);
-          break;
 
-        case "outputTranscript":
+          if (!languageRef.current) {
+            const detected = inferLanguage(inputBuffer.current);
+            if (detected) {
+              lockChosenLanguage(detected, true);
+            }
+          }
+          break;
+        }
+
+        case "outputTranscript": {
+          if (endedRef.current) break;
+          clearSilenceTimer();
+          // Strip Gemini meta tags or brackets like [No verbal response required.]
+          const cleaned = event.text
+            .replace(/\[[^\]]*\]\.?/gi, "")
+            .trim();
+          if (!cleaned) break;
+
           setStatus("speaking");
           outputBuffer.current = mergeTranscript(
             outputBuffer.current,
-            event.text,
+            cleaned,
           );
           lastAssistantTextRef.current = outputBuffer.current;
           pushStreaming("assistant", outputBuffer.current);
-          break;
 
-        case "toolCall":
-          setStatus("processing");
-          sealBubble();
-          void runTools(event.calls);
+          if (!languageRef.current) {
+            const detected = inferLanguage(undefined, outputBuffer.current);
+            if (detected) {
+              lockChosenLanguage(detected, true);
+            }
+          }
+
+          // If the model produces a clear closing sign-off while speaking, stop mic immediately
+          // to prevent background noise from interrupting or initiating new turns
+          if (isGoodbye(outputBuffer.current)) {
+            micRef.current?.stop();
+          }
           break;
+        }
+
+        case "toolCall": {
+          if (closingRef.current || endedRef.current) break;
+          setStatus("processing");
+          const preToolSpeech = outputBuffer.current.trim();
+          sealBubble();
+          outputBuffer.current = "";
+          void runTools(event.calls, preToolSpeech);
+          break;
+        }
 
         case "interrupted":
           /*
@@ -408,6 +761,8 @@ export function useCallSession(
            * back to the caller. Any audio that arrived after the interrupt is
            * discarded too, so the model never continues talking over them.
            */
+          clearSilenceTimer();
+          silenceWarningSentRef.current = false;
           playerRef.current?.flush();
           sealBubble();
           inputBuffer.current = "";
@@ -420,26 +775,21 @@ export function useCallSession(
           // Captured before the buffers are cleared, because both the language
           // choice and the drift check are decisions about this turn.
           const callerText = inputBuffer.current;
+          const assistantLine = lastAssistantTextRef.current;
           sealBubble();
           inputBuffer.current = "";
           outputBuffer.current = "";
           setStatus((prev) =>
             prev === "error" || prev === "ended" ? prev : "listening",
           );
-          /*
-           * A caller who *says* "speak in Hindi" has chosen the language just as
-           * clearly as one who pressed 1. Locking it here is what keeps the two
-           * paths identical — and it means the drift guard below protects that
-           * choice rather than arguing with it.
-           */
-          const requested = detectLanguageRequest(callerText);
-          if (requested && requested.code !== languageRef.current?.code) {
-            setLanguage(requested);
-            languageRef.current = requested;
-            setLanguageMenuOpen(false);
-            pushEntry("system", `Language · ${requested.label}`);
-            sessionRef.current?.sendText(languageSwitchPrompt(requested));
+
+          if (!languageRef.current) {
+            const detected = inferLanguage(callerText, assistantLine);
+            if (detected) {
+              lockChosenLanguage(detected, true);
+            }
           }
+
           /*
            * Catch a language drift on the turn it happened.
            *
@@ -454,25 +804,178 @@ export function useCallSession(
           const lockedLanguage = languageRef.current;
           if (
             lockedLanguage &&
-            lastAssistantTextRef.current &&
-            driftedFromLanguage(lockedLanguage, lastAssistantTextRef.current)
+            assistantLine &&
+            driftedFromLanguage(lockedLanguage, assistantLine)
           ) {
             sessionRef.current?.sendContext(
               languageCorrectionPrompt(lockedLanguage),
             );
           }
-          // An explicit receptionist sign-off is the model's signal that the
-          // call is over, even if an optional lead field is still missing.
-          if (
-            lastAssistantTextRef.current &&
-            isGoodbye(lastAssistantTextRef.current)
-          ) {
+          /*
+           * The caller's answer to the closing read-back.
+           *
+           * An explicit yes marks the confirmation done, so the call may wrap
+           * up; a correction is merged by the ordinary extraction and the
+           * read-back is offered again on the next completion check. A field
+           * that is still missing simply re-asks for that field.
+           */
+          const isConfirmPromptSpoken =
+            awaitingConfirmRef.current ||
+            /कन्फर्म|कन्फॄम|confirm|जानकारी सही|सब सही|सही है|ठीक है\?|details correct|all correct/i.test(
+              prevAssistantTextRef.current,
+            );
+
+          if (isConfirmPromptSpoken && callerText) {
+            const stage = awaitingConfirmRef.current
+              ? confirmStageRef.current
+              : "confirm";
+            const decision = applyConfirmationReply(
+              leadRef.current,
+              stage,
+              callerText,
+            );
+            if (decision.kind === "advance") {
+              leadRef.current = decision.lead;
+              setLead(decision.lead);
+              confirmKeyRef.current = "";
+              if (decision.lead.confirmation === "done") {
+                awaitingConfirmRef.current = false;
+              }
+            } else if (decision.kind === "reread") {
+              /*
+               * The caller changed something or said NO. The correction is folded into
+               * lead state; Gemini already heard the caller's spoken audio directly
+               * and will respond naturally. Do not inject a competing text turn.
+               */
+              leadRef.current = decision.lead;
+              setLead(decision.lead);
+              confirmKeyRef.current = "";
+            }
+          }
+
+          /*
+           * The receptionist is told to ask for the name and the contact number
+           * itself, early in the call. Catch those answers deterministically as
+           * well: a voice model routinely forgets to file what it just heard,
+           * which is how a call that plainly established a name reached the
+           * admin as "Name: Not shared yet".
+           */
+          // If assistant addressed the caller by name (e.g. "आंसू जी", "पास्सो जी"), capture it immediately!
+          const honorificName = extractHonorificName(assistantLine);
+          if (honorificName && (!leadRef.current.name || leadRef.current.name !== honorificName)) {
+            const next: Lead = { ...leadRef.current, name: honorificName };
+            leadRef.current = next;
+            setLead(next);
+            confirmKeyRef.current = "";
+          }
+
+          // If assistant read back or stated a phone number (e.g. "आपका मोबाइल नंबर 748586309"), capture it immediately!
+          if (!leadRef.current.phone && /(?:नंबर|फ़ोन|फोन|phone|mobile|contact)/i.test(assistantLine)) {
+            const assistantPhone = extractPhone(assistantLine);
+            if (assistantPhone) {
+              const next: Lead = { ...leadRef.current, phone: assistantPhone };
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
+          // Direct caller phone capture: whenever the caller states digits / phone, save it!
+          if (callerText && !leadRef.current.phone) {
+            const directPhone = extractPhone(callerText);
+            if (directPhone) {
+              const next: Lead = { ...leadRef.current, phone: directPhone };
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
+          /*
+           * The receptionist is told to ask for the name and the contact number
+           * itself, early in the call. Catch those answers deterministically as
+           * well: a voice model routinely forgets to file what it just heard,
+           * which is how a call that plainly established a name reached the
+           * admin as "Name: Not shared yet".
+           */
+          if (!awaitingConfirmRef.current && callerText) {
+            const current = leadRef.current;
+            const asked = prevAssistantTextRef.current;
+            const named =
+              !current.name && /नाम|name/i.test(asked)
+                ? readName(callerText)
+                : undefined;
+            const numbered =
+              !current.phone && (/number|नंबर|फ़ोन|फोन|phone|contact|mobile/i.test(asked) || extractPhone(callerText) != null)
+                ? extractPhone(callerText)
+                : undefined;
+            if (named || numbered) {
+              const next: Lead = {
+                ...current,
+                ...(named ? { name: named } : {}),
+                ...(numbered ? { phone: numbered } : {}),
+              };
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
+          /*
+           * Catch verbal site visit or budget confirmation in the assistant's speech
+           * if the tool call was omitted.
+           */
+          if (!leadRef.current.siteVisit && /(?:विजिट|visit)/i.test(assistantLine)) {
+            const timeMatch = assistantLine.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm|बजे))/i);
+            const dateMatch = assistantLine.match(/(कल(?:\s+सुबह)?|today|tomorrow|\d{1,2}\s+(?:october|अक्टूबर|[a-z]+))/i);
+            if (dateMatch || timeMatch) {
+              const visitSlot = `${dateMatch ? dateMatch[1] : "Tomorrow"}, ${timeMatch ? timeMatch[1] : "10:00 AM"}`
+                .replace("कल सुबह", "Tomorrow 10:00 AM")
+                .replace("कल", "Tomorrow");
+              const nextLead: Lead = {
+                ...leadRef.current,
+                siteVisit: visitSlot,
+                selectedPropertyId: leadRef.current.selectedPropertyId || leadRef.current.matchedPropertyIds[0],
+                timeline: leadRef.current.timeline || "Immediately",
+              };
+              leadRef.current = nextLead;
+              setLead(nextLead);
+            }
+          }
+
+          if (!leadRef.current.budget && /(?:(\d+)\s*(?:लाख|lakh))/i.test(assistantLine)) {
+            const match = assistantLine.match(/(?:(\d+)\s*(?:लाख|lakh))/i);
+            if (match) {
+              const val = Number(match[1]) * 100000;
+              const nextLead: Lead = {
+                ...leadRef.current,
+                budget: val,
+                budgetLabel: `around ₹${match[1]}L`,
+              };
+              leadRef.current = nextLead;
+              setLead(nextLead);
+            }
+          }
+
+          /*
+           * An explicit receptionist sign-off is the model's signal that the
+           * call is over. When the receptionist says goodbye / thank you, end the call
+           * smoothly. Do not interrupt or re-ask once goodbye has been spoken.
+           */
+          const isAssistantGoodbye =
+            (Boolean(assistantLine) && isGoodbye(assistantLine)) ||
+            (Boolean(lastAssistantTextRef.current) && isGoodbye(lastAssistantTextRef.current));
+
+          if (isAssistantGoodbye) {
             endAfterGoodbye();
           } else {
             // Assistant output must never be echoed back as new input.
             checkCompletion();
             injectLeadState();
+            // Receptionist finished speaking; start 15-second silence timer waiting for caller
+            scheduleSilenceTimer();
           }
+          prevAssistantTextRef.current = assistantLine;
           lastAssistantTextRef.current = "";
           break;
         }
@@ -508,8 +1011,10 @@ export function useCallSession(
       runTools,
       sealBubble,
       checkCompletion,
+      startConfirmation,
       endAfterGoodbye,
       injectLeadState,
+      lockChosenLanguage,
     ],
   );
 
@@ -587,6 +1092,8 @@ export function useCallSession(
     playerRef.current = null;
     micRef.current?.stop();
     micRef.current = null;
+    clearSilenceTimer();
+    silenceWarningSentRef.current = false;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     sessionRef.current?.close();
@@ -616,12 +1123,20 @@ export function useCallSession(
     inputBuffer.current = "";
     outputBuffer.current = "";
     endedRef.current = false;
+    closingRef.current = false;
+    clearSilenceTimer();
+    silenceWarningSentRef.current = false;
     greetedRef.current = false;
     autoEndingRef.current = false;
     setAutoEnding(false);
     clearAutoEnd();
     leadRef.current = emptyLead("Phone");
     lastStateRef.current = "";
+    awaitingConfirmRef.current = false;
+    confirmKeyRef.current = "";
+    confirmTriesRef.current = 0;
+    confirmStageRef.current = "name";
+    prevAssistantTextRef.current = "";
     todayRef.current = new Date().toLocaleDateString("en-GB", {
       weekday: "long",
       day: "numeric",
@@ -794,9 +1309,7 @@ export function useCallSession(
       // is then chosen from the screen rather than the keypad.
       const chosen = byKey(key);
       if (chosen) {
-        setLanguage(chosen);
-        languageRef.current = chosen;
-        setLanguageMenuOpen(false);
+        lockChosenLanguage(chosen, false);
         sessionRef.current?.sendText(languageSwitchPrompt(chosen));
         return;
       }
@@ -809,7 +1322,7 @@ export function useCallSession(
 
       sessionRef.current?.sendText(`[Caller pressed ${key}]`);
     },
-    [pushEntry],
+    [pushEntry, lockChosenLanguage],
   );
 
   /** Chooses one of the extended languages from the on-screen list. */
@@ -817,13 +1330,10 @@ export function useCallSession(
     (code: LanguageCode) => {
       const chosen = byCode(code);
       if (!chosen) return;
-      setLanguage(chosen);
-      languageRef.current = chosen;
-      setLanguageMenuOpen(false);
-      pushEntry("system", `Language · ${chosen.label}`);
+      lockChosenLanguage(chosen, false);
       sessionRef.current?.sendText(languageSwitchPrompt(chosen));
     },
-    [pushEntry],
+    [lockChosenLanguage],
   );
 
   // Elapsed call timer.

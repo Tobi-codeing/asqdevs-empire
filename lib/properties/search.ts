@@ -1,4 +1,8 @@
-import { PROPERTIES, propertiesByIds, type Property } from '@/lib/data/properties';
+import {
+  getActiveProperties,
+  getPropertiesByIds as inventoryPropertiesByIds,
+} from '@/lib/data/inventory';
+import type { Property } from '@/lib/data/properties';
 
 export type PropertyQuery = {
   location?: string;
@@ -30,11 +34,11 @@ const sameText = (a: string, b: string) =>
 export function searchProperties(query: PropertyQuery): Property[] {
   const wantedBhk = bhkNumber(query.bhk);
 
+  const PROPERTIES = getActiveProperties();
   const scored = PROPERTIES.map((property) => {
-    const locationMatch = query.location
-      ? sameText(property.location, query.location)
-      : false;
-    const cityMatch = query.location ? sameText(property.city, query.location) : false;
+    const isFlexible = !query.location || /flexible|any|all/i.test(query.location);
+    const locationMatch = isFlexible ? true : (query.location ? sameText(property.location, query.location) : false);
+    const cityMatch = isFlexible ? true : (query.location ? sameText(property.city, query.location) : false);
     const bhkMatch = wantedBhk != null ? property.bhk === wantedBhk : false;
     const nameMatch = query.name ? nameSimilarity(property.name, query.name) : 0;
 
@@ -52,7 +56,8 @@ export function searchProperties(query: PropertyQuery): Property[] {
       if (score <= 0) return false;
       // A named property is a hard filter, like a stated size or locality.
       if (query.name) return nameMatch >= 6;
-      if (query.location && !locationMatch && !cityMatch) return false;
+      const isFlexible = !query.location || /flexible|any|all/i.test(query.location);
+      if (query.location && !isFlexible && !locationMatch && !cityMatch) return false;
       if (wantedBhk != null && !bhkMatch) return false;
       if (query.budget != null && property.price > query.budget * 1.15) return false;
       return true;
@@ -63,7 +68,7 @@ export function searchProperties(query: PropertyQuery): Property[] {
 }
 
 export function getPropertyDetails(id: string): Property | undefined {
-  return PROPERTIES.find((property) => property.id === id);
+  return getActiveProperties().find((property) => property.id === id);
 }
 
 /**
@@ -88,7 +93,7 @@ export function findNearMisses(
   const limit = options.limit ?? 3;
   const wantedBhk = bhkNumber(query.bhk);
 
-  return PROPERTIES.map((property) => {
+  return getActiveProperties().map((property) => {
     const mismatches: string[] = [];
 
     if (query.location && !sameText(property.location, query.location) && !sameText(property.city, query.location))
@@ -119,7 +124,7 @@ export function findNearMisses(
 }
 
 export function getPropertiesByIds(ids: string[]): Property[] {
-  return propertiesByIds(ids);
+  return inventoryPropertiesByIds(ids);
 }
 
 const normalise = (value: string) => value.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -161,19 +166,61 @@ function nameSimilarity(name: string, query: string): number {
  * Find the inventory property a customer is naming, if any. Used when someone
  * asks about a specific listing by name rather than by requirements.
  */
+/**
+ * Words that belong to a locality or city rather than a property name.
+ *
+ * Built from the live inventory, so an admin-added area is covered too.
+ */
+function localityWords(): Set<string> {
+  const words = new Set<string>();
+  for (const property of getActiveProperties()) {
+    for (const value of [property.location, property.city]) {
+      for (const word of normalise(value).split(" ")) {
+        if (word.length > 2) words.add(word);
+      }
+    }
+  }
+  return words;
+}
+
+/**
+ * Find the inventory property a customer is naming, if any.
+ *
+ * A stated locality is qualification input, never a property name: "South
+ * Delhi" resolves to "South Delhi Grand" by word overlap, so the assistant would
+ * drop a listing on the customer before it knew their size or budget — and the
+ * size question's buttons were pushed off the quick-reply row. A name match is
+ * therefore only accepted when at least one overlapping word is NOT itself a
+ * locality word, which keeps "Dwarka Heights" working while "South Delhi" and
+ * "Dwarka" no longer name a listing.
+ */
 export function findPropertyByName(text: string): Property | undefined {
   const normalised = normalise(text);
-  let best: { property: Property; score: number } | undefined;
+  if (!normalised) return undefined;
 
-  for (const property of PROPERTIES) {
+  const localities = localityWords();
+  const queryWords = new Set(normalised.split(" "));
+
+  let best: { property: Property; score: number; distinctive: boolean } | undefined;
+
+  for (const property of getActiveProperties()) {
     let score = nameSimilarity(property.name, text);
     // Fall back to the locality, so "tell me about the Dwarka one" still works
     // when a locality has exactly one listing.
     const inLocation = normalised.includes(normalise(property.location));
-    const locationCount = PROPERTIES.filter((p) => p.location === property.location).length;
+    const locationCount = getActiveProperties().filter(
+      (p) => p.location === property.location,
+    ).length;
     if (inLocation && locationCount === 1) score += 3;
-    if (score > 0 && (!best || score > best.score)) best = { property, score };
+
+    const nameWords = new Set(normalise(property.name).split(" "));
+    const overlap = [...queryWords].filter((word) => nameWords.has(word));
+    const distinctive = overlap.some((word) => !localities.has(word));
+
+    if (score > 0 && (!best || score > best.score))
+      best = { property, score, distinctive };
   }
 
-  return best && best.score >= 6 ? best.property : undefined;
+  if (!best || best.score < 6 || !best.distinctive) return undefined;
+  return best.property;
 }

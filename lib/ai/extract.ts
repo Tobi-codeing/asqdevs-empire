@@ -1,8 +1,6 @@
-﻿import {
-  KNOWN_LOCATIONS,
-  formatBudget,
-  formatBudgetRange,
-} from "@/lib/data/properties";
+import { formatBudget, formatBudgetRange } from "@/lib/data/properties";
+import { getKnownLocations } from "@/lib/data/inventory";
+import { normalisePhone } from "@/lib/leads/normalise";
 import type { Intent, Lead } from "@/lib/leads/types";
 
 const NUMBER_WORDS: Record<string, number> = {
@@ -31,6 +29,12 @@ const EXTRA_LOCATIONS = [
 ];
 
 const NAME_TRIGGERS = [
+  // Hindi / Devanagari, because the voice call transcript is in the caller's
+  // own script: "मेरा नाम राहुल है" must yield the name too.
+  /मेरा नाम\s+([\u0900-\u097F]{2,})/,
+  /मेरा नाम\s+([\u0900-\u097F]{2,})\s+है/,
+  /नाम\s+([\u0900-\u097F]{2,})/,
+  /मैं\s+([\u0900-\u097F]{2,})\s+(?:हूँ|हूं|बोल)/,
   /my name is\s+([a-z]+)/i,
   /name is\s+([a-z]+)/i,
   /this is\s+([a-z]+)/i,
@@ -65,35 +69,46 @@ const NAME_STOPWORDS = new Set([
   "new",
 ]);
 
+/*
+ * The amenities people actually mention, in the language they actually use.
+ * A phone call in Hindi is transcribed in Devanagari, so every Latin pattern
+ * has its Devanagari counterpart — otherwise a caller who listed a gym, a
+ * school and a market nearby reached the admin as "Preferences: None stated".
+ */
 const PREFERENCE_MAP: { test: RegExp; label: string }[] = [
   { test: /\bsemi[\s-]?furnished\b/i, label: "Semi-furnished" },
   { test: /\bunfurnished\b/i, label: "Unfurnished" },
-  { test: /\bfurnished\b/i, label: "Furnished" },
-  { test: /\bparking\b|\bcar park\b/i, label: "Parking" },
-  { test: /park facing|facing park/i, label: "Park facing" },
-  { test: /\bvastu\b/i, label: "Vastu" },
-  { test: /\bmetro\b/i, label: "Near metro" },
-  { test: /\bschool\b/i, label: "Near school" },
-  { test: /\blift\b|elevator/i, label: "Lift" },
-  { test: /ready to move/i, label: "Ready to move" },
-  { test: /under construction/i, label: "Under construction" },
+  { test: /\bfurnished\b|फर्निश्ड/i, label: "Furnished" },
+  { test: /\bparking\b|\bcar park\b|पार्किंग/i, label: "Parking" },
+  { test: /park facing|facing park|पार्क\s*(?:की|की तरफ|के सामने)/i, label: "Park facing" },
+  { test: /\bvastu\b|वास्तु/i, label: "Vastu" },
+  { test: /\bmetro\b|मेट्रो/i, label: "Near metro" },
+  { test: /\bschool\b|स्कूल|स्कुल/i, label: "Near school" },
+  { test: /\bgym\b|जिम/i, label: "Gym" },
+  { test: /\bmarket\b|मार्केट|बाज़ार|बाजार/i, label: "Market nearby" },
+  { test: /\blift\b|elevator|लिफ्ट/i, label: "Lift" },
+  { test: /ready to move|रहने के लिए तैयार/i, label: "Ready to move" },
+  { test: /under construction|निर्माणाधीन/i, label: "Under construction" },
   { test: /\bcorner\b/i, label: "Corner unit" },
   { test: /higher floor|top floor|high floor/i, label: "Higher floor" },
-  { test: /\bgarden\b/i, label: "Garden" },
-  { test: /\bgym\b/i, label: "Gym" },
-  { test: /\bpool\b|swimming/i, label: "Swimming pool" },
+  { test: /\bgarden\b|बगीचा|गार्डन/i, label: "Garden" },
+  { test: /\bpool\b|swimming|स्विमिंग/i, label: "Swimming pool" },
 ];
 
 function firstBudgetToken(
   text: string,
 ): { value: number; label: string } | undefined {
-  const crore = text.match(/(\d+(?:\.\d+)?)\s*(?:crore|crores|cr\b)/i);
+  const crore = text.match(
+    /(\d+(?:\.\d+)?)\s*(?:crore|crores|cr\b|करोड़|करोड|करोड़ों)/i,
+  );
   if (crore) {
     const value = Math.round(Number(crore[1]) * 10_000_000);
     return { value, label: formatBudget(value) };
   }
 
-  const lakh = text.match(/(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lacs?|\bl\b)/i);
+  const lakh = text.match(
+    /(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lacs?|\bl\b|लाख|लाखों|लाखो)/i,
+  );
   if (lakh) {
     const value = Math.round(Number(lakh[1]) * 100_000);
     return { value, label: formatBudget(value) };
@@ -115,7 +130,7 @@ function firstBudgetToken(
 function boundBudget(text: string): { min: number; max: number } | undefined {
   // "85 to 90", "85-90", "85 and 90", "85 - 90 lakh", etc.
   const fromTo = text.match(
-    /(\d+(?:\.\d+)?)\s*(?:-|\s*(?:to|and|tak|se)\s+)(\d+(?:\.\d+)?)/i,
+    /(\d+(?:\.\d+)?)\s*(?:-|to|and|tak|se|तक|से|\s+)\s*(\d+(?:\.\d+)?)/i,
   );
   if (!fromTo) return undefined;
 
@@ -129,8 +144,21 @@ function boundBudget(text: string): { min: number; max: number } | undefined {
     Math.max(0, fromTo.index! - 40),
     fromTo.index! + fromTo[0].length + 40,
   );
-  const unitLakh = /lakh|lakhs|lac|l\b| crore|crores|cr\b/i.test(context);
-  const unitCrore = /crore|crores|cr\b/i.test(context);
+  const unitLakh =
+    /lakh|lakhs|lac|\bl\b|लाख|लाखों|लाखो|crore|crores|cr\b|करोड़|करोड|करोड़ों/i.test(
+      context,
+    );
+  const unitCrore = /crore|crores|cr\b|करोड़|करोड|करोड़ों/i.test(context);
+  /*
+   * Two small bare numbers are usually not a budget — "2 3 BHK" is a
+   * configuration, not a price. A pair is only read as money when a unit, a
+   * "tak/तक" ceiling or another budget cue is present, or both are large enough
+   * to plainly be an amount.
+   */
+  const hasBudgetCue =
+    unitLakh ||
+    /तक|tak|budget|around|roughly|approx|between|up\s*to|upto/i.test(context);
+  if (!hasBudgetCue && (lower < 10 || upper < 10)) return undefined;
 
   const toValue = (n: number, preferCrore: boolean): number => {
     if (unitCrore) return Math.round(n * 10_000_000);
@@ -161,6 +189,17 @@ function parseBhk(text: string): string | undefined {
 
 function parseIntent(text: string): Intent | undefined {
   const lower = text.toLowerCase();
+
+  /*
+   * The voice call is transcribed in the caller's own script, so a Hindi
+   * caller's whole requirement arrives in Devanagari. Without these the intent
+   * field was left empty — which is exactly what stops matching and what made a
+   * phone lead reach the admin as "Intent: Not shared yet". Rent and Sell are
+   * checked before Buy so "किराये पर लेना" reads as a rental, not a purchase.
+   */
+  if (/किराये|किराया|रेंट|किराए/.test(text)) return "Rent";
+  if (/बेच|बिक्री|विक्रय/.test(text)) return "Sell";
+  if (/खरीद|क्रय|लेना है|लेने का|ले रहा|चाहता हूँ|चाहती हूँ/.test(text)) return "Buy";
 
   /*
    * Every keyword here is word-bounded. Without the boundaries, `lease` matched
@@ -234,7 +273,7 @@ export function parseTimeline(text: string): string | undefined {
     return "Just exploring";
 
   if (
-    /as soon as possible|immediate|immediately|asap|turant|jaldi|urgent|abhi|right now|this week|is hafte/i.test(
+    /as soon as possible|immediate|immediately|asap|turant|jaldi|urgent|abhi|right now|this week|is hafte|ready to move|\bkal\b|\btomorrow\b|\baaj\b|\btoday\b|कल|आज|तुरंत|जल्दी/i.test(
       t,
     )
   )
@@ -299,11 +338,12 @@ export function parseTimeline(text: string): string | undefined {
 }
 
 function parsePropertyType(text: string): string | undefined {
-  if (/\bvilla\b/i.test(text)) return "Villa";
-  if (/\bpenthouse\b/i.test(text)) return "Penthouse";
-  if (/\bstudio\b/i.test(text)) return "Studio";
-  if (/builder floor/i.test(text)) return "Builder Floor";
-  if (/\bflat\b|\bapartment\b/i.test(text)) return "Apartment";
+  if (/\bvilla\b|विला/i.test(text)) return "Villa";
+  if (/\bpenthouse\b|पेंटहाउस/i.test(text)) return "Penthouse";
+  if (/\bstudio\b|स्टूडियो/i.test(text)) return "Studio";
+  if (/builder floor|बिल्डर फ्लोर/i.test(text)) return "Builder Floor";
+  if (/\bflat\b|\bapartment\b|फ्लैट|फ़्लैट|अपार्टमेंट/i.test(text))
+    return "Apartment";
   return undefined;
 }
 
@@ -313,11 +353,41 @@ function parseLocation(text: string): string | undefined {
     .replace(/gurugram/gi, "Gurugram")
     .replace(/delhi\s+or\s+nearby|nearby\s+delhi|delhi\s+nearby/gi, "Delhi");
 
-  const candidates = [...KNOWN_LOCATIONS, ...EXTRA_LOCATIONS];
+  const candidates = [...getKnownLocations(), ...EXTRA_LOCATIONS];
   const match = candidates.find((location) =>
     normalised.toLowerCase().includes(location.toLowerCase()),
   );
-  return match;
+  if (match) return match;
+
+  if (
+    /(?:socha\s+nahi|koi\s+(?:idea|area|jagah)\s+nahi|pata\s+nahi|kuch\s+(?:rakha|fix)\s+nahi|any\s+area|anywhere|flexible|no\s+preference|no\s+specific\s+area|doesn'?t\s+matter|koi\s+bhi|kahi\s+bhi|इलाके\s*(?:का|में|में\s*कोई)\s*(?:कोई\s*)?(?:सोचा|आईडिया|आइडिया|पता)\s*नहीं|कुछ\s*(?:रखा|सोचा|तय)\s*तो\s*नहीं|कोई\s*(?:भी\s*)?(?:सोचा|आईडिया|आइडिया|तय)\s*नहीं|कोई\s+भी\s+चलेगा|कहीं\s+भी)/i.test(
+      text,
+    )
+  ) {
+    return "Delhi (Flexible)";
+  }
+
+  return undefined;
+}
+
+/**
+ * A contact number the customer stated.
+ *
+ * Deliberately strict: it looks for a run of digits a person would actually
+ * read out as a phone number (optionally with +91, spaces or dashes) and the
+ * caller's own words. A bare four-digit number from a garbled transcript must
+ * never become the number the sales team dials.
+ */
+function parsePhone(text: string): string | undefined {
+  if (!text) return undefined;
+  const cleanDigits = text.replace(/\D/g, "");
+  if (cleanDigits.length >= 8 && cleanDigits.length <= 13) {
+    const normalised = normalisePhone(cleanDigits);
+    if (normalised) return normalised;
+  }
+  const match = text.match(/(?:\+?91[\s-]?)?(?:0)?[5-9](?:[\s-]?\d){7,10}/);
+  if (!match) return undefined;
+  return normalisePhone(match[0]);
 }
 
 function parseName(text: string): string | undefined {
@@ -328,6 +398,19 @@ function parseName(text: string): string | undefined {
     if (!candidate || NAME_STOPWORDS.has(candidate.toLowerCase())) continue;
     return candidate.charAt(0).toUpperCase() + candidate.slice(1).toLowerCase();
   }
+
+  // Name correction or trailing name: e.g. "pass on nahi hai pass on nahi Aansu", "nahi Aansu"
+  const correction =
+    text.match(/(?:nahi|not|galat|nahi\s+hai)\s+([A-Za-z\u0900-\u097F]{2,})\s*$/i) ||
+    text.match(/naam\s+([A-Za-z\u0900-\u097F]{2,})\s+hai/i) ||
+    text.match(/([A-Za-z\u0900-\u097F]{2,})\s+naam\s+hai/i);
+  if (correction) {
+    const candidate = correction[1];
+    if (candidate && !NAME_STOPWORDS.has(candidate.toLowerCase())) {
+      return candidate.charAt(0).toUpperCase() + candidate.slice(1).toLowerCase();
+    }
+  }
+
   return undefined;
 }
 
@@ -359,6 +442,17 @@ function parseBudgetSignals(
     result.budgetLabel = formatBudget(value);
   }
 
+  // Hindi ceiling where the unit comes first: "50 लाख तक" / "55 lakh tak".
+  const uptoMatch = text.match(
+    /(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|\bl\b|लाख|लाखों|लाखो|crore|crores|cr\b|करोड़|करोड)\s*(?:तक|tak)/i,
+  );
+  if (!maxMatch && uptoMatch) {
+    const value = moneyFor(Number(uptoMatch[1]), uptoMatch[0]);
+    result.budgetMax = value;
+    result.budget = value;
+    result.budgetLabel = formatBudget(value);
+  }
+
   const minMatch = text.match(
     /(?:minimum|at\s+least|starting\s+at|no\s+less\s+than)\s*(?:rs\.?|â‚¹)?\s*(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|lac|l\b|crore|crores|cr\b)/i,
   );
@@ -374,6 +468,7 @@ export type Extraction = Partial<
   Pick<
     Lead,
     | "name"
+    | "phone"
     | "intent"
     | "location"
     | "preferredLocations"
@@ -403,6 +498,9 @@ export function extractLeadFields(raw: string): Extraction {
   const name = parseName(text);
   if (name) result.name = name;
 
+  const phone = parsePhone(text);
+  if (phone) result.phone = phone;
+
   const intent = parseIntent(text);
   if (intent) result.intent = intent;
 
@@ -414,7 +512,7 @@ export function extractLeadFields(raw: string): Extraction {
   // registers the first, and the second is silently dropped.
   const locationScan = text.replace(/gurgaon/gi, "Gurugram");
   const statedLocations = Array.from(
-    new Set([...KNOWN_LOCATIONS, ...EXTRA_LOCATIONS]),
+    new Set([...getKnownLocations(), ...EXTRA_LOCATIONS]),
   ).filter((locationName) =>
     locationScan.match(
       new RegExp(
@@ -448,7 +546,9 @@ export function extractLeadFields(raw: string): Extraction {
 
   if (
     text.toLowerCase().includes("between") ||
-    /\b(?:to|and|tak|se)\b/i.test(text)
+    /\b(?:to|and|tak|se)\b/i.test(text) ||
+    /तक|से/.test(text) ||
+    /\d\s+\d/.test(text)
   ) {
     const range = boundBudget(text);
     if (range) {

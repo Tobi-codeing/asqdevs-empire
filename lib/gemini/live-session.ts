@@ -231,12 +231,16 @@ export class GeminiLiveSession {
         });
 
       const outputText = serverContent.outputTranscription?.text;
-      if (outputText)
-        this.handler({
-          type: "outputTranscript",
-          text: outputText,
-          final: false,
-        });
+      if (outputText) {
+        const cleaned = outputText.replace(/\[[^\]]*\]\.?/gi, "").trim();
+        if (cleaned) {
+          this.handler({
+            type: "outputTranscript",
+            text: cleaned,
+            final: false,
+          });
+        }
+      }
 
       if (serverContent.turnComplete) this.handler({ type: "turnComplete" });
     }

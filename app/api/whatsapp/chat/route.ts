@@ -2,6 +2,9 @@
 import type { Lead } from "@/lib/leads/types";
 import type { SentLink } from "@/lib/whatsapp/messages";
 import { runTurn } from "@/lib/whatsapp/turn";
+// Importing the server store hydrates the shared inventory cache with the
+// admin's latest properties before the turn runs.
+import "@/lib/data/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

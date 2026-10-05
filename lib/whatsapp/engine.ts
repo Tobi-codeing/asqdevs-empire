@@ -6,10 +6,8 @@ import {
 } from "@/lib/ai/extract";
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
 import { broadenSearchFor, canMatchLead } from "@/lib/leads/match";
-import {
-  findPropertyByName,
-  getPropertiesByIds,
-} from "@/lib/properties/search";
+import { findPropertyByName } from "@/lib/properties/search";
+import { getPropertiesByIds } from "@/lib/data/inventory";
 import { applyExtraction, changedFields, recompute } from "@/lib/leads/update";
 import {
   emptyLead,
@@ -18,11 +16,11 @@ import {
   type Lead,
 } from "@/lib/leads/types";
 import { budgetSummaryText } from "@/lib/leads/format";
+import { buildReviewMessage, REVIEW_REPLIES } from "@/lib/leads/confirmation";
 import { RESTART_REPLIES, suggestedReplies } from "@/lib/whatsapp/options";
 import {
   additionalMatchesMessage,
   broadenedMessage,
-  finalRecapMessage,
   NO_EXACT_MATCH,
   propertyLinkMessage,
   toSentLink,
@@ -42,8 +40,8 @@ export type ChatMessage = {
   propertyIds?: string[];
   /** Property links actually sent to the customer with this message. */
   links?: SentLink[];
-  /** A message that should read as the end-of-conversation recap. */
-  kind?: "recap";
+  /** A message that should read as the end-of-conversation recap/review. */
+  kind?: "recap" | "review";
 };
 
 export type EngineState = {
@@ -150,7 +148,7 @@ export function conversationStage(
   if (done.callback) return "CALLBACK_REQUESTED";
   if (isVisitTimePending(lead)) return "CHOOSING_VISIT_TIME";
   if (done.siteVisit) return "VISIT_REQUESTED";
-  if (lead.recapSent) return "COMPLETED";
+  if (lead.recapSent || lead.confirmation) return "COMPLETED";
   if (offeredPropertyIds.length) return "SHOWING_MATCHES";
   return "QUALIFYING";
 }
@@ -196,10 +194,24 @@ export function isConversationComplete(lead: Lead): boolean {
  */
 export function visitTimeSelection(text: string): string | undefined {
   const value = text.trim().toLowerCase();
-  if (!value || value.length > 24) return undefined;
+  if (!value || value.length > 50) return undefined;
+  if (/^(?:this\s+)?weekend$/i.test(value)) return "This weekend";
+  if (/^tomorrow\s+morning$/i.test(value)) return "Tomorrow morning";
+  if (/^tomorrow\s+afternoon$/i.test(value)) return "Tomorrow afternoon";
+  if (/^tomorrow\s+evening$/i.test(value)) return "Tomorrow evening";
+  const date = resolveDate(text);
+  const time = resolveTime(text);
+  if (date?.label && time) return `${date.label}, ${time}`;
+  if (date?.label) {
+    if (/\bmorning\b|\bsubah\b/.test(value)) return `${date.label} morning`;
+    if (/\bafternoon\b|\bdopahar\b/.test(value)) return `${date.label} afternoon`;
+    if (/\bevening\b|\bshaam\b|\bsham\b/.test(value)) return `${date.label} evening`;
+    return date.label;
+  }
   if (/\bmorning\b|\bsubah\b/.test(value)) return "Morning";
   if (/\bafternoon\b|\bdopahar\b/.test(value)) return "Afternoon";
   if (/\bevening\b|\bshaam\b|\bsham\b/.test(value)) return "Evening";
+  if (time) return time;
   return undefined;
 }
 
@@ -234,13 +246,19 @@ export function nextActionButtons(completed: CompletedActions): string[] {
 export function matchButtons(
   completed: CompletedActions,
   hasMatches: boolean,
+  /** The properties just shown — one "Tell me about X" button each. */
+  matchNames: string[] = [],
 ): string[] {
   const buttons: string[] = [];
+  for (const name of matchNames.slice(0, 2)) {
+    const label = `Tell me about ${name}`;
+    if (!buttons.includes(label)) buttons.push(label);
+  }
   if (!completed.siteVisit) buttons.push("Schedule a site visit");
   if (!completed.advisor) buttons.push("Talk to an advisor");
-  if (hasMatches) buttons.push("Show more options");
+  if (hasMatches && buttons.length < 4) buttons.push("Show more options");
   if (!buttons.length) buttons.push("Done");
-  return buttons.slice(0, 3);
+  return buttons.slice(0, 4);
 }
 
 /** The honest ways out of a no-match, minus any handoff already made. */
@@ -266,7 +284,7 @@ export function openingMessages(
   if (source === "Phone") {
     return [
       assistant(
-        "Namaste! Delhi Homes se Priya bol rahi hoon — bataiye, main aapki kaise madad kar sakti hoon?",
+        "Namaste, Delhi Homes mein aapka swagat hai. Aap kis tarah ki property dekh rahe hain?",
         {
           quickReplies: [
             "2 BHK chahiye Dwarka me",
@@ -321,6 +339,9 @@ const questionFor: Record<CoreField, string> = {
   budget: "What budget range should I work with?",
   timeline: "When are you hoping to move forward?",
 };
+
+/** The one question for a missing core field, shared with the model path. */
+export const fieldQuestion = questionFor;
 
 
 export function shouldShowLead(state: EngineState): boolean {
@@ -568,7 +589,10 @@ export function respond(state: EngineState, userText: string): EngineReply {
       const sentLinks = mergeLinks(state.sentLinks, [toSentLink(top)]);
       const { text: copy, link } = propertyLinkMessage(top);
       messages.push(
-        assistant(copy, { quickReplies: matchButtons(completed, true), links: [link] }),
+        assistant(copy, {
+          quickReplies: matchButtons(completed, true, [top.name]),
+          links: [link],
+        }),
       );
       return {
         messages,
@@ -757,7 +781,13 @@ export function respond(state: EngineState, userText: string): EngineReply {
         ? assistant(questionFor[missing[0]], { quickReplies: buttonsFor(false) })
         : assistant(
             "Would you like to arrange a site visit, or speak with an advisor?",
-            { quickReplies: matchButtons(completed, true) },
+            {
+              quickReplies: matchButtons(
+                completed,
+                true,
+                offered.map((property) => property.name),
+              ),
+            },
           ),
     );
     return {
@@ -802,7 +832,12 @@ export function respond(state: EngineState, userText: string): EngineReply {
     const built = fresh.length ? broadenedMessage(fresh, widened.relaxed) : undefined;
 
     if (built)
-      return offer(fresh, built.links, built.text, matchButtons(completed, true));
+      return offer(
+        fresh,
+        built.links,
+        built.text,
+        matchButtons(completed, true, fresh.map((property) => property.name)),
+      );
 
     messages.push(assistant(NO_EXACT_MATCH, { quickReplies: noMatchButtons(completed) }));
     return { messages, state: { ...state, lead, offeredMatches: true } };
@@ -825,7 +860,13 @@ export function respond(state: EngineState, userText: string): EngineReply {
     messages.push(
       assistant(
         "Would you like to arrange a site visit, or speak with an advisor?",
-        { quickReplies: matchButtons(completed, true) },
+        {
+          quickReplies: matchButtons(
+            completed,
+            true,
+            offered.map((property) => property.name),
+          ),
+        },
       ),
     );
     return {
@@ -855,7 +896,11 @@ export function respond(state: EngineState, userText: string): EngineReply {
     const links = offered.map(toSentLink);
     messages.push(
       assistant("Here are the closest matches I have for what you shared:", {
-        quickReplies: matchButtons(completed, true),
+        quickReplies: matchButtons(
+          completed,
+          true,
+          offered.map((property) => property.name),
+        ),
         propertyIds: offered.map((property) => property.id),
         links,
       }),
@@ -878,13 +923,15 @@ export function respond(state: EngineState, userText: string): EngineReply {
   // Already offered: the customer can ask for more, or name a property.
   if (action === "moreOptions") {
     const extra = additionalMatchesMessage(matches, state.offeredPropertyIds);
-    if (extra)
+    if (extra) {
+      const more = getPropertiesByIds(extra.links.map((link) => link.propertyId));
       return offer(
-        getPropertiesByIds(extra.links.map((link) => link.propertyId)),
+        more,
         extra.links,
         extra.text,
-        matchButtons(completed, true),
+        matchButtons(completed, true, more.map((property) => property.name)),
       );
+    }
 
     messages.push(
       assistant(
@@ -935,9 +982,11 @@ export function respond(state: EngineState, userText: string): EngineReply {
 }
 
 /**
- * Close the conversation: mark it finished and append the one concise recap of
- * the requirement, the matched property links and the decided next action.
- * No-ops if a recap was already sent, so the customer never gets it twice.
+ * Close the qualification: mark the requirement settled and hand the customer
+ * the one read-back that asks them to confirm it. The recap itself goes out only
+ * after the confirmation (name, number, number read-back) has completed — so a
+ * name or a budget the customer never actually agreed to cannot reach the
+ * business. No-ops once a review has already gone out.
  */
 function finish(
   state: EngineState,
@@ -948,12 +997,10 @@ function finish(
     return { messages, state: { ...state, lead, finished: true } };
   }
 
-  const matches = getPropertiesByIds(lead.matchedPropertyIds);
-  const recap = finalRecapMessage(lead, matches);
   messages.push(
-    assistant(recap.text, {
-      kind: "recap",
-      links: recap.links,
+    assistant(buildReviewMessage(lead), {
+      kind: "review",
+      quickReplies: REVIEW_REPLIES,
     }),
   );
 
@@ -961,14 +1008,11 @@ function finish(
     messages,
     state: {
       ...state,
-      lead,
+      lead: { ...lead, confirmation: "review" },
       finished: true,
       offeredMatches: true,
-      offeredPropertyIds: mergeIds(
-        state.offeredPropertyIds,
-        recap.links.map((link) => link.propertyId),
-      ),
-      sentLinks: mergeLinks(state.sentLinks, recap.links),
+      offeredPropertyIds: state.offeredPropertyIds,
+      sentLinks: state.sentLinks,
     },
   };
 }

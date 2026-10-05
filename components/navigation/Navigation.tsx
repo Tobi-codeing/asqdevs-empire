@@ -11,6 +11,7 @@ const links = [
   { href: "/#whatsapp", label: "WhatsApp" },
   { href: "/#phone", label: "AI Receptionist" },
   { href: "/#contact", label: "Contact" },
+  { href: "/admin", label: "Admin" },
 ];
 
 export default function Navigation() {

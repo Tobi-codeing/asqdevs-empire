@@ -1,5 +1,7 @@
-import { PROPERTIES, type Property } from "@/lib/data/properties";
+import { getPropertyById } from "@/lib/data/inventory";
+import type { Property } from "@/lib/data/properties";
 import { budgetSummaryText, formatLocation } from "@/lib/leads/format";
+import { formatPhone } from "@/lib/leads/normalise";
 import { missingFields, type Lead } from "@/lib/leads/types";
 import { searchForLead } from "@/lib/leads/match";
 
@@ -25,7 +27,7 @@ export type LeadField = {
 /** The property the conversation centred on, if the customer named one. */
 export function selectedProperty(lead: Lead): Property | undefined {
   if (!lead.selectedPropertyId) return undefined;
-  return PROPERTIES.find((property) => property.id === lead.selectedPropertyId);
+  return getPropertyById(lead.selectedPropertyId);
 }
 
 /** "2 BHK apartment" — size and format joined the one way everywhere. */
@@ -117,6 +119,11 @@ export function leadFieldsFor(lead: Lead): LeadField[] {
   const property = selectedProperty(lead);
   return [
     { label: "Name", value: lead.name, placeholder: "Not shared yet" },
+    {
+      label: "Phone",
+      value: lead.phone ? formatPhone(lead.phone) : undefined,
+      placeholder: "Not shared yet",
+    },
     { label: "Intent", value: lead.intent },
     {
       label: "Location",

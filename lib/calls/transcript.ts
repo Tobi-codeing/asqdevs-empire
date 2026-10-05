@@ -30,6 +30,51 @@ export function mergeTranscript(current: string, next: string): string {
 }
 
 /**
+ * Detect whether a new assistant utterance repeats the intent of an earlier assistant utterance.
+ *
+ * Catches premature pre-tool chatter (e.g. asking for phone number before scheduleVisit)
+ * followed by post-tool speech asking for the same thing again, or duplicate back-to-back questions.
+ */
+export function isDuplicateQuestion(prevText: string, newText: string): boolean {
+  const p = prevText.trim();
+  const n = newText.trim();
+  if (!p || !n) return false;
+  if (p === n) return true;
+
+  // Phone number question check
+  const phoneRe = /नंबर|फ़ोन|फोन|phone|mobile|contact|number/i;
+  if (phoneRe.test(p) && phoneRe.test(n)) return true;
+
+  // Name question check
+  const nameRe = /नाम|name/i;
+  const questionIndicators = /\?|क्या|किस|कौन|कितना|कहाँ|कहां|बता|जान|tell|which|what|where|how/i;
+  if (nameRe.test(p) && nameRe.test(n) && (questionIndicators.test(p) || questionIndicators.test(n))) return true;
+
+  // Locality / area question check
+  const areaRe = /इलाक|एरिया|locality|area|जगह/i;
+  if (areaRe.test(p) && areaRe.test(n) && (questionIndicators.test(p) || questionIndicators.test(n))) return true;
+
+  // Budget question check
+  const budgetRe = /बजट|budget/i;
+  if (budgetRe.test(p) && budgetRe.test(n) && (questionIndicators.test(p) || questionIndicators.test(n))) return true;
+
+  // High word similarity check (e.g. 70%+ shared significant words)
+  const wordsP = new Set(p.toLowerCase().split(/\s+/).filter((w) => w.length > 2));
+  const wordsN = new Set(n.toLowerCase().split(/\s+/).filter((w) => w.length > 2));
+  if (wordsP.size > 0 && wordsN.size > 0) {
+    let common = 0;
+    for (const w of wordsP) {
+      if (wordsN.has(w)) common++;
+    }
+    const similarity = common / Math.min(wordsP.size, wordsN.size);
+    if (similarity >= 0.7) return true;
+  }
+
+  return false;
+}
+
+
+/**
  * Fold a freshly extracted patch into the existing lead.
  *
  * A stated value always wins — a corrected "3BHK" or a moved budget replaces

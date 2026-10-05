@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { Property } from '@/lib/data/properties';
 
 export default function PropertyCard({
@@ -11,21 +12,41 @@ export default function PropertyCard({
   onView?: (property: Property) => void;
   compact?: boolean;
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
   const monogram = property.name
     .split(' ')
     .map((w) => w[0])
     .slice(0, 2)
     .join('');
 
+  // Real cover image (including admin uploads); falls back to a monogram only if
+  // the property has no image or the file is missing.
+  const cover = property.image;
+  const showImage = Boolean(cover) && !imageFailed;
+
   return (
     <div className="border border-[#2f2f2f] bg-[#141414] p-4">
       <div className="flex items-start gap-4">
-        <div
-          aria-hidden
-          className="flex h-14 w-14 flex-shrink-0 items-center justify-center border border-[#2f2f2f] bg-[#0b0b0b] text-sm font-medium tracking-wide text-[#c6ad78]/70"
-        >
-          {monogram}
-        </div>
+        {showImage ? (
+          <div className="h-16 w-20 flex-shrink-0 overflow-hidden border border-[#2f2f2f] bg-[#0b0b0b]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cover}
+              alt={property.name}
+              loading="lazy"
+              className="h-full w-full object-cover"
+              onError={() => setImageFailed(true)}
+            />
+          </div>
+        ) : (
+          <div
+            aria-hidden
+            className="flex h-14 w-14 flex-shrink-0 items-center justify-center border border-[#2f2f2f] bg-[#0b0b0b] text-sm font-medium tracking-wide text-[#c6ad78]/70"
+          >
+            {monogram}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-3">
             <p className="truncate text-base font-medium">{property.name}</p>

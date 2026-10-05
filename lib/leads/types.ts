@@ -16,8 +16,28 @@ export type LeadSource = "WhatsApp" | "Phone";
  * *propose* a partial patch; the application owns the merge, so the admin record
  * cannot disagree with the conversation it came from.
  */
+/**
+ * Where a conversation is in the end-of-conversation confirmation.
+ *
+ * The customer is shown a read-back of everything collected and asked whether
+ * it is correct, then asked for a name and a contact number, then asked to
+ * confirm that number. Only once every step is done is the lead finalised and
+ * sent to the business — so the record the admin sees is always the one the
+ * customer just agreed to, not a half-heard guess.
+ */
+export type ConfirmationStage =
+  | "review"
+  | "name"
+  | "phone"
+  | "phoneConfirm"
+  | "done";
+
 export type Lead = {
   name?: string;
+  /** The contact number the customer agreed to be reached on. */
+  phone?: string;
+  /** Where the confirmation flow currently is, if it has started. */
+  confirmation?: ConfirmationStage;
   intent?: Intent;
   /** The single location the customer is looking in. */
   location?: string;

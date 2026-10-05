@@ -64,6 +64,7 @@ export type LeadPayload = {
   source: string;
   capturedAt: string;
   name: string;
+  phone: string;
   intent: string;
   location: string;
   preferredLocations: string[];
@@ -126,6 +127,7 @@ export function buildLeadPayload({
     source: lead.source,
     capturedAt: new Date().toISOString(),
     name: lead.name ?? "",
+    phone: lead.phone ?? "",
     intent: lead.intent ?? "",
     location: lead.location ?? "",
     preferredLocations: lead.preferredLocations,

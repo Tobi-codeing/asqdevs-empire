@@ -7,7 +7,7 @@ import {
   formatLocation,
   formatTimeline,
 } from "@/lib/leads/format";
-import { getPropertiesByIds } from "@/lib/properties/search";
+import { getPropertiesByIds } from "@/lib/data/inventory";
 
 /**
  * How many matches the assistant will send at once.

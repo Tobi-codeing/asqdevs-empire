@@ -3,6 +3,7 @@ import {
   byCode,
   detectLanguageRequest,
   driftedFromLanguage,
+  inferLanguage,
 } from "@/lib/gemini/languages";
 
 const hindi = byCode("hi")!;
@@ -68,5 +69,29 @@ describe("choosing a language by speaking it", () => {
     ).toBeUndefined();
     expect(detectLanguageRequest("2 BHK chahiye Dwarka mein")).toBeUndefined();
     expect(detectLanguageRequest("my budget is around 90 lakh")).toBeUndefined();
+  });
+});
+
+describe("inferring language from early conversation", () => {
+  it("detects language from speech aliases or numbers", () => {
+    expect(inferLanguage("मन")?.code).toBe("hi");
+    expect(inferLanguage("number 1")?.code).toBe("hi");
+    expect(inferLanguage("option 2")?.code).toBe("en");
+  });
+
+  it("detects Hindi from caller Devanagari speech", () => {
+    expect(inferLanguage("मुझे प्रॉपर्टी खरीदना है")?.code).toBe("hi");
+    expect(inferLanguage("नमस्ते")?.code).toBe("hi");
+  });
+
+  it("detects Hindi from caller Romanized Hindi", () => {
+    expect(inferLanguage("property kharidna hai")?.code).toBe("hi");
+    expect(inferLanguage("flat dekhna chahta hu")?.code).toBe("hi");
+  });
+
+  it("detects Hindi when assistant speaks in Devanagari", () => {
+    expect(
+      inferLanguage(undefined, "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?")?.code,
+    ).toBe("hi");
   });
 });

@@ -84,6 +84,22 @@ const buttons = (run: Run) => run.replies.flatMap((r) => r.quickReplies ?? []);
 const qualified = () =>
   play(["hi", "Buy", "Rohini", "2 BHK", "Around ₹90L", "within 3 months"]);
 
+/**
+ * Walk the end-of-conversation confirmation to the delivered recap: confirm the
+ * read-back, give a name and a number, then confirm the number.
+ */
+const confirmAll = async (
+  run: Run,
+  name = "Rahul",
+  phone = "9876543210",
+): Promise<Run> => {
+  run = await step(run, "Yes, that's correct");
+  run = await step(run, name);
+  run = await step(run, phone);
+  run = await step(run, "Call on this number");
+  return run;
+};
+
 describe("parseTimeline buckets", () => {
   it("does not misread '1–3 months' as '3–6 months'", () => {
     expect(parseTimeline("1–3 months")).toBe("1–3 months");
@@ -110,8 +126,19 @@ describe("visit time is not a loop", () => {
     expect(texts(run)).toMatch(/afternoon/i);
     expect(run.lead.siteVisit).toMatch(/afternoon/i);
 
-    // Everything was captured and the visit time was given, so the conversation
-    // closes with the recap instead of looping on the same options again.
+    // Everything was captured and the visit time was given, so the assistant
+    // reads it all back and asks the customer to confirm before finishing.
+    expect(run.lead.confirmation).toBe("review");
+    expect(run.lead.recapSent).toBeFalsy();
+    expect(texts(run)).toMatch(/confirm I have it right/i);
+    expect(texts(run)).toMatch(/within 3/i);
+    expect(buttons(run)).toEqual(["Yes, that's correct", "Change something"]);
+
+    run = await confirmAll(run);
+
+    // Only after the name, number and number read-back does the recap go out.
+    expect(run.lead.name).toBe("Rahul");
+    expect(run.lead.phone).toBe("9876543210");
     expect(run.lead.recapSent).toBe(true);
     expect(texts(run)).toMatch(/here's what I have/i);
     expect(buttons(run)).toEqual([]);
@@ -139,8 +166,13 @@ describe("advisor handoff is terminal", () => {
 
     expect(run.lead.advisorRequested).toBe(true);
     expect(texts(run)).toMatch(/property advisor/i);
-    // The requirement is captured and the hand-off is agreed, so the recap goes
-    // out once and the enquiry is finished instead of looping.
+    // Nothing reaches the advisor until the customer has confirmed the
+    // read-back, given a name and a number, and confirmed the number.
+    expect(run.lead.confirmation).toBe("review");
+    expect(run.lead.recapSent).toBeFalsy();
+
+    run = await confirmAll(run);
+
     expect(run.lead.recapSent).toBe(true);
     expect(texts(run)).toMatch(/here's what I have/i);
     // Nothing already done is offered again.
@@ -150,6 +182,7 @@ describe("advisor handoff is terminal", () => {
 
   it("stays closed when the customer keeps chatting after a hand-off", async () => {
     let run = await step(await qualified(), "Talk to an advisor");
+    run = await confirmAll(run);
     expect(run.lead.recapSent).toBe(true);
 
     run = await step(run, "Amenities");
@@ -167,7 +200,8 @@ describe("advisor handoff is terminal", () => {
     // A person was asked for, so the assistant stops qualifying immediately —
     // it does not keep interrogating the customer to fill the form first.
     expect(run.lead.advisorRequested).toBe(true);
-    expect(run.lead.recapSent).toBe(true);
+    // The hand-off still runs through the confirmation read-back.
+    expect(run.lead.confirmation).toBe("review");
     expect(texts(run)).toMatch(/property advisor/i);
   });
 
@@ -180,14 +214,20 @@ describe("advisor handoff is terminal", () => {
     expect(texts(run)).not.toMatch(/here's what I have/i);
   });
 
-  it("shows the recap exactly once, on a genuine wrap-up", async () => {
+  it("asks for confirmation once, then sends the recap once", async () => {
     let run = await qualified();
     run = await step(run, "thanks, that's all");
-    expect(texts(run)).toMatch(/here's what I have/i);
-    expect(run.lead.recapSent).toBe(true);
+    expect(texts(run)).toMatch(/confirm I have it right/i);
+    expect(run.lead.confirmation).toBe("review");
 
-    run = await step(run, "thanks again");
-    expect(texts(run)).not.toMatch(/here's what I have/i);
+    run = await step(run, "Yes, that's correct");
+    // The confirmation flow owns the conversation now: one read-back, no repeat.
+    expect(texts(run)).not.toMatch(/confirm I have it right/i);
+    expect(texts(run)).toMatch(/what name/i);
+
+    run = await confirmAll(run);
+    expect(run.lead.recapSent).toBe(true);
+    expect(texts(run)).toMatch(/here's what I have/i);
   });
 });
 
@@ -196,7 +236,7 @@ describe("no backward loops after completion", () => {
     let run = await qualified();
     run = await step(run, "Schedule a site visit");
     run = await step(run, "Afternoon");
-    run = await step(run, "Done");
+    run = await confirmAll(run);
     expect(run.lead.recapSent).toBe(true);
 
     run = await step(run, "ok");

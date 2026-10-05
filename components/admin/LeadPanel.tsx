@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import type { Lead } from "@/lib/leads/types";
 import type { SentLink } from "@/lib/whatsapp/messages";
-import { getPropertiesByIds } from "@/lib/properties/search";
+import { getPropertiesByIds } from "@/lib/data/inventory";
 import PropertyCard from "@/components/shared/PropertyCard";
 import { leadFieldsFor } from "@/lib/leads/view";
 

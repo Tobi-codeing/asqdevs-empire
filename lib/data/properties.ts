@@ -39,6 +39,16 @@ export type Property = {
    * structured fields above so nothing is invented.
    */
   keyDetails: string[];
+  /** Property status (active properties are visible to AI and pages). */
+  status?: "active" | "inactive" | "sold";
+  /** Whether this was added by admin. */
+  adminAdded?: boolean;
+  /** Optional extras. */
+  featured?: boolean;
+  area?: string;
+  parking?: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export const PROPERTIES: Property[] = [
@@ -382,7 +392,10 @@ export const PROPERTIES: Property[] = [
   },
 ];
 
-/** Known localities used by the extractor and the search tool. */
+/**
+ * Known localities from seed data.
+ * For dynamic locations (including admin-added), use `getKnownLocations()` from store.
+ */
 export const KNOWN_LOCATIONS = Array.from(
   new Set(PROPERTIES.map((p) => p.location)),
 );

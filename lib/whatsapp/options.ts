@@ -1,4 +1,5 @@
-import { KNOWN_LOCATIONS, PROPERTIES, formatBudget } from "@/lib/data/properties";
+import { formatBudget } from "@/lib/data/properties";
+import { getKnownLocations, getPropertyById } from "@/lib/data/inventory";
 import { budgetForMatching } from "@/lib/leads/score";
 import { CORE_FIELDS, missingFields, type CoreField, type Lead } from "@/lib/leads/types";
 
@@ -12,7 +13,9 @@ import { CORE_FIELDS, missingFields, type CoreField, type Lead } from "@/lib/lea
  */
 export const OPTIONS: Record<CoreField, string[]> = {
   intent: ["Buy", "Rent", "Sell"],
-  location: KNOWN_LOCATIONS.slice(0, 5),
+  // Resolved from the live inventory at render time — admin-added localities show
+  // up here the moment they are saved. Empty means "ask the inventory".
+  location: [],
   bhk: ["1 BHK", "2 BHK", "3 BHK", "4+ BHK"],
   budget: ["Around ₹60L", "Around ₹90L", "Around ₹1.2Cr", "Above ₹1.5Cr"],
   timeline: ["Immediately", "1–3 months", "3–6 months", "Just exploring"],
@@ -72,7 +75,17 @@ function completedFrom(lead: Lead) {
 
 export function suggestedReplies(
   lead: Lead,
-  options: { hasMatches: boolean; hasSelectedProperty: boolean; finished?: boolean },
+  options: {
+    hasMatches: boolean;
+    hasSelectedProperty: boolean;
+    finished?: boolean;
+    /**
+     * The properties just recommended. One "Tell me about X" button is built per
+     * listing so the customer can open EITHER home they were shown — a single
+     * button for one of two suggestions reads as if the other does not exist.
+     */
+    matchNames?: string[];
+  },
 ): string[] {
   const done = completedFrom(lead);
 
@@ -85,6 +98,10 @@ export function suggestedReplies(
    */
   if (done.advisor || done.callback) return ["Done"];
 
+  if (lead.siteVisit && /time to confirm/i.test(lead.siteVisit)) {
+    return ["Tomorrow morning", "Tomorrow afternoon", "This weekend", "Talk to an advisor"];
+  }
+
   if (options.hasSelectedProperty) {
     const actions: string[] = [];
     if (!done.siteVisit) actions.push("Book a site visit");
@@ -96,9 +113,13 @@ export function suggestedReplies(
 
   if (options.hasMatches) {
     const replies: string[] = [];
+    for (const name of (options.matchNames ?? []).slice(0, 2)) {
+      const label = `Tell me about ${name}`;
+      if (!replies.includes(label)) replies.push(label);
+    }
     if (!done.siteVisit) replies.push("Schedule a site visit");
     if (!done.advisor) replies.push("Talk to an advisor");
-    replies.push("Show more options");
+    if (replies.length < 4) replies.push("Show more options");
     return replies.slice(0, 4);
   }
 
@@ -111,6 +132,10 @@ export function suggestedReplies(
     if (!done.advisor) replies.push("Talk to an advisor");
     replies.push("Broaden search", "Adjust budget");
     return replies.slice(0, 4);
+  }
+  if (field === "location") {
+    const areas = getKnownLocations().slice(0, 5);
+    if (areas.length) return areas;
   }
   if (field === "budget") return budgetOptions(lead);
   return OPTIONS[field];
@@ -158,8 +183,50 @@ function replyKind(reply: string): ReplyKind {
 export function reconcileReplies(
   modelReplies: string[] | undefined,
   lead: Lead,
-  options: { hasMatches: boolean; hasSelectedProperty: boolean; finished?: boolean },
+  options: {
+    hasMatches: boolean;
+    hasSelectedProperty: boolean;
+    finished?: boolean;
+    matchNames?: string[];
+    history?: { side?: string; role?: string; text?: string; content?: string }[];
+  },
 ): string[] {
+  // If a site visit was requested and we need to choose a time slot, ONLY offer visit time slots.
+  if (lead.siteVisit && /time to confirm/i.test(lead.siteVisit)) {
+    return ["Tomorrow morning", "Tomorrow afternoon", "This weekend", "Talk to an advisor"];
+  }
+
+  const userHistory = (options.history ?? [])
+    .filter((item) => item.side === "user" || item.role === "user")
+    .map((item) => (item.text || item.content || "").toLowerCase().trim())
+    .filter(Boolean);
+  const userSentSet = new Set(userHistory);
+
+  const isAlreadySent = (reply: string): boolean => {
+    const val = reply.toLowerCase().trim();
+    if (userSentSet.has(val)) return true;
+    // Check if the user already clicked "Tell me about [Property]"
+    if (val.startsWith("tell me about ")) {
+      const propName = val.replace("tell me about ", "").trim();
+      if (userHistory.some((sent) => sent.includes(propName))) return true;
+      if (
+        lead.selectedPropertyId &&
+        getPropertyById(lead.selectedPropertyId)?.name.toLowerCase() === propName
+      ) {
+        return true;
+      }
+    }
+    // Check if user already requested a visit
+    if (lead.siteVisit && /\b(?:book|schedule|arrange)\s+(?:a\s+)?site\s+visit\b/i.test(val)) {
+      return true;
+    }
+    // Check if user already requested advisor
+    if (lead.advisorRequested && /\btalk to an advisor\b/i.test(val)) {
+      return true;
+    }
+    return false;
+  };
+
   const settled = new Set<string>();
   if (lead.intent) settled.add(lead.intent.toLowerCase());
   if (lead.bhk) settled.add(lead.bhk.toLowerCase());
@@ -169,15 +236,14 @@ export function reconcileReplies(
   // The property the conversation is centred on is settled too — offering to
   // "show" the customer the home they are already looking at is just noise.
   if (lead.selectedPropertyId) {
-    const selected = PROPERTIES.find(
-      (property) => property.id === lead.selectedPropertyId,
-    );
+    const selected = getPropertyById(lead.selectedPropertyId);
     if (selected) settled.add(selected.name.toLowerCase());
   }
 
   const isSettled = (reply: string) => {
     const value = reply.toLowerCase().trim();
     if (settled.has(value)) return true;
+    if (isAlreadySent(reply)) return true;
     // A button restating a known fact is noise; "Tell me more" is not.
     if (/^(more|show|view|and)\b/.test(value) && settled.has(value.replace(/^(more|show|view|and)\s+/, "")))
       return true;
@@ -198,7 +264,7 @@ export function reconcileReplies(
     if (done.advisor && /advisor|human|agent|insaan/.test(value)) return true;
     if (done.siteVisit && /\bvisit\b|dekhne|milne|mil sakt/.test(value)) return true;
     if (done.callback && /\bcallback\b|call back/.test(value)) return true;
-    return false;
+    return isAlreadySent(reply);
   };
 
   /*
@@ -212,7 +278,7 @@ export function reconcileReplies(
    * at a question it was already asked to phrase in the reply.
    */
   if (!options.hasMatches && !options.hasSelectedProperty && !options.finished) {
-    const canonical = suggestedReplies(lead, options);
+    const canonical = suggestedReplies(lead, options).filter((r) => !isAlreadySent(r));
     if (canonical.length) return canonical.slice(0, 4);
   }
 
@@ -222,17 +288,31 @@ export function reconcileReplies(
     .filter((reply) => !isSettled(reply))
     .filter((reply) => !isCompletedAction(reply));
 
-  const merged = [
-    ...kept,
-    ...suggestedReplies(lead, options).filter(
-      (reply) => !kept.some((k) => k.toLowerCase() === reply.toLowerCase()),
-    ),
-  ];
+  /*
+   * Once there are listings to act on, one "Tell me about X" button is placed
+   * first for EACH property shown that hasn't already been asked about.
+   */
+  const propertyButtons = (options.matchNames ?? [])
+    .slice(0, 2)
+    .map((name) => `Tell me about ${name}`)
+    .filter((btn) => !isAlreadySent(btn));
+  const canonicalActions = suggestedReplies(lead, options)
+    .filter((reply) => !isAlreadySent(reply))
+    .filter(
+      (reply) =>
+        !propertyButtons.some((button) => button.toLowerCase() === reply.toLowerCase()),
+    );
+  const merged = options.hasMatches
+    ? [...propertyButtons, ...canonicalActions, ...kept]
+    : [...kept, ...canonicalActions];
 
   const seenKinds = new Set<ReplyKind>();
+  // Two buttons that name the same property are one button — "Show me Sky
+  // Residency" and "Tell me about Sky Residency" must not both survive.
+  const seenDetailNames = new Set<string>();
   return merged
     .map((reply) => reply.trim())
-    .filter((reply) => reply && !isCompletedAction(reply))
+    .filter((reply) => reply && !isCompletedAction(reply) && !isAlreadySent(reply))
     // Exact duplicates first, then one button per action. Free-text answers
     // ("Within 3 months", "Just exploring") are "other" and never collapsed.
     .filter(
@@ -241,7 +321,22 @@ export function reconcileReplies(
         index,
     )
     .filter((reply) => {
+      const value = reply.toLowerCase();
+      // Any button naming a recommended property is deduped BY PROPERTY, not by
+      // kind — "Tell me more about Sky Residency" and "Tell me about Sky
+      // Residency" are the same button, while the two different listings each
+      // keep their own.
+      const named = (options.matchNames ?? []).find((candidate) =>
+        value.includes(candidate.toLowerCase()),
+      );
+      if (named) {
+        const key = named.toLowerCase();
+        if (seenDetailNames.has(key)) return false;
+        seenDetailNames.add(key);
+        return true;
+      }
       const kind = replyKind(reply);
+      // Free-text answers are never collapsed.
       if (kind === "other") return true;
       if (seenKinds.has(kind)) return false;
       seenKinds.add(kind);

@@ -4,14 +4,29 @@ import {
   extractLeadFields,
 } from "@/lib/ai/extract";
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
-import { KNOWN_LOCATIONS, formatBudget, type Property } from "@/lib/data/properties";
+import {
+  formatBudget,
+  formatBudgetRange,
+  type Property,
+} from "@/lib/data/properties";
+import {
+  getKnownLocations,
+  getPropertiesByIds,
+} from "@/lib/data/inventory";
 import { applyExtraction, recompute } from "@/lib/leads/update";
+import {
+  advanceConfirmation,
+  buildReviewMessage,
+  REVIEW_REPLIES,
+} from "@/lib/leads/confirmation";
 import { deliverLead } from "@/lib/leads/delivery";
-import type { Lead } from "@/lib/leads/types";
+import { recordLead } from "@/lib/leads/store";
+import { missingFields, type Lead } from "@/lib/leads/types";
 import { broadenSearchFor } from "@/lib/leads/match";
 import { nextActionKey } from "@/lib/leads/view";
-import { findPropertyByName, getPropertiesByIds } from "@/lib/properties/search";
+import { findPropertyByName } from "@/lib/properties/search";
 import {
+  fieldQuestion,
   isConversationComplete,
   isVisitTimePending,
   respond,
@@ -50,8 +65,8 @@ export type OutgoingMessage = {
   quickReplies?: string[];
   propertyIds?: string[];
   links?: SentLink[];
-  /** The closing recap, which never carries buttons. */
-  kind?: "recap";
+  /** The closing recap / confirmation read-back. */
+  kind?: "recap" | "review";
 };
 
 export type TurnResult = {
@@ -99,7 +114,9 @@ const normaliseArea = (value: string) => value.replace(/gurgaon/gi, "Gurugram").
 /** Localities the inventory actually has, detected in the customer's own words. */
 function mentionedLocations(text: string): string[] {
   const normalised = text.replace(/gurgaon/gi, "Gurugram").toLowerCase();
-  return KNOWN_LOCATIONS.filter((location) => normalised.includes(location.toLowerCase()));
+  return getKnownLocations().filter((location) =>
+    normalised.includes(location.toLowerCase()),
+  );
 }
 
 /**
@@ -140,7 +157,7 @@ const isWrapUp = (text: string) =>
 
 export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnResult> {
   const { text, history } = input;
-  const priorLead = safeLead(input.lead);
+  let priorLead = safeLead(input.lead);
   const action = detectAction(text);
 
   if (action === "restart") return { restarted: true } as TurnResult;
@@ -156,11 +173,13 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       optOut: true,
       nextAction: "opted_out",
     });
-    await deliverLead({
+    const optOutLead = {
       lead: optedOut,
       matches: getPropertiesByIds(optedOut.matchedPropertyIds),
       transcript: asTurns(history),
-    });
+    };
+    recordLead(optOutLead);
+    await deliverLead(optOutLead);
     return {
       replies: [
         {
@@ -171,6 +190,58 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       offeredPropertyIds: input.offeredPropertyIds,
       sentLinks: input.sentLinks,
     };
+  }
+
+  /*
+   * End-of-conversation confirmation.
+   *
+   * Once the read-back is pending, the whole turn belongs to that flow: the
+   * customer's reply is a confirmation, a correction, or the name/number we
+   * asked for. Handling it here keeps it identical on the model path and the
+   * deterministic fallback, and means a correction merges through the ordinary
+   * `applyExtraction` path below — so it lands in the admin record too.
+   */
+  if (priorLead.confirmation) {
+    const step = advanceConfirmation(priorLead, text);
+
+    if (step.kind === "final") {
+      const finalMatches = getPropertiesByIds(step.lead.matchedPropertyIds);
+      const finalLead = recompute(
+        { ...step.lead, recapSent: true, confirmation: "done" },
+        { keepMatches: true },
+      );
+      const built = finalRecapMessage(finalLead, finalMatches);
+      const links = built.links
+        .map((link) => getPropertiesByIds([link.propertyId])[0])
+        .filter((property): property is Property => Boolean(property))
+        .map((property) => sentLinkFor(property));
+      await deliverIfFinished(priorLead, finalLead, history, finalMatches);
+      return {
+        replies: [{ text: built.text, kind: "recap", links }],
+        lead: finalLead,
+        offeredPropertyIds: input.offeredPropertyIds,
+        sentLinks: Array.from(
+          new Map(
+            [...input.sentLinks, ...links].map((link) => [link.propertyId, link]),
+          ).values(),
+        ),
+      };
+    }
+
+    if (step.kind === "reply") {
+      return {
+        replies: [{ text: step.text, quickReplies: step.quickReplies }],
+        lead: step.lead,
+        offeredPropertyIds: input.offeredPropertyIds,
+        sentLinks: input.sentLinks,
+      };
+    }
+
+    if (step.kind === "change") {
+      // The customer is correcting something: clear the stage and let the
+      // ordinary turn merge their words, which re-reads back on completion.
+      priorLead = step.lead;
+    }
   }
 
   let lead = applyExtraction(priorLead, localFacts(text));
@@ -347,7 +418,16 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
       ).map(normaliseArea),
     ),
   );
-  if (lead.budget != null) lead.budgetLabel = formatBudget(lead.budget);
+  if (lead.budget != null) {
+    // Preserve a stated range — flattening "₹50L–₹55L" to a single figure made
+    // the admin record disagree with what the customer actually said.
+    lead.budgetLabel =
+      lead.budgetMin != null &&
+      lead.budgetMax != null &&
+      lead.budgetMin !== lead.budgetMax
+        ? formatBudgetRange(lead.budgetMin, lead.budgetMax)
+        : formatBudget(lead.budget);
+  }
 
   // Re-run the search: the model's extraction may have opened up or narrowed
   // the requirement, and the links must match what is now on the lead.
@@ -439,29 +519,28 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
   const completedThisTurn = isConversationComplete(lead);
   const wrapUp =
     !priorLead.recapSent &&
+    !priorLead.confirmation &&
     (completedThisTurn || (lead.status === "Qualified" && isWrapUp(text)));
 
-  // The recap restates the requirement and the closest matches in one message,
-  // so it replaces this turn's property list rather than following it. A
-  // customer who gets both sees the same three homes twice.
-  let recap: OutgoingMessage | undefined;
+  /*
+   * The requirement is settled. Rather than closing straight away, the customer
+   * is shown a read-back of everything collected and asked to confirm it; the
+   * name, the contact number and the number read-back follow, and only then is
+   * the closing recap sent. The recap replaces this turn's property list rather
+   * than following it, so the same homes are never shown twice.
+   */
+  let review: OutgoingMessage | undefined;
   if (wrapUp) {
-    const built = finalRecapMessage(lead, matches);
-    recap = {
-      text: built.text,
-      kind: "recap",
-      links: built.links
-        .map((link) => getPropertiesByIds([link.propertyId])[0])
-        .filter((property): property is Property => Boolean(property))
-        .map((property) => sentLinkFor(property)),
+    review = {
+      text: buildReviewMessage(lead),
+      kind: "review",
+      quickReplies: REVIEW_REPLIES,
     };
     replyPropertyIds = [];
   }
 
   const links = Array.from(
-    new Map(
-      [...replyLinks, ...(recap?.links ?? [])].map((link) => [link.propertyId, link]),
-    ).values(),
+    new Map([...replyLinks].map((link) => [link.propertyId, link])).values(),
   );
 
   /* ---------------------------------------------------------------------
@@ -481,25 +560,78 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    */
   const quickReplies = priorLead.recapSent
     ? []
-    : reconcileReplies(modelQuickReplies, lead, {
-        hasMatches: matches.length > 0 || Boolean(named),
-        hasSelectedProperty: Boolean(named) || Boolean(lead.selectedPropertyId),
-        finished: wrapUp,
-      });
+    : review
+      ? REVIEW_REPLIES
+      : reconcileReplies(modelQuickReplies, lead, {
+          hasMatches: matches.length > 0 || Boolean(named),
+          hasSelectedProperty: Boolean(named) || Boolean(lead.selectedPropertyId),
+          finished: wrapUp,
+          matchNames: matches.slice(0, 2).map((property) => property.name),
+          history: input.history,
+        });
 
   lead = recompute(
     {
       ...lead,
+      confirmation: priorLead.confirmation ?? (wrapUp ? "review" : undefined),
       nextAction: nextActionForTurn(lead, modelNextStep, matches.length > 0),
-      recapSent: priorLead.recapSent || wrapUp,
+      recapSent: priorLead.recapSent,
     },
     { keepMatches: true },
   );
 
-  // On a wrap-up turn the recap is the whole message; anything the model said
-  // on the way to it is dropped rather than printed above the summary.
-  const replies: OutgoingMessage[] = recap
-    ? [recap]
+  /*
+   * If a site visit was requested and time is still open, ensure we ask for
+   * the time slot (morning / afternoon / evening / weekend) before moving on.
+   */
+  if (isVisitTimePending(lead) && !review && !listReply) {
+    if (!/morning|afternoon|evening|weekend|time|day|slot|कब|समय/i.test(reply)) {
+      reply = reply.trim()
+        ? `${reply.trim()} What day and time works best for your visit — morning, afternoon, or evening?`
+        : "We would be glad to arrange a site visit! What day and time works best for you — morning, afternoon, or evening?";
+    }
+  }
+
+  /*
+   * On the turn the first matches go out, the one core field still open has to
+   * be asked too. Otherwise the model, having decided the requirement looked
+   * complete enough to search with, simply never asks the timeline — and the
+   * customer is shown homes while a question they were owed silently disappears.
+   * The question is only appended when the model did not already ask something.
+   */
+  if (!review && !listReply && !isVisitTimePending(lead) && (becameSearchable || replyPropertyIds.length > 0)) {
+    const stillMissing = missingFields(lead);
+    if (stillMissing.length && !/\?\s*$/.test(reply.trim())) {
+      const question = fieldQuestion[stillMissing[0]];
+      reply = reply.trim() ? `${reply.trim()} ${question}` : question;
+    }
+  }
+
+  /*
+   * The model is asked to collect the name, but name is not a core field so it
+   * routinely skipped it and every lead reached the admin as "Name: Not shared
+   * yet". The application guarantees the ask instead — once per conversation,
+   * only on a turn where the assistant is not already asking something else.
+   */
+  const nameAlreadyAsked = history.some(
+    (item) => item.side === "assistant" && /\bname\b|नाम/i.test(item.text),
+  );
+  const wantsName =
+    !lead.name &&
+    !nameAlreadyAsked &&
+    !review &&
+    !lead.confirmation &&
+    !isVisitTimePending(lead) &&
+    replyPropertyIds.length > 0 &&
+    !/\?\s*$/.test(reply.trim());
+  if (wantsName) {
+    reply = `${reply.trim()} Also, what name should I use for you?`.trim();
+  }
+
+  // On a confirmation turn the read-back is the whole message; anything the
+  // model said on the way to it is dropped rather than printed above it.
+  const replies: OutgoingMessage[] = review
+    ? [review]
     : listReply
       ? [{ text: listReply.text, links: listReply.links, quickReplies }]
       : [
@@ -539,11 +671,14 @@ async function deliverIfFinished(
   const justOptedOut = !priorLead.optOut && Boolean(lead.optOut);
   if (!justCompleted && !justOptedOut) return;
 
-  await deliverLead({
+  const input = {
     lead,
     matches: matches ?? getPropertiesByIds(lead.matchedPropertyIds),
     transcript: asTurns(transcript),
-  });
+  };
+  // Keep the admin's record in step with whatever the destination receives.
+  recordLead(input);
+  await deliverLead(input);
 }
 
 /** The chat history in the shape a CRM record expects. */

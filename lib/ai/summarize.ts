@@ -73,6 +73,8 @@ export function buildSummary(lead: Lead, matches: Property[], source: string): s
     sentence += ' No matching listings were found in the demo inventory.';
   }
 
+  if (lead.phone) sentence += ` Contact number: ${lead.phone}.`;
+
   if (lead.advisorRequested) sentence += ' The caller asked to speak with a human advisor.';
   else if (lead.callbackRequested) sentence += ' A callback was requested.';
   else if (lead.siteVisit) sentence += ` A site visit was requested for ${lead.siteVisit}.`;

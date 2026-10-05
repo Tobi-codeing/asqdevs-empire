@@ -17,7 +17,7 @@ import {
   type ChatMessage,
   type EngineState,
 } from "@/lib/whatsapp/engine";
-import { getPropertiesByIds } from "@/lib/properties/search";
+import { pickProperties, useInventory } from "@/lib/data/useInventory";
 import { buildSummary } from "@/lib/ai/summarize";
 import { propertyLinkMessage, type SentLink } from "@/lib/whatsapp/messages";
 import { demoCompany, type Property } from "@/lib/data";
@@ -38,7 +38,7 @@ type TurnResponse = {
     quickReplies?: string[];
     propertyIds?: string[];
     links?: SentLink[];
-    kind?: "recap";
+    kind?: "recap" | "review";
   }[];
   lead: Lead;
   offeredPropertyIds: string[];
@@ -65,6 +65,10 @@ export default function WhatsAppWorkbench() {
   const [showLead, setShowLead] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [retryText, setRetryText] = useState<string>();
+
+  // The shared, server-owned inventory. Hydrated once so admin-added properties
+  // render in the chat exactly as they do everywhere else.
+  const inventory = useInventory();
 
   const stateRef = useRef(state);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -223,7 +227,7 @@ export default function WhatsAppWorkbench() {
     setRetryText(undefined);
   };
 
-  const matches = getPropertiesByIds(state.lead.matchedPropertyIds);
+  const matches = pickProperties(inventory, state.lead.matchedPropertyIds);
   const isEmpty = messages.length === 0 && !typing;
 
   return (
@@ -306,7 +310,7 @@ export default function WhatsAppWorkbench() {
                   message={message}
                   properties={
                     message.propertyIds && message.kind !== "recap"
-                      ? getPropertiesByIds(message.propertyIds)
+                      ? pickProperties(inventory, message.propertyIds)
                       : undefined
                   }
                   read={message.side === "user" && index < readUpTo}

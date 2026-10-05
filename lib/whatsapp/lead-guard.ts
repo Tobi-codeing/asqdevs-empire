@@ -1,6 +1,12 @@
-import { PROPERTIES } from "@/lib/data/properties";
+import { isKnownPropertyId } from "@/lib/data/inventory";
 import { parseTimeline, type Extraction } from "@/lib/ai/extract";
-import { emptyLead, type Intent, type Lead } from "@/lib/leads/types";
+import { normalisePhone } from "@/lib/leads/normalise";
+import {
+  emptyLead,
+  type ConfirmationStage,
+  type Intent,
+  type Lead,
+} from "@/lib/leads/types";
 
 /**
  * Boundary validation for anything crossing into lead state.
@@ -43,9 +49,7 @@ const money = (value: unknown): number | undefined =>
     : undefined;
 
 const knownPropertyId = (value: unknown): string | undefined =>
-  typeof value === "string" && PROPERTIES.some((property) => property.id === value)
-    ? value
-    : undefined;
+  isKnownPropertyId(value) ? value : undefined;
 
 /** Rehydrate a lead from untrusted client state, dropping anything invalid. */
 export function safeLead(input?: Partial<Lead>): Lead {
@@ -55,6 +59,14 @@ export function safeLead(input?: Partial<Lead>): Lead {
 
   const name = text(input.name, 80);
   if (name) lead.name = name;
+  const phone = normalisePhone(input.phone);
+  if (phone) lead.phone = phone;
+  if (
+    ["review", "name", "phone", "phoneConfirm", "done"].includes(
+      input.confirmation ?? "",
+    )
+  )
+    lead.confirmation = input.confirmation as ConfirmationStage;
   if (VALID_INTENTS.has(input.intent as Intent)) lead.intent = input.intent as Intent;
 
   const location = text(input.location, 80);
@@ -154,6 +166,8 @@ export function validatedExtraction(value: unknown, userText: string): Extractio
 
   const name = text(raw.name, 80);
   if (name) patch.name = name;
+  const phone = normalisePhone(raw.phone);
+  if (phone) patch.phone = phone;
   const location = text(raw.location, 80);
   if (location) patch.location = location;
   const bhk = text(raw.bhk, 20);
@@ -165,7 +179,15 @@ export function validatedExtraction(value: unknown, userText: string): Extractio
   }
 
   const timeline = text(raw.timeline, 50);
-  if (timeline) patch.timeline = parseTimeline(timeline) ?? timeline;
+  /*
+   * The model happily volunteers a timeline nobody gave — "Immediately" was
+   * being written onto a lead that had never been asked when the customer wanted
+   * to move. A timeline is only admitted when the customer's own message
+   * independently produces one, so the admin record can never show a timeline
+   * that was neither asked for nor stated.
+   */
+  if (timeline && parseTimeline(userText))
+    patch.timeline = parseTimeline(timeline) ?? timeline;
 
   if (Array.isArray(raw.preferredLocations)) {
     patch.preferredLocations = raw.preferredLocations

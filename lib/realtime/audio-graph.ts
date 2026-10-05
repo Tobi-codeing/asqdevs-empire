@@ -321,6 +321,12 @@ export class PcmPlayer {
     source.onended = () => this.sources.delete(source);
   }
 
+  /** Approximate duration in milliseconds of queued audio still waiting to play. */
+  get remainingPlaybackMs(): number {
+    const diff = this.nextStartTime - this.context.currentTime;
+    return diff > 0 ? Math.ceil(diff * 1000) : 0;
+  }
+
   /** Stop everything immediately — used when the caller interrupts. */
   flush() {
     for (const source of this.sources) {

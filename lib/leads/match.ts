@@ -1,4 +1,5 @@
-import { KNOWN_LOCATIONS, PROPERTIES, type Property } from "@/lib/data/properties";
+import { getActiveProperties, getKnownLocations } from "@/lib/data/inventory";
+import type { Property } from "@/lib/data/properties";
 import type { Lead } from "@/lib/leads/types";
 import { searchProperties } from "@/lib/properties/search";
 
@@ -36,20 +37,24 @@ export function searchAreasFor(lead: Lead): string[] {
     new Set([...(lead.location ? [lead.location] : []), ...lead.preferredLocations]),
   ).filter(Boolean);
 
+  const known = getKnownLocations();
+
   if (!stated.length) {
-    return lead.budgetFlexible === true ? KNOWN_LOCATIONS.slice(0, 5) : [];
+    return lead.budgetFlexible === true ? known.slice(0, 5) : [];
   }
 
   // An exact locality name, not a substring: "South Delhi" contains "Delhi",
   // but "Delhi" is still a broad city rather than a locality in its own right.
   const isLocality = (area: string) =>
-    KNOWN_LOCATIONS.some(
+    known.some(
       (location) => location.toLowerCase() === area.trim().toLowerCase(),
     );
   const citiesOfStated = new Set(
-    PROPERTIES.filter((property) =>
-      stated.some((area) => sameText(area, property.location)),
-    ).map((property) => property.city.toLowerCase()),
+    getActiveProperties()
+      .filter((property) =>
+        stated.some((area) => sameText(area, property.location)),
+      )
+      .map((property) => property.city.toLowerCase()),
   );
   const narrowed = stated.filter(
     (area) => isLocality(area) || !citiesOfStated.has(area.toLowerCase()),
@@ -117,7 +122,10 @@ export function broadenSearchFor(lead: Lead, limit = 3): BroadenedSearch {
     return { properties: sameSize.slice(0, limit), relaxed: ["budget", "location"] };
 
   // Last resort: the nearest thing we hold, whatever it is.
-  return { properties: PROPERTIES.slice(0, limit), relaxed: ["budget", "location", "size"] };
+  return {
+    properties: getActiveProperties().slice(0, limit),
+    relaxed: ["budget", "location", "size"],
+  };
 }
 
 /**

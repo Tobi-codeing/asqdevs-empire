@@ -144,9 +144,55 @@ export function resolveDate(
     return { date: startOfDay(date), label: spokenLabel(date), ok: true };
   }
 
-  // An explicit date like "2 October" or "02/10".
+  // 1. ISO format: YYYY-MM-DD or YYYY/MM/DD (e.g. 2026-10-06, 2026-10-02)
+  const iso = input.match(/\b(\d{4})[/-](\d{1,2})[/-](\d{1,2})\b/);
+  if (iso) {
+    const year = Number(iso[1]);
+    const month = Number(iso[2]) - 1;
+    const day = Number(iso[3]);
+    const date = new Date(year, month, day);
+    if (!Number.isNaN(date.getTime())) {
+      return { date: startOfDay(date), label: spokenLabel(date), ok: true };
+    }
+  }
+
+  // 2. Hindi month names (e.g. "6 अक्टूबर", "मंगलवार, 6 अक्टूबर")
+  const HINDI_MONTHS: Record<string, number> = {
+    जनवरी: 0,
+    फरवरी: 1,
+    फ़रवरी: 1,
+    मार्च: 2,
+    अप्रैल: 3,
+    मई: 4,
+    जून: 5,
+    जुलाई: 6,
+    अगस्त: 7,
+    सितंबर: 8,
+    सितम्बर: 8,
+    अक्टूबर: 9,
+    अक्तूबर: 9,
+    नवंबर: 10,
+    नवम्बर: 10,
+    दिसंबर: 11,
+    दिसम्बर: 11,
+  };
+  const hindiMonthMatch = input.match(
+    /(\d{1,2})\s*(?:st|nd|rd|th)?\s*(जनवरी|फ़रवरी|फरवरी|मार्च|अप्रैल|मई|जून|जुलाई|अगस्त|सितंबर|सितम्बर|अक्टूबर|अक्तूबर|नवंबर|नवम्बर|दिसंबर|दिसम्बर)/i,
+  );
+  if (hindiMonthMatch) {
+    const day = Number(hindiMonthMatch[1]);
+    const monthIndex = HINDI_MONTHS[hindiMonthMatch[2]];
+    if (monthIndex != null) {
+      const date = new Date(now.getFullYear(), monthIndex, day);
+      if (startOfDay(date) < startOfDay(now))
+        date.setFullYear(date.getFullYear() + 1);
+      return { date: startOfDay(date), label: spokenLabel(date), ok: true };
+    }
+  }
+
+  // 3. An explicit English date like "2 October" or "02/10".
   const dayMonth = input.match(
-    /(\d{1,2})\s*(?:st|nd|rd|th)?\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*/i,
+    /(\d{1,2})\s*(?:st|nd|rd|th)?\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?/i,
   );
   if (dayMonth) {
     const day = Number(dayMonth[1]);
@@ -165,14 +211,16 @@ export function resolveDate(
       "dec",
     ].indexOf(dayMonth[2].toLowerCase());
     if (monthIndex >= 0) {
-      const date = new Date(now.getFullYear(), monthIndex, day);
-      // A date already past means they mean next year.
-      if (startOfDay(date) < startOfDay(now))
+      const year = dayMonth[3] ? Number(dayMonth[3]) : now.getFullYear();
+      const date = new Date(year, monthIndex, day);
+      // A date already past without explicit year means next year.
+      if (!dayMonth[3] && startOfDay(date) < startOfDay(now))
         date.setFullYear(date.getFullYear() + 1);
       return { date: startOfDay(date), label: spokenLabel(date), ok: true };
     }
   }
 
+  // 4. Numeric day-month DD/MM or DD-MM (or DD/MM/YYYY)
   const numeric = input.match(/\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b/);
   if (numeric) {
     const day = Number(numeric[1]);
@@ -235,5 +283,9 @@ export function bookingLabel(
 ): string {
   const resolved = date ? resolveDate(date) : undefined;
   const spoken = resolved?.label ?? date;
-  return [spoken, time].filter(Boolean).join(", ") || "Requested — to confirm";
+  if (!spoken && !time) return "Requested — to confirm";
+  if (!time) return spoken ?? "Requested — to confirm";
+  if (!spoken) return time;
+  if (spoken.toLowerCase().includes(time.toLowerCase())) return spoken;
+  return `${spoken}, ${time}`;
 }

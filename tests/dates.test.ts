@@ -21,6 +21,21 @@ describe("date and time resolution", () => {
     expect(kal?.date.getDate()).toBe(3);
   });
 
+  it("resolves ISO dates like 2026-10-06 correctly as October 6 rather than June 10", () => {
+    const oct = resolveDate("2026-10-06", FRIDAY);
+    expect(oct?.ok).toBe(true);
+    expect(oct?.date.getMonth()).toBe(9); // 9 is October (0-indexed)
+    expect(oct?.date.getDate()).toBe(6);
+    expect(oct?.label).toContain("October");
+  });
+
+  it("resolves Hindi month names correctly", () => {
+    const hindi = resolveDate("6 अक्टूबर", FRIDAY);
+    expect(hindi?.ok).toBe(true);
+    expect(hindi?.date.getMonth()).toBe(9);
+    expect(hindi?.date.getDate()).toBe(6);
+  });
+
   it("resolves spoken times", () => {
     expect(resolveTime("tomorrow at 8 am")).toBe("8:00 AM");
     expect(resolveTime("let's say 8:30 pm")).toBe("8:30 PM");

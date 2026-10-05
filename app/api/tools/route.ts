@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ALLOWED_TOOLS } from '@/lib/gemini/config';
+// Hydrate the shared inventory so phone searches see admin changes too.
+import '@/lib/data/store';
 import { findNearMisses, getPropertyDetails, searchProperties } from '@/lib/properties/search';
 import { bookingLabel } from '@/lib/ai/dates';
 import { checkSlot } from '@/lib/demo/slots';
@@ -57,6 +59,21 @@ export async function POST(request: Request) {
         kind: typeof args.kind === 'string' ? args.kind : undefined,
         budget: typeof args.budget === 'number' ? args.budget : undefined,
       };
+
+      const hasCriteria =
+        Boolean(query.location) ||
+        Boolean(query.bhk) ||
+        Boolean(query.kind) ||
+        Boolean(query.budget && query.budget > 0);
+
+      if (!hasCriteria) {
+        return NextResponse.json({
+          ok: false,
+          error: 'insufficient_criteria',
+          note: 'DO NOT search yet! You do not know the caller\'s area, property type, or budget. Do NOT speak about search results, and do NOT repeat questions you already asked. Simply wait for the caller to answer.',
+        });
+      }
+
       const results = searchProperties(query);
 
       if (results.length) {
@@ -147,7 +164,7 @@ export async function POST(request: Request) {
         ok: true,
         booked: true,
         slot: requestedLabel,
-        note: `Visit booked for ${requestedLabel}. Confirm this to the caller in one short sentence, then close the call warmly.`,
+        note: `Visit booked for ${requestedLabel}. If you do not have the caller's mobile number AND have not already asked for it, ask in ONE short sentence: "बहुत बढ़िया, आपकी विजिट तय हो गई है। कृपया अपना मोबाइल नंबर बता दीजिए।" If you ALREADY asked for their number right before this tool, DO NOT ask again — simply wait for them to answer. If you already have their number, proceed to the final confirmation read-back. NEVER repeat any question.`,
       });
     }
 

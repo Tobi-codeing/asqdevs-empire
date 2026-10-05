@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { deliverLead } from "@/lib/leads/delivery";
-import { getPropertiesByIds } from "@/lib/properties/search";
+import { recordLead } from "@/lib/leads/store";
+import { getPropertiesByIds } from "@/lib/data/inventory";
+import "@/lib/data/store";
 import { safeLead } from "@/lib/whatsapp/lead-guard";
 import type { Lead } from "@/lib/leads/types";
 
@@ -54,12 +56,15 @@ export async function POST(request: Request) {
       text: String(turn.text).slice(0, 800),
     }));
 
-  const result = await deliverLead({
+  const input = {
     lead,
     matches: getPropertiesByIds(ids),
     transcript,
     optOut: body.optOut,
-  });
+  };
+  // The phone call ends in the browser, so its record is written here.
+  recordLead(input);
+  const result = await deliverLead(input);
 
   return NextResponse.json({
     delivered: result.ok,

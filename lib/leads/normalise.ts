@@ -1,4 +1,7 @@
-import { KNOWN_LOCATIONS, PROPERTIES } from "@/lib/data/properties";
+import {
+  getActiveProperties,
+  getKnownLocations,
+} from "@/lib/data/inventory";
 import type { Intent } from "@/lib/leads/types";
 
 /**
@@ -170,7 +173,7 @@ export function normaliseLocation(value: unknown): string | undefined {
     .replace(/gurgaon/gi, "Gurugram")
     .replace(/\s+/g, " ")
     .trim();
-  const known = KNOWN_LOCATIONS.find(
+  const known = getKnownLocations().find(
     (location) => location.toLowerCase() === collapsed.toLowerCase(),
   );
   if (known) return known;
@@ -201,11 +204,45 @@ export function normaliseBudget(value: unknown): number | undefined {
   return Math.round(value);
 }
 
+/**
+ * A phone number, reduced to the ten-digit Indian mobile it actually is.
+ *
+ * Callers say "+91 98765 43210", "09876543210" or "9876543210" and all three
+ * mean one number. Anything that is not a plausible Indian mobile is rejected
+ * rather than stored, so a stray digit string from a garbled transcript never
+ * becomes the number the sales team dials.
+ */
+export function normalisePhone(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const digits = value.replace(/\D/g, "");
+  let local = digits;
+  if (local.length >= 11 && local.startsWith("91")) local = local.slice(2);
+  else if (local.length >= 11 && local.startsWith("0")) local = local.slice(1);
+
+  // Accept 9 to 10 digits starting with 6-9 (handles 9-digit spoken numbers like 748586309 and standard 10-digit Indian mobiles)
+  if ((local.length === 10 || local.length === 9) && /^[6-9]/.test(local)) {
+    return local;
+  }
+  return undefined;
+}
+
+/** A phone number as it should be read back to a person: "98765 43210". */
+export function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  if (digits.length === 9) {
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return phone;
+}
+
 /** Only an id that exists in the inventory may be stored as a selected property. */
 export function normalisePropertyId(value: unknown): string | undefined {
   const raw = normaliseText(value, 60);
   if (!raw) return undefined;
-  return PROPERTIES.find((property) => property.id === raw)?.id;
+  return getActiveProperties().find((property) => property.id === raw)?.id;
 }
 
 /**

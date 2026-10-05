@@ -83,7 +83,7 @@ describe("deterministic fallback engine", () => {
     expect(second.state.lead.budget).toBe(9_000_000);
   });
 
-  it("closes with a recap once the customer is done", () => {
+  it("asks the customer to confirm once they are done", () => {
     const state = createEngineState("WhatsApp");
     const first = respond(
       state,
@@ -91,14 +91,14 @@ describe("deterministic fallback engine", () => {
     );
     const second = respond(first.state, "thanks, that's all");
 
-    const recap = assistantMessages(second.messages).find(
-      (message) => message.kind === "recap",
+    const review = assistantMessages(second.messages).find(
+      (message) => message.kind === "review",
     );
-    expect(recap).toBeTruthy();
-    expect(recap?.text).toMatch(/closest matches/i);
-    expect(recap?.links?.map((link) => link.propertyId)).toContain(
-      "dwarka-heights",
-    );
+    expect(review).toBeTruthy();
+    expect(review?.text).toMatch(/confirm I have it right/i);
+    // The requirement is read back, not sent on — the recap waits for consent.
+    expect(review?.text).toMatch(/2 BHK/);
+    expect(second.state.lead.confirmation).toBe("review");
   });
 
   it("does not replay the exploratory question after 'I don't know the area'", () => {

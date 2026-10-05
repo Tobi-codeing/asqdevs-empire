@@ -16,13 +16,16 @@ import Footer from "@/components/shared/Footer";
 import ProjectMedia from "@/components/portfolio/ProjectMedia";
 import Reveal from "@/components/shared/Reveal";
 import { CtaLink } from "@/components/shared/Cta";
-import { getPropertyDetails } from "@/lib/properties/search";
-import { PROPERTIES, type Property } from "@/lib/data/properties";
+import {
+  getActiveProperties,
+  getPropertyById,
+  type Property,
+} from "@/lib/data/store";
 
-// Pre-render every property page in the demo inventory at build time.
-export function generateStaticParams() {
-  return PROPERTIES.map((property) => ({ id: property.id }));
-}
+// Resolve the property against the live shared inventory on every request, so an
+// admin-added listing has a working page the moment it is saved and a removed
+// one stops resolving.
+export const dynamic = "force-dynamic";
 
 // In this version of Next.js, `params` is a Promise.
 export async function generateMetadata({
@@ -31,7 +34,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const property = getPropertyDetails(id);
+  const property = getPropertyById(id);
   if (!property) return { title: "Property not found" };
 
   return {
@@ -51,13 +54,15 @@ export default async function PropertyDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const property = getPropertyDetails(id);
+  const property = getPropertyById(id);
 
   if (!property) notFound();
 
-  const others = PROPERTIES.filter(
-    (entry) => entry.id !== property.id && entry.location === property.location,
-  ).slice(0, 2);
+  const others = getActiveProperties()
+    .filter(
+      (entry) => entry.id !== property.id && entry.location === property.location,
+    )
+    .slice(0, 2);
 
   const facts = [
     {

@@ -1,4 +1,4 @@
-import { PROPERTIES } from '@/lib/data/properties';
+import { getActiveProperties } from '@/lib/data/inventory';
 import type { Lead, LeadStatus, Temperature } from './types';
 
 /**
@@ -37,7 +37,9 @@ export function hasRealisticBudget(lead: Lead): boolean {
   const amount =
     lead.budgetMax ?? lead.budgetMin ?? lead.budget ?? null;
   if (amount == null) return false;
-  const cheapest = Math.min(...PROPERTIES.map((property) => property.price));
+  const cheapest = Math.min(
+    ...getActiveProperties().map((property) => property.price),
+  );
   return amount >= cheapest * 0.8;
 }
 
