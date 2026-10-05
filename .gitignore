@@ -44,7 +44,6 @@ yarn-error.log*
 next-env.d.ts
 
 # runtime data for the file-backed inventory + lead records
-/data/leads.json
 /data/*.local.json
 # admin-uploaded property images
 /public/uploads/

@@ -155,6 +155,60 @@ export default function WhatsAppWorkbench() {
       stateRef.current = nextState;
       setState(nextState);
 
+      if (
+        typeof window !== "undefined" &&
+        (nextState.lead.phone ||
+          nextState.lead.name ||
+          nextState.lead.location ||
+          nextState.lead.siteVisit)
+      ) {
+        try {
+          const clientLead = {
+            id: `whatsapp-${(nextState.lead.phone || "anon").replace(/\D/g, "") || Date.now().toString(36)}`,
+            source: "WhatsApp",
+            capturedAt: new Date().toISOString(),
+            receivedAt: new Date().toISOString(),
+            name: nextState.lead.name || "Not shared yet",
+            phone: nextState.lead.phone || "Not shared yet",
+            intent: nextState.lead.intent || "Enquiry",
+            location: nextState.lead.location || "Delhi NCR",
+            preferredLocations: nextState.lead.preferredLocations,
+            propertyType: nextState.lead.propertyType || "Apartment",
+            bhk: nextState.lead.bhk || "2 BHK",
+            budget: nextState.lead.budgetLabel || "Flexible",
+            budgetValue: nextState.lead.budget ?? null,
+            timeline: nextState.lead.timeline || "Exploring",
+            preferences: nextState.lead.preferences,
+            requirement:
+              `${nextState.lead.bhk || ""} ${nextState.lead.propertyType || "property"} in ${nextState.lead.location || "Delhi"}`.trim(),
+            siteVisit: nextState.lead.siteVisit || "None requested",
+            callbackRequested: Boolean(nextState.lead.callbackRequested),
+            advisorRequested: Boolean(nextState.lead.advisorRequested),
+            optedOutFollowUps: Boolean(nextState.lead.optOut),
+            score: nextState.lead.score,
+            temperature: nextState.lead.temperature,
+            status: nextState.lead.status,
+            nextAction: nextState.lead.nextAction || "Follow up",
+            summary: `${nextState.lead.name || "Customer"} is looking for properties in ${nextState.lead.location || "Delhi NCR"}.`,
+            matches: [],
+            transcript: [],
+            text: `WhatsApp Lead: ${nextState.lead.name || "Customer"} - ${nextState.lead.phone || "No phone"}`,
+          };
+          const raw = localStorage.getItem("asqdevs_client_leads");
+          const existing = raw ? JSON.parse(raw) : [];
+          const filtered = existing.filter(
+            (l: any) =>
+              l.id !== clientLead.id &&
+              (clientLead.phone === "Not shared yet" ||
+                l.phone !== clientLead.phone),
+          );
+          localStorage.setItem(
+            "asqdevs_client_leads",
+            JSON.stringify([clientLead, ...filtered].slice(0, 50)),
+          );
+        } catch {}
+      }
+
       setMessages((prev) => [
         ...prev,
         ...data.replies.map((message) =>

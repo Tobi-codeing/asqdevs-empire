@@ -643,6 +643,30 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
           },
         ];
 
+  // Whenever the turn has gathered actionable customer info (phone, name, site visit,
+  // callback, advisor request, qualifying location/budget, or high score), ensure the
+  // admin console has this lead recorded immediately so it never waits for full completion.
+  const hasActionableInfo =
+    Boolean(lead.phone) ||
+    Boolean(lead.name) ||
+    Boolean(lead.siteVisit) ||
+    Boolean(lead.callbackRequested) ||
+    Boolean(lead.advisorRequested) ||
+    lead.status === "Qualified" ||
+    lead.score >= 25 ||
+    Boolean(lead.confirmation) ||
+    Boolean(lead.recapSent) ||
+    Boolean(lead.optOut);
+
+  if (hasActionableInfo) {
+    recordLead({
+      lead,
+      matches: matches.length ? matches : getPropertiesByIds(lead.matchedPropertyIds),
+      transcript: asTurns(history),
+      optOut: lead.optOut,
+    });
+  }
+
   await deliverIfFinished(priorLead, lead, history, matches);
 
   return {

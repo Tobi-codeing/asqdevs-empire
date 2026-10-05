@@ -91,9 +91,37 @@ async function loadConsole(): Promise<ConsoleData> {
   const leadsData = (leadsRes.ok ? await leadsRes.json().catch(() => ({})) : {}) as {
     leads?: StoredLead[];
   };
+
+  let combinedLeads = leadsData.leads ?? [];
+
+  if (typeof window !== "undefined") {
+    try {
+      const rawLocal = localStorage.getItem("asqdevs_client_leads");
+      if (rawLocal) {
+        const localList = JSON.parse(rawLocal) as StoredLead[];
+        if (Array.isArray(localList)) {
+          const knownIds = new Set(combinedLeads.map((l) => l.id));
+          const knownPhones = new Set(
+            combinedLeads
+              .map((l) => l.phone)
+              .filter((p) => p && p !== "Not shared yet"),
+          );
+          const toAdd = localList.filter(
+            (l) =>
+              !knownIds.has(l.id) &&
+              (!l.phone || l.phone === "Not shared yet" || !knownPhones.has(l.phone)),
+          );
+          if (toAdd.length) {
+            combinedLeads = [...toAdd, ...combinedLeads];
+          }
+        }
+      }
+    } catch {}
+  }
+
   return {
     properties: propsData.properties ?? [],
-    leads: leadsData.leads ?? [],
+    leads: combinedLeads,
   };
 }
 

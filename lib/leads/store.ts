@@ -47,6 +47,11 @@ function ensureWritableDir(): string {
 const isTest = () =>
   process.env.NODE_ENV === "test" || Boolean(process.env.VITEST);
 
+function getRelayUrl(): string | undefined {
+  const value = process.env.VOICE_RELAY_URL?.trim();
+  return value ? value.replace(/\/+$/, "") : undefined;
+}
+
 export type StoredLead = LeadPayload & {
   /** Stable id for the admin list. */
   id: string;
@@ -87,26 +92,87 @@ function persist(leads: StoredLead[]) {
   }
 }
 
-/** Newest first. */
-export function getStoredLeads(): StoredLead[] {
+/** Newest first. Tries persistent relay first if configured, else reads local store. */
+export async function getStoredLeads(): Promise<StoredLead[]> {
+  const relayUrl = getRelayUrl();
+  if (relayUrl) {
+    try {
+      const res = await fetch(`${relayUrl}/api/leads`, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(3500),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.leads) && data.leads.length > 0) {
+          const relayIds = new Set(data.leads.map((l: StoredLead) => l.id));
+          const localOnly = load().filter((l) => !relayIds.has(l.id));
+          return [...data.leads, ...localOnly];
+        }
+      }
+    } catch {
+      /* relay unreachable or timing out — proceed with local storage */
+    }
+  }
   return load();
 }
 
-/** Record one finished lead. Returns the stored record. */
+/** Record or update a lead. Returns the stored record. */
 export function recordLead(input: LeadDeliveryInput): StoredLead {
   const payload = buildLeadPayload(input);
   const receivedAt = new Date().toISOString();
+
+  const currentLeads = load();
+  const existingIndex = currentLeads.findIndex((l) => {
+    if (payload.phone && payload.phone !== "Not shared yet" && l.phone === payload.phone) {
+      return true;
+    }
+    // Also match by recent source and identical name/intent if phone not yet shared
+    if (
+      payload.name &&
+      payload.name !== "Not shared yet" &&
+      l.name === payload.name &&
+      l.source === payload.source
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  const leadId =
+    existingIndex >= 0
+      ? currentLeads[existingIndex].id
+      : `${payload.source.toLowerCase()}-${Date.now().toString(36)}-${Math.random()
+          .toString(36)
+          .slice(2, 6)}`;
+
   const record: StoredLead = {
     ...payload,
-    id: `${payload.source.toLowerCase()}-${Date.now().toString(36)}-${Math.random()
-      .toString(36)
-      .slice(2, 6)}`,
-    receivedAt,
+    id: leadId,
+    receivedAt: existingIndex >= 0 ? currentLeads[existingIndex].receivedAt : receivedAt,
   };
-  inMemoryLeads = [record, ...inMemoryLeads].slice(0, MAX_LEADS);
+
+  let updatedList: StoredLead[];
+  if (existingIndex >= 0) {
+    updatedList = [...currentLeads];
+    updatedList[existingIndex] = record;
+  } else {
+    updatedList = [record, ...currentLeads].slice(0, MAX_LEADS);
+  }
+
+  inMemoryLeads = updatedList;
+
+  // Sync to Render persistent relay service if available
+  const relayUrl = getRelayUrl();
+  if (relayUrl && !isTest()) {
+    fetch(`${relayUrl}/api/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(record),
+    }).catch(() => undefined);
+  }
+
   if (isTest()) return record;
 
-  const leads = [record, ...load()];
-  persist(leads);
+  persist(updatedList);
   return record;
 }

@@ -22,7 +22,7 @@
 
 import { createServer } from "node:http";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { WebSocketServer, WebSocket } from "ws";
@@ -208,13 +208,56 @@ const sendJson = (res, status, body) => {
   res.end(payload);
 };
 
+let relayLeads = [];
+
+function loadRelayLeads() {
+  try {
+    const leadsFile = path.join(process.cwd(), "data", "leads.json");
+    if (existsSync(leadsFile)) {
+      const raw = readFileSync(leadsFile, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const ids = new Set(relayLeads.map((l) => l.id));
+        relayLeads = [...relayLeads, ...parsed.filter((l) => !ids.has(l.id))];
+      }
+    }
+  } catch {}
+  return relayLeads;
+}
+
+function recordRelayLead(lead) {
+  if (!lead || typeof lead !== "object") return null;
+  loadRelayLeads();
+  const existingIndex = relayLeads.findIndex((l) => {
+    if (lead.id && l.id === lead.id) return true;
+    if (lead.phone && lead.phone !== "Not shared yet" && l.phone === lead.phone) return true;
+    return false;
+  });
+
+  if (existingIndex >= 0) {
+    relayLeads[existingIndex] = { ...relayLeads[existingIndex], ...lead };
+  } else {
+    relayLeads = [lead, ...relayLeads].slice(0, 300);
+  }
+
+  try {
+    const dataDir = path.join(process.cwd(), "data");
+    if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
+    writeFileSync(path.join(dataDir, "leads.json"), JSON.stringify(relayLeads, null, 2), "utf-8");
+  } catch {}
+
+  return lead;
+}
+
 /**
  * Standalone relay server.
  *
  * Endpoints:
- *   GET  /health    → { ok, voice }
- *   POST /ticket    → { ticket, expiresAt }   (requires VOICE_RELAY_TOKEN when set)
- *   WS   /api/gemini/live?ticket=…            (the Live bridge)
+ *   GET  /health      → { ok, voice }
+ *   GET  /api/leads   → { leads }
+ *   POST /api/leads   → { ok, lead }
+ *   POST /ticket      → { ticket, expiresAt }   (requires VOICE_RELAY_TOKEN when set)
+ *   WS   /api/gemini/live?ticket=…              (the Live bridge)
  */
 export function startStandaloneRelay(options = {}) {
   const apiKey = options.apiKey ?? process.env.GEMINI_API_KEY;
@@ -240,6 +283,40 @@ export function startStandaloneRelay(options = {}) {
     if (req.method === "GET" && url.pathname === "/health") {
       sendJson(res, 200, { ok: true, voice: Boolean(apiKey) });
       return;
+    }
+
+    if (url.pathname === "/api/leads") {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+      if (req.method === "OPTIONS") {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
+      if (req.method === "GET") {
+        sendJson(res, 200, { leads: loadRelayLeads() });
+        return;
+      }
+
+      if (req.method === "POST") {
+        let raw = "";
+        req.on("data", (chunk) => {
+          raw += chunk;
+        });
+        req.on("end", () => {
+          try {
+            const body = JSON.parse(raw);
+            const saved = recordRelayLead(body);
+            sendJson(res, 200, { ok: true, lead: saved });
+          } catch {
+            sendJson(res, 400, { error: "invalid_lead_payload" });
+          }
+        });
+        return;
+      }
     }
 
     if (

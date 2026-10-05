@@ -1,0 +1,4040 @@
+[
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T20:48:32.639Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "1 BHK BHK",
+    "budget": "₹75L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "1 BHK BHK apartment in Rohini",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 94,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "Ashish is looking to buy a 1 BHK BHK Apartment in Rohini with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! दिल्ली होम्स में आपका स्वागत है। बताइए, मैं आपकी किस तरह से सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे फ्लैट खरीदना है दिल्ली में।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! क्या आपने कोई खास इलाका सोचा है या आपका कोई बजट तय है?"
+      },
+      {
+        "role": "user",
+        "text": "ने कोई इलाका नहीं सोचा, बस दिल्ली में कोई अच्छी जगह जहां आसपास स्कूल और पार्क हो बच्चों के लिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। आपका बजट कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "budget 75 to 90 lakhs"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया, मुझे रोहिणी एन्क्लेव में 78 लाख में 2 BHK फ्लैट मिला है। क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Ashish hai."
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद आशीष जी! क्या आप रोहिणी एन्क्लेव का यह फ्लैट देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है आशीष जी! आप विजिट के लिए कौन सा दिन पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल के दिन सुबह 10:00 बजे"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया, आपकी विजिट तय हो गई है। कृपया अपना मोबाइल नंबर बता दीजिए।"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK अपार्टमेंट के लिए कल सुबह 10:00 बजे की विजिट और आपका नंबर 7485826309 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Ashish is looking to buy a 1 BHK BHK Apartment in Rohini with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvq2dmq-h7iz",
+    "receivedAt": "2026-10-05T20:48:32.642Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T20:32:21.072Z",
+    "name": "आशीष",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹80L–₹95L",
+    "budgetValue": 9500000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Rohini",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "आशीष is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹95L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "ti"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते। मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "घर देखना है दिल्ली में। प्रॉपर्टी"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "काका का उतना नहीं पता मुझे लेकिन दिल्ली में कहीं चाहिए जहां स्कूल वगैरह पास में हो और पार्क भी।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। क्या आपका कोई बजट फिक्स है?"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "user",
+        "text": "Mera budget kareeb 80 se 95 lakh tak hai."
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत अच्छे। किस तरह का घर—जैसे 2 BHK या 3 BHK देख रहे हैं आप, और क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है और मैं 2 BHK देख रहा हूं।"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया आशीष जी। क्या आप इस प्रॉपर्टी को खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "खरीदना चाहता हूं।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आशीष जी, मुझे रोहिणी एन्क्लेव में 78 लाख में और द्वारका हाइट्स में 92 लाख में 2 BHK अपार्टमेंट्स मिले हैं। क्या आप इनमें से कोई देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "पहले दोनों के बारे में बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी एन्क्लेव में 78 लाख में अनफर्निश्ड 2 BHK है और द्वारका हाइट्स में 92 लाख में सेमी-फर्निश्ड 2 BHK। क्या आप इन्हें देखने का समय तय करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "मैं दोनों को कल देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है आशीष जी। क्या आप कल यानी बुधवार, 7 अक्टूबर को किस समय इन्हें देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "10:00 बजे से"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया आशीष जी, आपकी विजिट बुधवार 7 अक्टूबर को सुबह 10 बजे के लिए शेड्यूल हो गई है। कन्फर्मेशन के लिए क्या आप अपना मोबाइल नंबर बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "748586309"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK अपार्टमेंट के लिए बुधवार 7 अक्टूबर सुबह 10 बजे की विजिट और आपका मोबाइल नंबर 748586309 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "आशीष is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹95L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvphjyo-0os5",
+    "receivedAt": "2026-10-05T20:32:21.072Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T20:29:58.892Z",
+    "name": "",
+    "phone": "",
+    "intent": "",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 0,
+    "temperature": "COLD",
+    "status": "New",
+    "nextAction": "Ask whether they are buying, renting or selling",
+    "summary": "The customer has enquired about a property. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! दिल्ली होम्स में आपका स्वागत है। आज मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "de"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! दिल्ली होम्स में आपका स्वागत है। बताइए, मैं आपकी किस तरह सहायता कर सकती हूँ?"
+      }
+    ],
+    "text": "The customer has enquired about a property. Lead source: Phone.",
+    "id": "phone-muvpei98-k4vz",
+    "receivedAt": "2026-10-05T20:29:58.892Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T20:16:29.637Z",
+    "name": "Ashish",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Delhi (Flexible)"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹75L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Delhi (Flexible)",
+    "siteVisit": "Wednesday 7 October, 11:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 11:00 AM",
+    "summary": "Ashish is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      },
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "इलाके का कोई आईडिया नहीं, बट आसपास बच्चों के लिए सब चीज होना चाहिए जैसे स्कूल, कॉलेज, पार्क वगैरह।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प मौजूद हैं। क्या आप फ्लैट या घर में से कुछ खास पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "लेट"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आप कितने BHK का फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत अच्छे। आपका बजट क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "Mera budget hai 75 to 90 lakhs."
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया, मुझे रोहिणी एन्क्लेव में 78 लाख में एक 2 BHK फ्लैट मिला है। क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Ashish hai."
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद, आशीष जी। आप कब तक प्रॉपर्टी लेने का प्लान बना रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "Abhi lene ka plan to nahi hai, abhi bas dekhne ka plan socha hun."
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप रोहिणी एन्क्लेव वाले फ्लैट को देखने के लिए कोई साइट विजिट प्लान करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, जरूर। कल सुबह 10:00 12:00 बजे।"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या हम कल यानी बुधवार, 7 अक्टूबर को सुबह 11:00 बजे का समय तय कर सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "विजिट बुक करने से पहले, क्या मैं आपका मोबाइल नंबर जान सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, विजिट बुक करने से पहले कृपया अपना मोबाइल नंबर बता दीजिए।"
+      },
+      {
+        "role": "user",
+        "text": "7986794586"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK फ्लैट के लिए बुधवार, 7 अक्टूबर को सुबह 11:00 बजे की विजिट और आपका नंबर 7986794586 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "id": "phone-muvox5ty-7s27",
+    "receivedAt": "2026-10-05T20:16:29.638Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T19:59:07.945Z",
+    "name": "Ashish",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Delhi",
+    "preferredLocations": [
+      "Delhi"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹75L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Delhi",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "Ashish is looking to buy a 2 BHK Apartment in Delhi with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      },
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "मन"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी देखना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "Delhi mein koi achhi jagah jahan pe aas paas school vagera ho?"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। दिल्ली में अच्छी सुविधाओं और स्कूलों के पास हमारे पास कई बेहतरीन विकल्प हैं। क्या आप फ्लैट या कोई और प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "flat dekh raha hun."
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप कितने बीएचके का फ्लैट देखना पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, टू बीएचके के लिए आपका बजट क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "around 75 to 90 lakhs"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "Perfect. I found a 2 BHK flat in Rohini Enclave for ₹78 Lakhs. May I please have your name?"
+      },
+      {
+        "role": "user",
+        "text": "My name is Ashish."
+      },
+      {
+        "role": "assistant",
+        "text": "Thank you, Ashish ji. When are you looking to move into your new home?"
+      },
+      {
+        "role": "user",
+        "text": "I just wanted to see like I wanted to do a site visit tomorrow 10:00 p.m. 10:00 a.m."
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "Great, Ashish ji. Before we confirm the visit for tomorrow at 10 AM, could you please provide your best contact number?"
+      },
+      {
+        "role": "user",
+        "text": "7986794586"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, Rohini Enclave में 2 BHK फ्लैट के लिए कल सुबह 10:00 बजे की विजिट और आपका नंबर 7986794586 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां। हां, यह सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK Apartment in Delhi with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvoau21-6ugx",
+    "receivedAt": "2026-10-05T19:59:07.945Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T19:48:56.356Z",
+    "name": "Aansu",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹70L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Rohini",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "Aansu is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी हिंदी"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस इलाके में प्रॉपर्टी देखना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "property ka idea nahi aa raha hai ki kahan lena chahiye but mujhe aas paas school chahiye bachon ki facility puri ho jaye waisi jagah chahiye."
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। आप किस तरह की प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "plate dekho"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आप कितने BHK का फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आपका बजट क्या है, ताकि मैं उसी हिसाब से विकल्प देख सकूँ?"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "मेरे पास रोहिणी"
+      },
+      {
+        "role": "user",
+        "text": "around 70 to 90 lakhs"
+      },
+      {
+        "role": "assistant",
+        "text": "इस बजट में मेरे पास रोहिणी में रोहिणी एनक्लेव और द्वारका में द्वारका हाइट्स के ऑप्शंस हैं। क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "passo"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया, Passo जी। आप इन दो ऑप्शंस में से किस इलाके को पहले देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "सुगर"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी एनक्लेव में 2 BHK फ्लैट है, जो 78 लाख का है और इसमें कवर्ड पार्किंग और लिफ्ट की सुविधा है। क्या आप इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "आप किस दिन इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "आप किस दिन इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "kal subah 10:00"
+      },
+      {
+        "role": "assistant",
+        "text": "तो क्या हम बुधवार, 7 अक्टूबर सुबह 10:00 बजे रोहिणी एनक्लेव की विजिट के लिए कन्फर्म करें?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "विजिट कन्फर्म करने के लिए, क्या आप अपना मोबाइल नंबर बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "7986794586"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "तो Passo जी, रोहिणी में 2 BHK अपार्टमेंट के लिए 7 अक्टूबर सुबह 10:00 बजे की विजिट और आपका नंबर 7986794586—क्या यह सब सही है?"
+      },
+      {
+        "role": "assistant",
+        "text": "तो Passo जी, रोहिणी में 2 BHK अपार्टमेंट के लिए 7 अक्टूबर सुबह 10:00 बजे की विजिट और आपका नंबर 7986794586—क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Aansu hai."
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Aansu is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvnxq5h-7i95",
+    "receivedAt": "2026-10-05T19:48:56.357Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T19:25:02.983Z",
+    "name": "आशीष",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Delhi (Flexible)",
+    "preferredLocations": [
+      "Delhi (Flexible)"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK in Delhi (Flexible)",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 59,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "आशीष is looking to buy a 2 BHK in Delhi (Flexible) and wants to move forward immediately. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7986794586. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी देखना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "कोई आईडिया नहीं है, बस आसपास स्कूल वगैरह होना चाहिए जो बच्चे वगैरह पढ़ने जा सके और कॉलेज भी।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। आप किस तरह की प्रॉपर्टी देख रहे हैं—फ्लैट या कुछ और?"
+      },
+      {
+        "role": "user",
+        "text": "बैठी देख रहा हूं।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है! आप कितने बीएचके का फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई! आपका बजट क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "92 फोन करूं?"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आपके बजट के हिसाब से द्वारका में ड्वार्का हाइट्स और रोहिणी में रोहिणी एन्क्लेव के बेहतरीन विकल्प मौजूद हैं। क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है।"
+      },
+      {
+        "role": "assistant",
+        "text": "आशीष जी, क्या आप ड्वार्का हाइट्स या रोहिणी एन्क्लेव में से किसी प्रॉपर्टी के बारे में और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "दोनों के बारे में बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "द्वारका हाइट्स में 92 लाख में सेमी-फर्निश्ड और रोहिणी एन्क्लेव में 78 लाख में अनफर्निश्ड फ्लैट उपलब्ध है। क्या आप किसी दिन विजिट करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल के दिन"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, कल के लिए आप किस समय आना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "सुबह 10:00 बजे"
+      },
+      {
+        "role": "assistant",
+        "text": "विजिट के लिए आप किस प्रॉपर्टी को चुनना चाहेंगे—द्वारका हाइट्स या रोहिणी एन्क्लेव?"
+      },
+      {
+        "role": "user",
+        "text": "मैं दोनों देखना चाहूंगा। दोनों में से बढ़िया कौन सा है, वहां जा के देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपकी कल सुबह 10:00 बजे दोनों प्रॉपर्टीज की विजिट तय कर सकती हूँ। आगे बढ़ने के लिए, क्या आप मुझे अपना फोन नंबर बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "7986794586"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, द्वारका हाइट्स और रोहिणी एन्क्लेव में 2 BHK फ्लैट के लिए कल सुबह 10:00 बजे की विजिट और आपका नंबर 7986794586 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "No."
+      },
+      {
+        "role": "assistant",
+        "text": "माफ़ कीजिएगा, क्या आप बता सकते हैं कि क्या जानकारी गलत है?"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, दिल्ली"
+      },
+      {
+        "role": "user",
+        "text": "नहीं-नहीं, वह सही है, सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "[No verbal response required.]"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी तरफ से कोई जवाब न मिलने के कारण कॉल समाप्त की जा रही है। दिल्ली होम्स में संपर्क करने के लिए धन्यवाद।"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — caller inactivity"
+      }
+    ],
+    "text": "आशीष is looking to buy a 2 BHK in Delhi (Flexible) and wants to move forward immediately. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7986794586. Lead source: Phone.",
+    "id": "phone-muvn305j-o8fk",
+    "receivedAt": "2026-10-05T19:25:02.983Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T19:03:27.859Z",
+    "name": "",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Delhi (Flexible)"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "₹70L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "apartment in Delhi (Flexible)",
+    "siteVisit": "Wednesday 7 October, 11:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 84,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 11:00 AM",
+    "summary": "The customer is looking to buy a Apartment in Delhi (Flexible) with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 4 matching properties were identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      },
+      {
+        "name": "Dwarka Studio Lofts",
+        "bhk": "1 BHK Studio",
+        "location": "Dwarka",
+        "price": "₹52L",
+        "url": "http://localhost:3000/demo/properties/dwarka-lofts"
+      },
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदनी"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल, मैं आपकी सहायता कर सकती हूँ। आप किस इलाके में प्रॉपर्टी देखना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे कोई आईडिया नहीं है, लेकिन आसपास स्कूल वगैरह होना चाहिए बच्चों के लिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। दिल्ली में अच्छे स्कूलों के पास कई विकल्प हैं। क्या आप फ्लैट या बिल्डर फ्लोर जैसा कुछ देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "flat dikhao"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आप कितने BHK का फ्लैट देखना पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "BHK"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आपका बजट क्या है ताकि मैं उसके हिसाब से विकल्प बता सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "around 70 to 90 lakhs"
+      },
+      {
+        "role": "assistant",
+        "text": "इस बजट में मैं आपको रोहिणी में एक बढ़िया 2 BHK अपार्टमेंट दिखा सकती हूँ। क्या आपका कोई पसंदीदा नाम है ताकि मैं आपको ठीक से संबोधित कर सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "passo"
+      },
+      {
+        "role": "assistant",
+        "text": "पास्सो जी, रोहिणी में एक 2 BHK फ्लैट उपलब्ध है, जिसकी कीमत 78 लाख रुपये है। क्या आप इसके बारे में और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "pass on nahi hai pass on nahi Aansu"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, आंसू जी। तो रोहिणी वाले फ्लैट के बारे में आप कुछ और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "आंसू जी, यह 2 BHK फ्लैट रोहिणी एनक्लेव में है, जो कि पूरी तरह से तैयार है और इसकी कीमत 78 लाख रुपये है। क्या आप इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "Oh"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप इसे देखने के लिए कोई दिन तय करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल के दिन कोई भी टाइम"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है आंसू जी, क्या हम कल यानी बुधवार 7 अक्टूबर को सुबह 11:00 बजे का समय तय करें?"
+      },
+      {
+        "role": "user",
+        "text": "OK."
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "विज़िट बुक हो गई है। आगे बढ़ने के लिए, क्या आप मुझे अपना कांटेक्ट नंबर बता सकते हैं?"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मुझे अपना नाम और बेस्ट कांटेक्ट नंबर बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आंसू जी, रोहिणी एनक्लेव में 2 BHK अपार्टमेंट के लिए कल सुबह 11:00 बजे की विजिट और आपका नंबर 7485826309 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आंसू जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "[No verbal response required.]"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी तरफ से कोई जवाब न मिलने के कारण कॉल समाप्त की जा रही है। दिल्ली होम्स में संपर्क करने के लिए धन्यवाद।"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — caller inactivity"
+      }
+    ],
+    "text": "The customer is looking to buy a Apartment in Delhi (Flexible) with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 4 matching properties were identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "id": "phone-muvmb8tv-f4ic",
+    "receivedAt": "2026-10-05T19:03:27.859Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T18:46:33.175Z",
+    "name": "Passo",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹70L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Rohini",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "Passo is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "property kharidna hai."
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। क्या आप किसी खास इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, ऐसा भी कुछ रखा तो नहीं बस आसपास स्कूल हो, कॉलेज हो बच्चों के लिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या आप अपार्टमेंट या बिल्डर फ्लोर जैसा कुछ पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, फ्लैट के लिए आप किस इलाके को प्राथमिकता दे रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "बोले तो इलाके में कोई सोचा नहीं है।"
+      },
+      {
+        "role": "assistant",
+        "text": "कोई बात नहीं। आप कितने बेडरूम का फ्लैट देख रहे हैं? ---"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "जी, और आपका बजट लगभग कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "around 70 to 90 lakhs"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। और मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "passo"
+      },
+      {
+        "role": "assistant",
+        "text": "आशू जी, रोहिणी में आपके बजट के अंदर एक 2 BHK फ्लैट उपलब्ध है। क्या आप इस बारे में और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "tal"
+      },
+      {
+        "role": "assistant",
+        "text": "यह फ्लैट रोहिणी एन्क्लेव में है, जो रेडी टू मूव और अनफर्निश्ड है, जिसकी कीमत 78 लाख रुपये है। क्या आप इसे देखने के लिए कोई समय चुनना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "jab bhi time ho"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या आप इस हफ़्ते शनिवार को इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल चलेगा कल।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो क्या हम कल सुबह दस बजे का समय फाइनल करें?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आपकी विजिट बुधवार सुबह दस बजे के लिए तय हो गई है। क्या आप मुझे अपना संपर्क नंबर बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "तो, क्या आप रोहिणी एन्क्लेव में 2 BHK फ्लैट खरीदने के लिए बुधवार सुबह दस बजे की विजिट और अपना नंबर 7485826309 कन्फर्म करना चाहेंगे?"
+      },
+      {
+        "role": "assistant",
+        "text": "पास्सो जी, आप रोहिणी में अत्तरह"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "पास्सो जी, आप रोहिणी में 2 BHK अपार्टमेंट खरीदना चाहते हैं जिसका बजट 70 से 90 लाख के बीच है और आपकी विजिट बुधवार सुबह दस बजे तय की गई है, नंबर 7485826309 के साथ। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया पास्सो जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Passo is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹70L–₹90L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvlphw7-agw2",
+    "receivedAt": "2026-10-05T18:46:33.175Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T18:36:34.111Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "₹70L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "apartment in Rohini",
+    "siteVisit": "Wednesday 7 October, 11:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 76,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 11:00 AM",
+    "summary": "Ashish is looking to buy a Apartment in Rohini with a budget of approximately ₹70L–₹90L. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्कार! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। क्या आप किसी खास इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "इलाके का कोई आईडिया नहीं लेकिन मुझे आसपास अच्छे फैसिलिटी चाहिए जैसे स्कूल हो गया, कॉलेज हो गया बच्चों के लिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी, बिल्कुल। क्या आप मुझे बता सकते हैं कि आप किस तरह की प्रॉपर्टी देख रहे हैं, जैसे अपार्टमेंट या विला?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप किन इलाकों में फ्लैट देखना चाहेंगे, जैसे द्वारका, रोहिणी या कोई और?"
+      },
+      {
+        "role": "user",
+        "text": "Bangalore"
+      },
+      {
+        "role": "assistant",
+        "text": "माफ़ कीजिएगा, हमारी प्रॉपर्टीज़ केवल दिल्ली-एनसीआर के इलाकों में उपलब्ध हैं, जैसे द्वारका या रोहिणी। क्या आप इनमें से किसी इलाके में देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "जो फैसिलिटी मैंने बताया वह जहां मिल जाए वहीं का बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। क्या आप मुझे अपना बजट बता सकते हैं ताकि मैं उसी हिसाब से प्रॉपर्टीज़ देख सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "around 70 to 90 lakhs"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "मैंने आपके बजट के हिसाब से रोहिणी में एक प्रॉपर्टी देखी है। रोहिणी एनक्लेव में टू बीएचके फ्लैट है जो अठहत्तर लाख रुपये में उपलब्ध है। क्या आप इसके बारे में और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "बताओ।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह प्रॉपर्टी रोहिणी में है, जो एक टू बीएचके का रेडी टू मूव फ्लैट है। इसमें कवर्ड पार्किंग और लिफ्ट की सुविधा है और इसकी कीमत अठहत्तर लाख रुपये है। क्या आप इस प्रॉपर्टी को देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "आप इस प्रॉपर्टी को किस दिन देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल जब भी टाइम मिले"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या हम कल यानी सात अक्टूबर को ग्यारह बजे का समय रखें?"
+      },
+      {
+        "role": "user",
+        "text": "11:00 सुबह या रात को?"
+      },
+      {
+        "role": "assistant",
+        "text": "यह समय सुबह ग्यारह बजे का है। क्या यह समय आपके लिए सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां, फिर सही है।"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या मैं आपका नाम और संपर्क नंबर जान सकती हूँ?"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपके लिए किस नाम से नोट कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम"
+      },
+      {
+        "role": "assistant",
+        "text": "जी, मैं आपका पूरा नाम जानना चाहूँगी।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपसे किस"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Ashish hai aur mera number 7485826309 hai."
+      },
+      {
+        "role": "assistant",
+        "text": "आशीष जी, आपने रोहिणी में टू बीएचके फ्लैट देखने के लिए सात अक्टूबर को सुबह ग्यारह बजे का समय तय किया है और आपका नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Ashish is looking to buy a Apartment in Rohini with a budget of approximately ₹70L–₹90L. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 11:00 AM. Lead source: Phone.",
+    "id": "phone-muvlcnnj-6r2x",
+    "receivedAt": "2026-10-05T18:36:34.111Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T18:33:01.483Z",
+    "name": "Ashu",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 98,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment featuring covered parking, a lift, power backup, and 24x7 security. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK apartment in Dwarka that includes covered parking, a gym, a clubhouse, and power backup. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "What day and time works best for you to visit Sky Residency?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, your site visit for tomorrow afternoon is all set."
+      },
+      {
+        "role": "user",
+        "text": "Talk to an advisor"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashu"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74858 26309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muvl83l7-e39x",
+    "receivedAt": "2026-10-05T18:33:01.483Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T18:22:16.332Z",
+    "name": "",
+    "phone": "",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 15,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask which area they are considering",
+    "summary": "The customer is looking to buy. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस इलाके में प्रॉपर्टी देखना चाहते हैं?"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आप किस इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे"
+      },
+      {
+        "role": "assistant",
+        "text": "आप किस इलाके में प्रॉपर्टी देखना पसंद करेंगे?"
+      }
+    ],
+    "text": "The customer is looking to buy. Lead source: Phone.",
+    "id": "phone-muvku9sc-a4qc",
+    "receivedAt": "2026-10-05T18:22:16.332Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T18:08:02.944Z",
+    "name": "आशीष",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "₹7Cr",
+    "budgetValue": 70000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Rohini",
+    "siteVisit": "Thursday 10 June, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 66,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Thursday 10 June, 10:00 AM",
+    "summary": "आशीष is looking to buy a property in Rohini with a budget of approximately ₹7Cr. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Thursday 10 June, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "कोई आईडिया नहीं है, बस अच्छी जगह हो।"
+      },
+      {
+        "role": "assistant",
+        "text": "कोई बात नहीं। क्या आप अपार्टमेंट या विला में से कुछ पसंद करती हैं?"
+      },
+      {
+        "role": "user",
+        "text": "o lette"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप फ्लैट के बारे में पूछ रही हैं? और आपका बजट कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "flat ke bare mein aur budget mera around 70 to 80 lakhs hai."
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। रोहिणी में एक 2 बीएचके फ्लैट है जो आपके बजट में आता है, लगभग अठहत्तर लाख का। क्या आप इसके बारे में और जानना चाहती हैं?"
+      },
+      {
+        "role": "user",
+        "text": "बताइए।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह फ्लैट रोहिणी में है, रेडी टू मूव है, और इसमें कवर्ड पार्किंग, लिफ्ट और सिक्योरिटी जैसी सुविधाएं हैं। क्या आप इसे देखने जाना चाहेंगी और क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है और मैं इसे देखना जानना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत खुशी हुई आशीष जी। आप किस दिन इस फ्लैट को देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल सुबह 10:00 बजे"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे रोहिणी एनक्लेव देखने के लिए तैयार हैं?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी विजिट मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे के लिए बुक हो गई है। क्या आप मुझे अपना फोन नंबर और अपनी डिटेल्स कंफर्म कर सकते हैं?"
+      },
+      {
+        "role": "assistant",
+        "text": "एडवाइजर आपसे संपर्क कर सके, इसके लिए आपका सबसे अच्छा संपर्क नंबर क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद आशीष जी। आपने रोहिणी एनक्लेव में 2 बीएचके फ्लैट के लिए मंगलवार, 6 अक्टूबर सुबह 10:00 बजे का विजिट स्लॉट बुक किया है, और आपका संपर्क नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "7 करोड़"
+      },
+      {
+        "role": "assistant",
+        "text": "तो ठीक है आशीष जी, आपने रोहिणी एनक्लेव में 2 बीएचके फ्लैट के लिए मंगलवार, 6 अक्टूबर सुबह 10:00 बजे का विजिट स्लॉट बुक किया है और आपका नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया, आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया, आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "[No verbal response required.]"
+      },
+      {
+        "role": "user",
+        "text": "ch"
+      },
+      {
+        "role": "assistant",
+        "text": "तो ठीक है आशीष जी, आपने रोहिणी में प्रॉपर्टी खरीदने के लिए सात करोड़ का बजट बताया है और आपकी विजिट मंगलवार, 6 अक्टूबर सुबह 10:00 बजे की है, और आपका नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "a"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया, आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, आप रोहिणी में प्रॉपर्टी खरीदना चाहते हैं, बजट लगभग सात करोड़ है, और आपका विजिट गुरुवार 10 जून सुबह 10:00 बजे का है। आपका संपर्क नंबर 7485826309 क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "number badal"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल, आप अपना नया संपर्क नंबर बताइए, मैं इसे अपडेट कर देती हूँ।"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, आप रोहिणी में प्रॉपर्टी खरीदना चाहते हैं, बजट लगभग सात करोड़ है, विजिट गुरुवार 10 जून सुबह 10:00 बजे का है, और आपका संपर्क नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "मेरे पहले वाले नंबर और अभी वाले नंबर में क्या डिफरेंस है?"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपके पुराने नंबर की पुष्टि नहीं कर सकती, लेकिन आपके नए संपर्क नंबर के साथ सभी विवरण मैंने दोहरा दिए हैं। क्या आप इनकी पुष्टि कर सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया! आपका दिन शुभ हो।"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "आशीष is looking to buy a property in Rohini with a budget of approximately ₹7Cr. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Thursday 10 June, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvkbzb4-p6xa",
+    "receivedAt": "2026-10-05T18:08:02.944Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T17:54:32.090Z",
+    "name": "Ashu",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Delhi",
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Delhi or Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 98,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "Ashu is looking to buy a 2 BHK in Delhi or Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK apartment in Dwarka that comes with a gym and clubhouse. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "I can arrange that site visit for Sky Residency, what day and time works best for you?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, your site visit for Sky Residency is set for tomorrow afternoon."
+      },
+      {
+        "role": "user",
+        "text": "Talk to an advisor"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Delhi or Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashu"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "same number"
+      },
+      {
+        "role": "assistant",
+        "text": "Sorry, that didn't look like a number — could you send a 10-digit mobile number?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74858 26309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashu is looking to buy a 2 BHK in Delhi or Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muvjulne-b5r4",
+    "receivedAt": "2026-10-05T17:54:32.090Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T17:21:20.358Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "₹80L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "apartment",
+    "siteVisit": "Tuesday 6 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 58,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Tuesday 6 October, 10:00 AM",
+    "summary": "Ashish is looking to buy a Apartment with a budget of approximately ₹80L–₹90L. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। आप द्वारका, रोहिणी या फिर साउथ दिल्ली में से कोई इलाका पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, वैसा तो कोई चॉइस नहीं है, कहीं भी चलेगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "कोई बात नहीं। आप किस तरह की प्रॉपर्टी देख रहे हैं—अपार्टमेंट या बिल्डर फ्लोर?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप कितने बीएचके का फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या आप 2 बीएचके"
+      },
+      {
+        "role": "user",
+        "text": "bitch"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपको बता सकती हूँ कि हमारे पास रोहिणी और द्वारका में 2 बीएचके के कई ऑप्शंस मौजूद हैं। आपका बजट कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "around 80 to 90 lakhs"
+      },
+      {
+        "role": "assistant",
+        "text": "इस बजट में, मेरे पास आपके लिए रोहिणी में एक 2 बीएचके और द्वारका में कुछ ऑप्शंस हैं। क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Ashish hai."
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष! क्या आप मुझे बता सकते हैं कि आप रोहिणी या द्वारका में से किस इलाके को प्राथमिकता देते हैं?   I need to make sure I don't give a list, just ask the location preference."
+      },
+      {
+        "role": "user",
+        "text": "कोई भी चलेगा मतलब द्वारका या रोहिणी कौन सा बढ़िया है?"
+      },
+      {
+        "role": "assistant",
+        "text": "दोनों ही इलाके अच्छे हैं, लेकिन आपके बजट को देखते हुए मैं आपको रोहिणी में प्रॉपर्टी दिखा सकती हूँ।"
+      },
+      {
+        "role": "user",
+        "text": "चलो बताओ उसके बारे में।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी में एक 2 बीएचके फ्लैट उपलब्ध है, जो रेडी टू मूव है और कवर पार्किंग के साथ आता है। इसकी कीमत 78 लाख रुपये है, क्या आप इसके बारे में कुछ और जानना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, इतना बहुत है।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप इस प्रॉपर्टी को देखने के लिए कोई साइट विजिट शेड्यूल करना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "ao"
+      },
+      {
+        "role": "assistant",
+        "text": "मुझे माफ़ कीजिएगा, मुझे आपकी बात ठीक से समझ नहीं आई। क्या आप कृपया दोबारा बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "हां, मैं देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप किस दिन इस प्रॉपर्टी को देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "Aap call subah kal jab bhi time ho"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं आपकी विजिट मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे के लिए शेड्यूल कर सकती हूँ। क्या यह समय आपके लिए ठीक है?"
+      },
+      {
+        "role": "user",
+        "text": "No, sí."
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी साइट विजिट मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे के लिए शेड्यूल कर दी गई है। शुक्रिया आशीष!"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मुझे अपना संपर्क नंबर दे सकते हैं ताकि एडवाइजर आपसे बात कर सकें?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नंबर यही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप कृपया मुझे अपना नंबर दोबारा बता सकते हैं ताकि मैं इसे नोट कर सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, मैंने आपका नंबर 7485826309 नोट कर लिया है। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष, आप 80 से 90 लाख के बजट में स्कूल के पास एक अपार्टमेंट खरीदना चाहते हैं, जिसकी विजिट मंगलवार सुबह 10:00 बजे के लिए तय है और आपका नंबर 7485826309 है। क्या ये सभी जानकारी सही है?"
+      },
+      {
+        "role": "user",
+        "text": "No."
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष! आपसे बात करके अच्छा लगा। आपका दिन शुभ हो।"
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद! आपका दिन शुभ हो।"
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद! आपका दिन शुभ हो।"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "Ashish is looking to buy a Apartment with a budget of approximately ₹80L–₹90L. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvinwti-oih5",
+    "receivedAt": "2026-10-05T17:21:20.358Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T17:17:20.572Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 98,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "We have a 2 BHK available in Rohini, though not directly in Dwarka — would you like to see that?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "A budget around ninety lakhs works nicely, we have options right in Dwarka that fit that range. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at 92 Lakhs with covered parking and 24x7 security. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can certainly arrange a site visit for Dwarka Heights. What is your name?"
+      },
+      {
+        "role": "user",
+        "text": "Talk to an advisor"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nSite visit: Visit requested — time to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashish"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74858 26309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muviirss-71kq",
+    "receivedAt": "2026-10-05T17:17:20.572Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T13:39:02.922Z",
+    "name": "Vagera",
+    "phone": "",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹1Cr",
+    "budgetValue": 10000000,
+    "timeline": "",
+    "preferences": [
+      "Near school",
+      "Gym"
+    ],
+    "requirement": "2 BHK",
+    "siteVisit": "Tuesday 6 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 70,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Tuesday 6 October, 10:00 AM",
+    "summary": "Vagera is looking to buy a 2 BHK with a budget of approximately ₹1Cr. Preferences noted: Near school, Gym. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ? क्या आप घर खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मैं खरीदना चाहता हूं।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस इलाके में घर तलाश रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे इलाके का आईडिया नहीं है, लेकिन आसपास मुझे अच्छी जगह चाहिए जैसे कि जिम हो गया। और स्कूल वगैरह।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप किस तरह का या कितने बीएचके का घर देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आपका बजट कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "around 95 to 1 crore"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल। हमारे पास द्वारका और रोहिणी में कुछ विकल्प उपलब्ध हैं, क्या आप इनमें से किसी इलाके को पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "जो बेस्ट हो उसके बारे में बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "द्वारका में स्काई रेजिडेंसी एक बेहतरीन विकल्प है, जो आपके बजट में है और फर्निश्ड भी है। क्या आप इस बारे में और जानना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "हां, बताओ।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह पूरी तरह से फर्निश्ड अपार्टमेंट"
+      },
+      {
+        "role": "user",
+        "text": "9"
+      },
+      {
+        "role": "assistant",
+        "text": "यह पूरी तरह से फर्निश्ड २ बीएचके अपार्टमेंट है, जिसमें जिम और क्लब हाउस जैसी सुविधाएँ भी शामिल हैं। क्या आप इसे देखने के लिए कोई समय निर्धारित करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "सुबह 10:00 से 12:00 बजे"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, लेकिन आप किस दिन आना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल सुबह"
+      },
+      {
+        "role": "assistant",
+        "text": "तो क्या हम मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे का समय पक्का समझें?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "आपका साइट विजिट मंगलवार, 6 अक्टूबर को सुबह 10:00 बजे के लिए पक्का हो गया है। दिल्ली होम्स चुनने के लिए शुक्रिया, आपका दिन शुभ हो!"
+      },
+      {
+        "role": "user",
+        "text": "Bro, isne naam vagera nahi pucha."
+      }
+    ],
+    "text": "Vagera is looking to buy a 2 BHK with a budget of approximately ₹1Cr. Preferences noted: Near school, Gym. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muvaq1l7-f901",
+    "receivedAt": "2026-10-05T13:39:02.923Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T13:35:13.255Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 98,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "We have two nice 2 BHK options in Dwarka right around that budget. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK in Dwarka priced at 96 Lakhs, and it comes with covered parking, a gym, a clubhouse, and power backup. When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "I have noted your request for a site visit to Sky Residency, and our team will get in touch with you shortly to confirm the time."
+      },
+      {
+        "role": "user",
+        "text": "Talk to an advisor"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nSite visit: Visit requested — time to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashish"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "568657658"
+      },
+      {
+        "role": "assistant",
+        "text": "Sorry, that didn't look like a number — could you send a 10-digit mobile number?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74858 26309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muval4dj-ws98",
+    "receivedAt": "2026-10-05T13:35:13.255Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T10:39:55.462Z",
+    "name": "",
+    "phone": "",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹70L–₹80L",
+    "budgetValue": 8000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK apartment",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 42,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Dwarka Heights",
+    "summary": "The customer is looking to buy a 2 BHK Apartment with a budget of approximately ₹70L–₹80L. No matching listings were found in the demo inventory. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! दिल्ली होम्स में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस इलाके में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे आईडिया नहीं कि मुझे प्रॉपर्टी कहां लेना चाहिए, बट हां आसपास जिम हो, स्कूल वगैरह हो।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। जिम और स्कूल जैसी सुविधाओं के हिसाब से Dwarka या Vasant Kunj अच्छे इलाके हो सकते हैं। क्या आप इन इलाकों में देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "No."
+      },
+      {
+        "role": "assistant",
+        "text": "कोई बात नहीं। क्या आप किसी अन्य इलाके में प्रॉपर्टी देखना पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, मैं वही इलाके में देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो Dwarka या Vasant Kunj में आप किस तरह की प्रॉपर्टी तलाश रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "वहां पे कैसी-कैसी है, बता दो कुछ।"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka और Vasant Kunj में आपको अपार्टमेंट्स और बिल्डर फ्लोर्स के कई अच्छे विकल्प मिल सकते हैं। क्या आप अपना बजट बता सकती हूँ ताकि मैं सटीक प्रॉपर्टीज ढूँढ सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "budget kareeb 70 to 80 lakhs hai."
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आपको कितने BHK की प्रॉपर्टी चाहिए?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप Dwarka या Vasant Kunj में से किसी एक इलाके को प्राथमिकता देना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "जहां पे जो इस बजट में मिल रहा है, वहीं पे।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, मैं Dwarka और Vasant Kunj के सभी उपलब्ध विकल्पों को देखती हूँ। क्या आप कोई खास प्रॉपर्टी टाइप पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "जैसे मैं"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप अपार्टमेंट या बिल्डर फ्लोर में से कुछ पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैंने अपार्टमेंट बोला था।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "द्वारका में जो अपार्टमेंट उपलब्ध है, वह आपके बजट से थोड़ा ऊपर है। क्या मैं Vasant Kunj में विकल्प देखूँ?"
+      },
+      {
+        "role": "user",
+        "text": "啊"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "Vasant Kunj में आपके बजट के मुताबिक अभी कोई प्रॉपर्टी नहीं है। क्या मैं आपकी बात किसी एडवाइजर से करवा सकती हूँ?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK Apartment with a budget of approximately ₹70L–₹80L. No matching listings were found in the demo inventory. Lead source: Phone.",
+    "id": "phone-muv4bosm-1ria",
+    "receivedAt": "2026-10-05T10:39:55.462Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T10:18:58.838Z",
+    "name": "Ashish",
+    "phone": "7485826309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹60L",
+    "budgetValue": 6000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 94,
+    "temperature": "WARM",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹60L and wants to move forward immediately. No matching listings were found in the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Around ₹60L"
+      },
+      {
+        "role": "assistant",
+        "text": "60 lakhs is a bit tight for a 2 BHK in Dwarka, as our options start at 92 lakhs. Would you like to check Rohini instead?"
+      },
+      {
+        "role": "user",
+        "text": "Immediately"
+      },
+      {
+        "role": "assistant",
+        "text": "Moving immediately makes sense, but since our current Dwarka options are starting at 92 lakhs, would you be open to exploring Rohini?"
+      },
+      {
+        "role": "user",
+        "text": "Schedule a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "Our advisor will connect with you shortly to coordinate your site visit."
+      },
+      {
+        "role": "user",
+        "text": "Talk to an advisor"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹60L\nTimeline: immediately\nSite visit: Visit requested — time to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "Ashish"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "85786786"
+      },
+      {
+        "role": "assistant",
+        "text": "Sorry, that didn't look like a number — could you send a 10-digit mobile number?"
+      },
+      {
+        "role": "user",
+        "text": "7485826309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74858 26309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹60L and wants to move forward immediately. No matching listings were found in the demo inventory. Contact number: 7485826309. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muv3kr6f-r3sm",
+    "receivedAt": "2026-10-05T10:18:58.839Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T10:14:33.090Z",
+    "name": "",
+    "phone": "",
+    "intent": "",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "₹75L",
+    "budgetValue": 7500000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "apartment",
+    "siteVisit": "Wednesday 7 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 35,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
+    "summary": "The customer has enquired about a property a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "मुझे आईडिया नहीं है लेकिन मुझे आसपास कोई होटल वगैरह चाहिए, जिम वगैरह चाहिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या आप कोई खास बजट सोच रहे हैं जिससे मैं आपको सही इलाके और प्रॉपर्टी सुझा सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "budget mera 75 lakh ke around hai."
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप कोई खास प्रॉपर्टी टाइप, जैसे अपार्टमेंट या बिल्डर फ्लोर पसंद करते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। क्या आप फ्लैट खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, तो नाचो तुम।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप किसी खास जगह या इलाके में फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैंने बोला तो नहीं मेरे को आईडिया नहीं लिखना आसपास।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। क्या मैं आपको कुछ बेहतरीन इलाके सुझा सकती हूँ जहाँ आपको ये सब सुविधाएँ मिल जाएँ?"
+      },
+      {
+        "role": "user",
+        "text": "哦"
+      },
+      {
+        "role": "assistant",
+        "text": "बिल्कुल! तो मैं आपको कुछ खास इलाके बताता हूँ जो आपके बजट और ज़रूरतों के हिसाब से सही रहेंगे।"
+      },
+      {
+        "role": "user",
+        "text": "OK?"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "is"
+      },
+      {
+        "role": "assistant",
+        "text": "माफ़ कीजिएगा, मुझे आपकी बात समझ नहीं आई। क्या आप कृपया दोहरा सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "Asis"
+      },
+      {
+        "role": "assistant",
+        "text": "धन्यवाद, आशीष जी। जैसा कि हमने बात की थी, क्या आप कुछ खास इलाके पसंद करते हैं या मैं खुद कुछ अच्छे ऑप्शंस सुझाऊँ?"
+      },
+      {
+        "role": "user",
+        "text": "आप ही बताइए।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आशीष जी, द्वारका में आपके बजट के हिसाब से अभी कोई फ्लैट उपलब्ध नहीं है। क्या आप अपना बजट बढ़ाना चाहेंगे या कोई दूसरा इलाका देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "दूसरा इलाका है इस प्राइस रेंज पर तो वह बता दो।"
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी में आपके बजट के हिसाब से कुछ फ्लैट्स हैं। क्या आप उस इलाके के बारे में जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "माफ़ कीजिएगा, मुझे आपकी बात समझ नहीं आई। क्या आप कृपया दोहरा सकते हैं कि आप क्या कहना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "un"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी में एक फ्लैट उपलब्ध है, Rohini Enclave नाम है इसका। यह 2 BHK है और इसकी कीमत करीब अठत्तर लाख रुपये है। क्या आप इसके बारे में कुछ और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, ना सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो क्या आप किसी और जगह के बारे में सोचना चाहते हैं या अपना बजट थोड़ा बढ़ाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, यह सही है। यह सही था।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो क्या हम इस फ्लैट को देखने के लिए एक दिन तय कर सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप किस दिन इस फ्लैट को देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "2 दिन बाद 10:00 से 12:00 बजे"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो क्या हम बुधवार, सात अक्टूबर को सुबह दस बजे का समय तय करें?"
+      },
+      {
+        "role": "user",
+        "text": "哦"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, बुधवार, 7 अक्टूबर को सुबह दस बजे के लिए आपकी विज़िट बुक हो गई है। हमसे जुड़ने के लिए धन्यवाद!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "The customer has enquired about a property a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muv3f24j-wbcp",
+    "receivedAt": "2026-10-05T10:14:33.091Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T10:02:00.095Z",
+    "name": "Priya",
+    "phone": "9123456780",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹80L",
+    "budgetValue": 8000000,
+    "timeline": "3–6 months",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "Morning visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Morning visit requested — to confirm",
+    "summary": "Priya is looking to buy a 2 BHK in Rohini with a budget of approximately ₹80L and intends to move forward within the next 3–6 months. 1 matching property was identified from the demo inventory. Contact number: 9123456780. A site visit was requested for Morning visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "I want to buy a 2 BHK in Rohini around 90 lakh, within 3 months"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini Enclave comes in at 78 Lakhs, well within your budget and ready to move. Also, what name should I use for you?"
+      },
+      {
+        "role": "user",
+        "text": "Schedule a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "I have noted down your request for a site visit to Rohini Enclave."
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow morning"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Rohini\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: within 3–6 months\nSite visit: Morning visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "my budget is 80 lakh now"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Rohini\nSize: 2 BHK\nBudget: around ₹80L\nTimeline: within 3–6 months\nSite visit: Morning visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "Priya"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "9123456780"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 91234 56780. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Priya is looking to buy a 2 BHK in Rohini with a budget of approximately ₹80L and intends to move forward within the next 3–6 months. 1 matching property was identified from the demo inventory. Contact number: 9123456780. A site visit was requested for Morning visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muv2yx3z-w3y1",
+    "receivedAt": "2026-10-05T10:02:00.095Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T10:00:00.152Z",
+    "name": "Rahul",
+    "phone": "9876543210",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "3–6 months",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "Afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Afternoon visit requested — to confirm",
+    "summary": "Rahul is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and intends to move forward within the next 3–6 months. 1 matching property was identified from the demo inventory. Contact number: 9876543210. A site visit was requested for Afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "A 2 BHK in Rohini is a very practical choice. What kind of budget are you planning for this purchase?"
+      },
+      {
+        "role": "user",
+        "text": "Around 90L"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, 90L for a 2 BHK in Rohini is a solid budget. When are you hoping to move into your new home? Also, what name should I use for you?"
+      },
+      {
+        "role": "user",
+        "text": "within 3 months"
+      },
+      {
+        "role": "assistant",
+        "text": "Moving within 3 months gives us a clear window to work with. What is the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "Schedule a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can certainly arrange that site visit for you at Rohini Enclave."
+      },
+      {
+        "role": "user",
+        "text": "Afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Rohini\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: within 3–6 months\nSite visit: Afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "Rahul"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "9876543210"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 98765 43210. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Rahul is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and intends to move forward within the next 3–6 months. 1 matching property was identified from the demo inventory. Contact number: 9876543210. A site visit was requested for Afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muv2wck9-u8s5",
+    "receivedAt": "2026-10-05T10:00:00.153Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T09:22:48.054Z",
+    "name": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹60L",
+    "budgetValue": 6000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 58,
+    "temperature": "WARM",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹60L. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namaste"
+      },
+      {
+        "role": "assistant",
+        "text": "Hello and welcome to Delhi Homes, are you looking to buy or rent a property?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great investment choice, which area in Delhi or nearby are you considering? Also, what name should I use for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a popular choice with great connectivity, what size of home are you looking for there?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka is a solid choice, what budget do you have in mind for this?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹60L. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muv1ki9i-ini3",
+    "receivedAt": "2026-10-05T09:22:48.054Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T09:21:08.905Z",
+    "name": "आशीष",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "₹75L",
+    "budgetValue": 7500000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "apartment",
+    "siteVisit": "Tuesday 6 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 54,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Tuesday 6 October, 10:00 AM",
+    "summary": "आशीष is looking to buy a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी खरीदना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैंने सोचा नहीं।"
+      },
+      {
+        "role": "assistant",
+        "text": "कोई बात नहीं। क्या आप दिल्ली में कुछ खास इलाके या प्रॉपर्टी का प्रकार सोच रहे हैं? tatay"
+      },
+      {
+        "role": "user",
+        "text": "नहीं।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आपका बजट लगभग कितना है?"
+      },
+      {
+        "role": "user",
+        "text": "75 lakhs"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। क्या आप किसी खास तरह की प्रॉपर्टी, जैसे अपार्टमेंट या बिल्डर फ्लोर, ढूंढ रहे हैं, और क्या मैं आपका नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Manish hai aur main flat dekh raha hun."
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया मनीष जी! क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है।"
+      },
+      {
+        "role": "assistant",
+        "text": "क्षमा कीजिए मनीष जी, पर क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है, तुमने गलत सुना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "माफ़ी चाहती हूँ आशीष जी। क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैंने बोला तो मुझे इलाकों का आईडिया नहीं है, बट मुझे ऐसी जगह चाहिए जिसके आसपास काफी सर्विस प्रोवाइडेड हो जैसे कि जिम हो गया और फिर काफी सारी स्कूल, जिम ये सब चीजें पास में हो। मार्केट भी।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, आपको ऐसी जगह चाहिए जहाँ सारी सुविधाएँ पास हों। क्या आप कोई खास साइज़ या BHK का फ्लैट सोच रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "medic"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "मेरी नजर में रोहिणी में एक फ्लैट है, पर इसका बजट अठत्तर लाख के आस-पास है। क्या आप इसके बारे में जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "बताओ।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह रोहिणी एनक्लेव में एक टू-बीएचके फ्लैट है, जो अठत्तर लाख का है और इसमें कवर्ड पार्किंग और लिफ्ट की सुविधा है। क्या आप इसे देखने जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "देखने जाना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आप किस दिन जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "Mhm. Kal ka din sahi hoga."
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, कल यानी छह अक्टूबर को आप किस समय पर जाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "tribo"
+      },
+      {
+        "role": "assistant",
+        "text": "मुझे आपकी बात ठीक से समझ नहीं आई। क्या आप समय के बारे में दोबारा बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "10:00 सुबह को"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं कल यानी छह अक्टूबर को सुबह दस बजे के लिए आपकी विजिट बुक कर रही हूँ। क्या यह सही है?"
+      },
+      {
+        "role": "user",
+        "text": "哦"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या मैं आपकी विजिट कल यानी छह अक्टूबर को सुबह दस बजे के लिए बुक कर दूँ?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी विजिट मंगलवार छह अक्टूबर को सुबह दस बजे के लिए बुक कर दी गई है। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "आशीष is looking to buy a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muv1idrd-v3tf",
+    "receivedAt": "2026-10-05T09:21:08.905Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T04:30:51.521Z",
+    "name": "आशीष",
+    "intent": "",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹50L–₹70L",
+    "budgetValue": 7000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK apartment",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 31,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask whether they are buying, renting or selling",
+    "summary": "आशीष has enquired about a property a 2 BHK Apartment with a budget of approximately ₹50L–₹70L. No matching listings were found in the demo inventory. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "vedonath"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई जी। आप प्रॉपर्टी खरीदना चाहते हैं या"
+      },
+      {
+        "role": "user",
+        "text": "मुझे मुझे प्रॉपर्टी खरीदना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल। आप किस एरिया में प्रॉपर्टी देख रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "कोई आईडिया नहीं है लेकिन आसपास अच्छे खासे फैसिलिटीज होनी चाहिए जैसे पार्क हो गया, जिम हो गया एंड स्कूल वगैरह पास में हो।"
+      },
+      {
+        "role": "assistant",
+        "text": "मैं समझ गई। आपको अच्छी सुविधाओं वाली जगह चाहिए। क्या आप मुझे बता सकती हैं आप कितने बीएचके की प्रॉपर्टी देख रहे हैं और आपका नाम क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK देख रहा हूं। मेरा नाम आशीष है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी। क्या आप मुझे अपना बजट बता सकते हैं ताकि मैं आपके लिए कुछ विकल्प ढूँढ सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "budget around 50 to 70 lakhs"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है आशीष जी, क्या आप प्रॉपर्टी खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैं खरीदना चाहता हूं।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। आप किस एरिया में प्रॉपर्टी खरीदना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मैंने बोला था मुझे प्रॉपर्टी का आईडिया नहीं कि मुझे किस तरफ लेना है। बस आसपास सुविधाएं अच्छी होनी चाहिए। जैसे जिम हो गया। स्कूल हो गया।"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आशीष जी। क्या आप किसी खास तरह की प्रॉपर्टी जैसे अपार्टमेंट या बिल्डर फ्लोर के बारे में सोच रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      }
+    ],
+    "text": "आशीष has enquired about a property a 2 BHK Apartment with a budget of approximately ₹50L–₹70L. No matching listings were found in the demo inventory. Lead source: Phone.",
+    "id": "phone-muur52f5-kiwb",
+    "receivedAt": "2026-10-05T04:30:51.521Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T04:27:47.235Z",
+    "name": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹50L",
+    "budgetValue": 5000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 58,
+    "temperature": "WARM",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹50L. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes, I am here to help you find the right place. Are you looking to buy or rent a property?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step, which area are you thinking of exploring? Also, what name should I use for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a very popular choice for buyers. What size of home are you looking for here?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka is a solid choice with good options around. What is your budget for this home?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹50L. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muur1483-4h8g",
+    "receivedAt": "2026-10-05T04:27:47.235Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T04:24:50.896Z",
+    "name": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹50L",
+    "budgetValue": 5000000,
+    "timeline": "1–3 months",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹50L and intends to move forward within the next 1–3 months. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Hello and welcome to Delhi Homes, are you looking to buy or rent a property?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great investment choice, which area are you considering? Also, what name should I use for you?"
+      },
+      {
+        "role": "user",
+        "text": "mumbai"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently focus on properties in Delhi, Noida, Gurugram, Rohini, and Dwarka. Would any of those areas work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a wonderful choice with great connectivity. What size of property are you looking for?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka is a popular choice, what is your budget range?"
+      },
+      {
+        "role": "user",
+        "text": "around 50l"
+      },
+      {
+        "role": "assistant",
+        "text": "A budget around 50 lakhs in Dwarka is a bit tight for a 2 BHK since our options start a bit higher, but when are you hoping to move?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹50L and intends to move forward within the next 1–3 months. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muuqxc5s-9dh7",
+    "receivedAt": "2026-10-05T04:24:50.896Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-05T03:59:52.778Z",
+    "name": "",
+    "intent": "Buy",
+    "location": "",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "apartment",
+    "siteVisit": "Tuesday 6 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 35,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Prepare for the site visit — Tuesday 6 October, 10:00 AM",
+    "summary": "The customer is looking to buy a Apartment. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "¿Qué?"
+      },
+      {
+        "role": "assistant",
+        "text": "Please select your preferred language from the options mentioned: press 1 for Hindi, 2 for English, or 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "man"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! आज मैं आपकी किस तरह से सहायता कर सकता हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "property kharidna hai."
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आप किस इलाके में प्रॉपर्टी खरीदना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "कोई आईडिया नहीं है लेकिन आसपास मतलब अच्छे इलाके हो मतलब स्कूल वगैरह पास में हो। मार्केट पास में हो, हॉस्पिटल पास में होने चाहिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गया। आप किस तरह की प्रॉपर्टी खरीदना चाहते हैं, जैसे फ्लैट या कोई और?"
+      },
+      {
+        "role": "user",
+        "text": "flat"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। आपका बजट क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "35 लाख"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है। क्या आप कोई खास लोकेशन सोच रहे हैं या मैं कुछ इलाके सजेस्ट करूँ?"
+      },
+      {
+        "role": "user",
+        "text": "suggest kar do suggest"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "फिलहाल 35 लाख के बजट में हमारे पास कोई अपार्टमेंट्स नहीं हैं। क्या आप अपना बजट बढ़ाना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "50 तक जा सकता हूं 50 55 तक।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "आपके बजट में ड्वार्का में एक स्टूडियो अपार्टमेंट है, जिसकी कीमत 52 लाख है। क्या आप इसके बारे में और जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "A"
+      },
+      {
+        "role": "assistant",
+        "text": "मुझे आपकी बात ठीक से समझ नहीं आई। क्या आप दोबारा कहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "मैं उसके बारे में जानना चाहूंगा।"
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह ड्वार्का में एक फर्निश्ड स्टूडियो अपार्टमेंट है, जो 52 लाख का है। यह मेट्रो के पास स्थित है और पहली बार घर खरीदने वालों के लिए बहुत अच्छा है। क्या आप इसे देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "assistant",
+        "text": "आप किस दिन विजिट करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "सुबह 10:00 बजे"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, तो हम कल सुबह 10:00 बजे का साइट visit फिक्स कर दें?"
+      },
+      {
+        "role": "user",
+        "text": "हां।"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, आपका साइट visit कल सुबह 10:00 बजे के लिए बुक हो गया है।"
+      },
+      {
+        "role": "user",
+        "text": "te"
+      },
+      {
+        "role": "assistant",
+        "text": "कोई और सहायता चाहिए हो तो ज़रूर बताएँ। धन्यवाद!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "text": "The customer is looking to buy a Apartment. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muuq187f-288u",
+    "receivedAt": "2026-10-05T03:59:52.779Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-05T03:56:22.558Z",
+    "name": "",
+    "intent": "Buy",
+    "location": "South Delhi",
+    "preferredLocations": [
+      "South Delhi"
+    ],
+    "propertyType": "",
+    "bhk": "3 BHK",
+    "budget": "₹50L",
+    "budgetValue": 5000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "3 BHK in South Delhi",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": true,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Handed off",
+    "nextAction": "Assign to a property advisor",
+    "summary": "The customer is looking to buy a 3 BHK in South Delhi with a budget of approximately ₹50L and wants to move forward immediately. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Hello and welcome to Delhi Homes, are you looking to buy or rent a property?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision, which area are you thinking of exploring?"
+      },
+      {
+        "role": "user",
+        "text": "South Delhi"
+      },
+      {
+        "role": "assistant",
+        "text": "South Delhi is a wonderful choice, we have the South Delhi Grand furnished 3 BHK listed at ₹1.85Cr ready to move. What size are you after?"
+      },
+      {
+        "role": "user",
+        "text": "gulaab jamun"
+      },
+      {
+        "role": "assistant",
+        "text": "That sounds delicious, but let's stick to property for now—what size home are you looking for?"
+      },
+      {
+        "role": "user",
+        "text": "3 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "3 BHK in South Delhi is a great option, and we currently have the South Delhi Grand ready to move at 1.85Cr. What is your budget looking like?"
+      },
+      {
+        "role": "user",
+        "text": "50l"
+      },
+      {
+        "role": "assistant",
+        "text": "50L is a bit tight for South Delhi Grand which is priced at 1.85Cr, but when are you hoping to move in?"
+      }
+    ],
+    "text": "The customer is looking to buy a 3 BHK in South Delhi with a budget of approximately ₹50L and wants to move forward immediately. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
+    "id": "whatsapp-muupwpzz-d1qm",
+    "receivedAt": "2026-10-05T03:56:22.559Z"
+  }
+]

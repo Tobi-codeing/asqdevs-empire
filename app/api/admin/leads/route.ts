@@ -10,5 +10,5 @@ export async function GET(request: Request) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  return NextResponse.json({ leads: getStoredLeads() });
+  return NextResponse.json({ leads: await getStoredLeads() });
 }
