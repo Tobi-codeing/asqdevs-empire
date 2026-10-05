@@ -46,25 +46,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "no_files" }, { status: 400 });
   }
 
-  const dir = join(process.cwd(), "public", "uploads");
-  mkdirSync(dir, { recursive: true });
+  try {
+    const dir = join(process.cwd(), "public", "uploads");
+    mkdirSync(dir, { recursive: true });
 
-  const urls: string[] = [];
-  for (const file of files) {
-    const ext = EXT[file.type];
-    if (!ext || file.size === 0 || file.size > MAX_BYTES) continue;
+    const urls: string[] = [];
+    for (const file of files) {
+      const ext = EXT[file.type];
+      if (!ext || file.size === 0 || file.size > MAX_BYTES) continue;
 
-    const name = `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.${ext}`;
-    writeFileSync(join(dir, name), Buffer.from(await file.arrayBuffer()));
-    urls.push(`/uploads/${name}`);
-  }
+      const name = `${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.${ext}`;
+      writeFileSync(join(dir, name), Buffer.from(await file.arrayBuffer()));
+      urls.push(`/uploads/${name}`);
+    }
 
-  if (!urls.length) {
+    if (!urls.length) {
+      return NextResponse.json(
+        { error: "no_valid_images", detail: "Use JPEG, PNG, WebP, AVIF or GIF under 6 MB." },
+        { status: 400 },
+      );
+    }
+
+    return NextResponse.json({ urls });
+  } catch (err) {
+    console.error("[upload] disk write failed:", err);
     return NextResponse.json(
-      { error: "no_valid_images", detail: "Use JPEG, PNG, WebP, AVIF or GIF under 6 MB." },
-      { status: 400 },
+      { error: "upload_failed", detail: "File uploads require a writable storage directory." },
+      { status: 500 },
     );
   }
-
-  return NextResponse.json({ urls });
 }

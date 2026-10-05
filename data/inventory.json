@@ -1,0 +1,78 @@
+[
+  {
+    "id": "dwarka-lofts",
+    "name": "Dwarka Studio Lofts",
+    "bhk": 1,
+    "kind": "Studio",
+    "location": "Dwarka",
+    "city": "Delhi",
+    "price": 5200000,
+    "priceLabel": "₹52L",
+    "furnishing": "Furnished",
+    "availability": "Ready to move",
+    "amenities": [
+      "Lift",
+      "Security",
+      "Power backup"
+    ],
+    "image": "/projects/maison-noor/01.jpg",
+    "gallery": [
+      {
+        "src": "/projects/maison-noor/01.jpg",
+        "alt": "Dwarka Studio Lofts — image 1"
+      },
+      {
+        "src": "/projects/maison-noor/02.jpg",
+        "alt": "Dwarka Studio Lofts — image 2"
+      },
+      {
+        "src": "/projects/maison-noor/03.jpg",
+        "alt": "Dwarka Studio Lofts — image 3"
+      }
+    ],
+    "summary": "A compact furnished studio in Dwarka, suited to first-time buyers.",
+    "description": "An efficient furnished studio in Dwarka that works well as a first home or a low-maintenance let-out. Lift, security and power backup are in place, and the metro is close by.",
+    "detailPageUrl": "/demo/properties/dwarka-lofts",
+    "keyDetails": [
+      "1 BHK Studio",
+      "Dwarka",
+      "₹52L"
+    ],
+    "status": "active",
+    "adminAdded": true,
+    "createdAt": "2026-10-05T04:23:04.805Z",
+    "updatedAt": "2026-10-05T10:21:52.817Z"
+  },
+  {
+    "id": "imperial-sky-tower",
+    "name": "Imperial Sky Tower",
+    "bhk": 2,
+    "kind": "Apartment",
+    "location": "Dwarka",
+    "city": "Delhi",
+    "price": 8500000,
+    "priceLabel": "₹85L",
+    "furnishing": "Furnished",
+    "availability": "Ready to move",
+    "amenities": [
+      "Clubhouse",
+      "Gym",
+      "Swimming Pool"
+    ],
+    "image": "/projects/azura/01.jpg",
+    "gallery": [],
+    "summary": "Luxury 2 BHK apartment in prime Dwarka location.",
+    "description": "Spacious 2 BHK with modern fittings, central air, and panoramic balcony views.",
+    "detailPageUrl": "/demo/properties/imperial-sky-tower",
+    "keyDetails": [
+      "2 BHK Apartment",
+      "Dwarka",
+      "₹85L"
+    ],
+    "status": "inactive",
+    "adminAdded": true,
+    "featured": false,
+    "createdAt": "2026-10-05T17:08:44.001Z",
+    "updatedAt": "2026-10-05T17:08:53.170Z"
+  }
+]

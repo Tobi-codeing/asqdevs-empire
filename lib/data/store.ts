@@ -100,12 +100,26 @@ export type UpdatePropertyInput = Partial<CreatePropertyInput>;
 /*  Storage                                                                   */
 /* -------------------------------------------------------------------------- */
 
-const DATA_DIR = join(process.cwd(), "data");
-const INVENTORY_FILE = join(DATA_DIR, "inventory.json");
+const LOCAL_DATA_DIR = join(process.cwd(), "data");
+const LOCAL_INVENTORY_FILE = join(LOCAL_DATA_DIR, "inventory.json");
+const TMP_DATA_DIR = join("/tmp", "asqdevs-data");
+const TMP_INVENTORY_FILE = join(TMP_DATA_DIR, "inventory.json");
 
-function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
+function ensureWritableDir(): string {
+  try {
+    if (!existsSync(LOCAL_DATA_DIR)) {
+      mkdirSync(LOCAL_DATA_DIR, { recursive: true });
+    }
+    return LOCAL_DATA_DIR;
+  } catch {
+    try {
+      if (!existsSync(TMP_DATA_DIR)) {
+        mkdirSync(TMP_DATA_DIR, { recursive: true });
+      }
+      return TMP_DATA_DIR;
+    } catch {
+      return LOCAL_DATA_DIR;
+    }
   }
 }
 
@@ -135,8 +149,13 @@ let allProperties: StoredProperty[] = SEED_STORED;
 let loaded = false;
 
 function persist() {
-  ensureDataDir();
-  writeFileSync(INVENTORY_FILE, JSON.stringify(adminProperties, null, 2), "utf-8");
+  try {
+    const dir = ensureWritableDir();
+    const file = join(dir, "inventory.json");
+    writeFileSync(file, JSON.stringify(adminProperties, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[inventory] could not persist to disk, keeping in memory:", err);
+  }
   recompute();
 }
 
@@ -157,18 +176,22 @@ function load() {
   if (loaded) return;
   loaded = true;
 
-  ensureDataDir();
-
   try {
-    if (existsSync(INVENTORY_FILE)) {
-      const raw = readFileSync(INVENTORY_FILE, "utf-8");
+    const targetFile = existsSync(LOCAL_INVENTORY_FILE)
+      ? LOCAL_INVENTORY_FILE
+      : existsSync(TMP_INVENTORY_FILE)
+        ? TMP_INVENTORY_FILE
+        : null;
+
+    if (targetFile) {
+      const raw = readFileSync(targetFile, "utf-8");
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         adminProperties = parsed as StoredProperty[];
       }
     }
   } catch {
-    // File missing or corrupt — start fresh from the seed inventory.
+    // File missing, unreadable or corrupt — start fresh from the seed inventory.
     adminProperties = [];
   }
 

@@ -19,9 +19,29 @@ import {
  * Server-only (`node:fs`).
  */
 
-const DATA_DIR = join(process.cwd(), "data");
-const LEADS_FILE = join(DATA_DIR, "leads.json");
+const LOCAL_DATA_DIR = join(process.cwd(), "data");
+const LOCAL_LEADS_FILE = join(LOCAL_DATA_DIR, "leads.json");
+const TMP_DATA_DIR = join("/tmp", "asqdevs-data");
+const TMP_LEADS_FILE = join(TMP_DATA_DIR, "leads.json");
 const MAX_LEADS = 300;
+
+function ensureWritableDir(): string {
+  try {
+    if (!existsSync(LOCAL_DATA_DIR)) {
+      mkdirSync(LOCAL_DATA_DIR, { recursive: true });
+    }
+    return LOCAL_DATA_DIR;
+  } catch {
+    try {
+      if (!existsSync(TMP_DATA_DIR)) {
+        mkdirSync(TMP_DATA_DIR, { recursive: true });
+      }
+      return TMP_DATA_DIR;
+    } catch {
+      return LOCAL_DATA_DIR;
+    }
+  }
+}
 
 /** Tests exercise the turn logic, not the filesystem — never write during them. */
 const isTest = () =>
@@ -34,21 +54,37 @@ export type StoredLead = LeadPayload & {
   receivedAt: string;
 };
 
+let inMemoryLeads: StoredLead[] = [];
+
 function load(): StoredLead[] {
   try {
-    if (existsSync(LEADS_FILE)) {
-      const parsed = JSON.parse(readFileSync(LEADS_FILE, "utf-8"));
-      if (Array.isArray(parsed)) return parsed as StoredLead[];
+    const targetFile = existsSync(LOCAL_LEADS_FILE)
+      ? LOCAL_LEADS_FILE
+      : existsSync(TMP_LEADS_FILE)
+        ? TMP_LEADS_FILE
+        : null;
+
+    if (targetFile) {
+      const parsed = JSON.parse(readFileSync(targetFile, "utf-8"));
+      if (Array.isArray(parsed)) {
+        const ids = new Set(inMemoryLeads.map((l) => l.id));
+        return [...inMemoryLeads, ...(parsed as StoredLead[]).filter((l) => !ids.has(l.id))];
+      }
     }
   } catch {
-    /* corrupt or missing — start fresh */
+    /* corrupt or missing — fall back to in-memory */
   }
-  return [];
+  return inMemoryLeads;
 }
 
 function persist(leads: StoredLead[]) {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(LEADS_FILE, JSON.stringify(leads.slice(0, MAX_LEADS), null, 2), "utf-8");
+  try {
+    const dir = ensureWritableDir();
+    const file = join(dir, "leads.json");
+    writeFileSync(file, JSON.stringify(leads.slice(0, MAX_LEADS), null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[leads] could not persist leads to disk, keeping in memory:", err);
+  }
 }
 
 /** Newest first. */
@@ -67,6 +103,7 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
       .slice(2, 6)}`,
     receivedAt,
   };
+  inMemoryLeads = [record, ...inMemoryLeads].slice(0, MAX_LEADS);
   if (isTest()) return record;
 
   const leads = [record, ...load()];

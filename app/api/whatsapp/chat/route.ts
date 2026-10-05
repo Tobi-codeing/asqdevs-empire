@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import type { Lead } from "@/lib/leads/types";
 import type { SentLink } from "@/lib/whatsapp/messages";
 import { runTurn } from "@/lib/whatsapp/turn";
@@ -39,28 +39,50 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "message_required" }, { status: 400 });
   }
 
-  const result = await runTurn(
-    {
-      text,
-      lead: body.lead,
-      history: Array.isArray(body.history)
-        ? body.history
-            .filter(
-              (item) =>
-                item &&
-                (item.side === "user" || item.side === "assistant") &&
-                typeof item.text === "string",
-            )
-            .slice(-16)
-            .map((item) => ({ side: item.side, text: item.text.slice(0, 500) }))
-        : [],
-      offeredPropertyIds: Array.isArray(body.offeredPropertyIds)
-        ? body.offeredPropertyIds.filter((id): id is string => typeof id === "string")
-        : [],
-      sentLinks: Array.isArray(body.sentLinks) ? body.sentLinks : [],
-    },
-    process.env.GEMINI_API_KEY ?? "",
-  );
+  try {
+    const result = await runTurn(
+      {
+        text,
+        lead: body.lead,
+        history: Array.isArray(body.history)
+          ? body.history
+              .filter(
+                (item) =>
+                  item &&
+                  (item.side === "user" || item.side === "assistant") &&
+                  typeof item.text === "string",
+              )
+              .slice(-16)
+              .map((item) => ({ side: item.side, text: item.text.slice(0, 500) }))
+          : [],
+        offeredPropertyIds: Array.isArray(body.offeredPropertyIds)
+          ? body.offeredPropertyIds.filter((id): id is string => typeof id === "string")
+          : [],
+        sentLinks: Array.isArray(body.sentLinks) ? body.sentLinks : [],
+      },
+      process.env.GEMINI_API_KEY ?? "",
+    );
 
-  return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("WhatsApp chat turn error:", error);
+    return NextResponse.json(
+      {
+        replies: [
+          {
+            text: "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ? क्या आप दिल्ली NCR में कोई खास प्रॉपर्टी, इलाका या बजट देख रहे हैं?",
+            quickReplies: [
+              "Apartments in Dwarka",
+              "Villas in Greater Noida",
+              "Budget under 1 Cr",
+            ],
+          },
+        ],
+        lead: body.lead || {},
+        offeredPropertyIds: body.offeredPropertyIds || [],
+        sentLinks: body.sentLinks || [],
+      },
+      { status: 200 },
+    );
+  }
 }
