@@ -2,7 +2,7 @@ import { formatBudget, type Property } from '@/lib/data/properties';
 import { getPropertyById } from '@/lib/data/inventory';
 import { bookingLabel } from '@/lib/ai/dates';
 import { recompute } from '@/lib/leads/update';
-import { normalisePhone } from '@/lib/leads/normalise';
+import { normalisePhone, normaliseBhk } from '@/lib/leads/normalise';
 import type { Lead } from '@/lib/leads/types';
 
 type Args = Record<string, unknown>;
@@ -52,18 +52,17 @@ export function applyToolResult(lead: Lead, name: string, args: Args, result: un
             ? a.budgetMax
             : undefined;
       const bhkVal =
-        lead.bhk ||
-        (typeof a.bhk === 'string' && a.bhk.trim() ? a.bhk.trim() : undefined) ||
-        (first.bhk ? `${first.bhk} BHK` : undefined);
+        (typeof a.bhk === 'string' && a.bhk.trim() ? normaliseBhk(a.bhk) : undefined) ||
+        (lead.bhk ? normaliseBhk(lead.bhk) : undefined);
       const propTypeVal =
         lead.propertyType ||
         (typeof a.kind === 'string' && a.kind.trim() ? a.kind.trim() : undefined) ||
-        first.kind;
+        (first.kind ?? 'Apartment');
 
       return recompute(
         {
           ...lead,
-          bhk: bhkVal,
+          ...(bhkVal ? { bhk: bhkVal } : {}),
           propertyType: propTypeVal,
           ...(budgetNum && !lead.budget
             ? { budget: budgetNum, budgetLabel: formatBudget(budgetNum) }
@@ -71,7 +70,7 @@ export function applyToolResult(lead: Lead, name: string, args: Args, result: un
           ...(foundLocation ? { location: foundLocation } : {}),
           matchedPropertyIds: properties.map((p) => p.id),
           selectedPropertyId:
-            lead.selectedPropertyId || (properties.length > 0 ? first.id : undefined),
+            lead.selectedPropertyId || (properties.length === 1 ? first.id : undefined),
         },
         { keepMatches: true },
       );
@@ -87,7 +86,7 @@ export function applyToolResult(lead: Lead, name: string, args: Args, result: un
       return recompute(
         {
           ...lead,
-          bhk: lead.bhk || (property.bhk ? `${property.bhk} BHK` : undefined),
+          bhk: lead.bhk ? normaliseBhk(lead.bhk) : (property.bhk ? normaliseBhk(property.bhk) : undefined),
           propertyType: lead.propertyType || property.kind,
           location: lead.location || property.location,
           selectedPropertyId: property.id,
@@ -109,7 +108,7 @@ export function applyToolResult(lead: Lead, name: string, args: Args, result: un
       // A stated value always wins, so a corrected requirement ("actually 3BHK
       // bhi chalega") replaces the old one rather than coexisting with it.
       if (str(a.location)) next.location = str(a.location);
-      if (str(a.bhk)) next.bhk = str(a.bhk);
+      if (str(a.bhk)) next.bhk = normaliseBhk(str(a.bhk));
       if (str(a.timeline)) next.timeline = str(a.timeline);
       if (typeof a.budget === 'number' && a.budget > 0) {
         next.budget = a.budget;
@@ -143,12 +142,13 @@ export function applyToolResult(lead: Lead, name: string, args: Args, result: un
       // `booked` is the only thing that may be presented as a confirmed
       // appointment. Anything else is recorded as still pending.
       if (res?.ok && res.booked) {
+        const bookedBhk = prop?.bhk ? normaliseBhk(prop.bhk) : undefined;
         return recompute({
           ...lead,
-          bhk: lead.bhk || (prop?.bhk ? `${prop.bhk} BHK` : undefined),
-          propertyType: lead.propertyType || prop?.kind,
-          ...(location ? { location } : {}),
-          ...(propId ? { selectedPropertyId: propId } : {}),
+          bhk: bookedBhk ?? (lead.bhk ? normaliseBhk(lead.bhk) : undefined),
+          propertyType: prop?.kind ?? lead.propertyType ?? "Apartment",
+          location: prop?.location ?? location ?? lead.location,
+          selectedPropertyId: propId ?? lead.selectedPropertyId,
           timeline: lead.timeline || "Immediately",
           siteVisit: res.slot ?? bookingLabel(date, time),
           siteVisitAlternatives: [],

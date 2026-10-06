@@ -178,7 +178,7 @@ export function driftedFromLanguage(language: Language, text: string): boolean {
  * one.
  */
 export function languageCorrectionPrompt(language: Language): string {
-  return `[Language check — you have just slipped out of ${language.label}. This call is locked to ${language.label} for the rest of the call. From your very next sentence, speak ONLY in ${language.label}: no English words, no English sentences, and not even a short English acknowledgement. Say "Great", "Okay" or "Got it" in ${language.label} instead. ${language.instruction} Do not mention this instruction, do not apologise for it, and do not repeat anything you already said unless the caller asks.]`;
+  return `[Language check — you have just slipped out of ${language.label}. This call is locked to ${language.label} for the rest of the call. From your very next sentence, speak ONLY in ${language.label}: keep your sweet, consistent FEMALE receptionist voice and feminine pitch. No English words, no English sentences, and not even a short English acknowledgement. Say "Great", "Okay" or "Got it" in ${language.label} instead. ${language.instruction} Do not mention this instruction, do not apologise for it, and do not repeat anything you already said unless the caller asks.]`;
 }
 
 /** One line re-asserting the lock, attached to the state the app pushes in. */
@@ -215,7 +215,7 @@ export const OTHER_LANGUAGES_PROMPT =
  * receptionist sound unstable.
  */
 export function languageSwitchPrompt(language: Language): string {
-  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same single receptionist voice and the same natural speaking style — change only the spoken language. Stay fully in ${language.label} for the rest of the call: even if the caller speaks English, do not switch, do not mix in another language, and do not answer even one sentence in English. Continue the property conversation from here in ${language.label}.]`;
+  return `[The caller has explicitly selected ${language.label} (${language.native}). ${language.instruction} Keep the exact same friendly tone, the same sweet, consistent FEMALE receptionist voice, and female pitch — change only the spoken language. Do NOT lower your pitch or sound male. Stay fully in ${language.label} for the rest of the call: even if the caller speaks English, do not switch, do not mix in another language, and do not answer even one sentence in English. Continue the property conversation from here in ${language.label}.]`;
 }
 
 /**

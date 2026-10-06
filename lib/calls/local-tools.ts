@@ -46,7 +46,7 @@ export function executeToolLocally(
         return {
           ok: false,
           error: "insufficient_criteria",
-          note: "Acknowledge the caller warmly in Hindi Devanagari. Mention that we have great options across Delhi (Dwarka, Rohini, Saket) and ask what BHK size or budget they have in mind.",
+          note: "Acknowledge the caller warmly in your clear female voice in Hindi Devanagari. Mention that we have great options across Delhi (Dwarka, Rohini, Saket) and ask what BHK size or budget they have in mind.",
         };
       }
 
@@ -56,7 +56,7 @@ export function executeToolLocally(
           ok: true,
           count: results.length,
           properties: results.map(brief),
-          note: "These are matching listings from Delhi Homes inventory. Recommend 1 or 2 options warmly in Hindi (Devanagari) and ask if they would like to book a site visit.",
+          note: "These are matching listings from Delhi Homes inventory. Recommend 1 or 2 options warmly in your consistent female voice in Hindi (Devanagari) and ask if they would like to book a site visit.",
         };
       }
 

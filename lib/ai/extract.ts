@@ -172,9 +172,18 @@ function boundBudget(text: string): { min: number; max: number } | undefined {
   return { min, max };
 }
 
+const HINDI_BHK_WORDS: Record<string, number> = {
+  एक: 1,
+  दो: 2,
+  तीन: 3,
+  चार: 4,
+  पाँच: 5,
+  पांच: 5,
+};
+
 function parseBhk(text: string): string | undefined {
   const numeric = text.match(
-    /(\d+)\s*(?:\+\s*)?(?:bhk|bedroom|bed rooms?|br\b)/i,
+    /(\d+)\s*(?:\+\s*)?(?:bhk|bedroom|bed rooms?|br\b|बीएचके|बी\s*एच\s*के|कमरे|कमरों)/i,
   );
   if (numeric) return `${numeric[1]} BHK`;
 
@@ -182,6 +191,11 @@ function parseBhk(text: string): string | undefined {
     /\b(one|two|three|four|ek|do|teen|char|chaar)\s*(?:bhk|bedroom)/i,
   );
   if (worded) return `${NUMBER_WORDS[worded[1].toLowerCase()]} BHK`;
+
+  const hindiWorded = text.match(
+    /(एक|दो|तीन|चार|पाँच|पांच)\s*(?:बीएचके|बी\s*एच\s*के|कमरे|कमरों|bhk)/i,
+  );
+  if (hindiWorded) return `${HINDI_BHK_WORDS[hindiWorded[1]]} BHK`;
 
   if (/\bstudio\b/i.test(text)) return "1 BHK";
   return undefined;

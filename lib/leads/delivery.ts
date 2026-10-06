@@ -1,6 +1,7 @@
 import { absolutePropertyUrl, type Property } from "@/lib/data/properties";
 import { buildSummary } from "@/lib/ai/summarize";
 import { nextActionLabel } from "@/lib/leads/view";
+import { normaliseBhk } from "@/lib/leads/normalise";
 import type { Lead } from "@/lib/leads/types";
 
 /**
@@ -102,9 +103,14 @@ function requirementPhrase(lead: Lead): string {
     : lead.location
       ? [lead.location]
       : [];
+  const cleanBhk = lead.bhk ? normaliseBhk(lead.bhk) : undefined;
+  let cleanType = lead.propertyType?.toLowerCase();
+  if (cleanType) {
+    cleanType = cleanType.replace(/\b\d*\s*bhk\b/gi, "").trim();
+  }
   return [
-    lead.bhk,
-    lead.propertyType?.toLowerCase(),
+    cleanBhk,
+    cleanType,
     areas.length ? `in ${areas.join(" or ")}` : "",
   ]
     .filter(Boolean)

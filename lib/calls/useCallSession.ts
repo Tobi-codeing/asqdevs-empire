@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GeminiLiveSession } from "@/lib/gemini/live-session";
 import {
   AUTOMATIC_VAD,
+  DEFAULT_VOICE,
   INJECT_LEAD_STATE,
   buildSessionConfig,
 } from "@/lib/gemini/config";
@@ -52,6 +53,8 @@ import {
   wrapUpPrompt,
 } from "@/lib/calls/completion";
 import { extractPhone, readName } from "@/lib/leads/confirmation";
+import { normaliseBhk } from "@/lib/leads/normalise";
+import { getActiveProperties } from "@/lib/data/inventory";
 import {
   isDuplicateQuestion,
   mergeTranscript,
@@ -979,6 +982,47 @@ export function useCallSession(
             }
           }
 
+          // If assistant stated or confirmed a specific BHK (e.g. "2 BHK फ्लैट के लिए कल सुबह 10 बजे की विजिट")
+          const bhkInAssistant = assistantLine.match(
+            /(\d+)\s*(?:bhk|बीएचके|बी\s*एच\s*के)/i,
+          );
+          if (bhkInAssistant) {
+            const confirmedBhk = normaliseBhk(bhkInAssistant[1]);
+            if (confirmedBhk && leadRef.current.bhk !== confirmedBhk) {
+              const next: Lead = { ...leadRef.current, bhk: confirmedBhk };
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
+          // If assistant mentioned a specific property from inventory in confirmation or visit booking
+          const activeProps = getActiveProperties();
+          const mentionedProp = activeProps.find(
+            (p) =>
+              assistantLine.toLowerCase().includes(p.name.toLowerCase()) ||
+              assistantLine.includes(p.name),
+          );
+          if (mentionedProp && isConfirmPromptSpoken) {
+            const current = leadRef.current;
+            const next: Lead = {
+              ...current,
+              selectedPropertyId: mentionedProp.id,
+              bhk: normaliseBhk(mentionedProp.bhk) ?? current.bhk,
+              location: mentionedProp.location ?? current.location,
+              propertyType: mentionedProp.kind ?? current.propertyType ?? "Apartment",
+            };
+            if (
+              next.selectedPropertyId !== current.selectedPropertyId ||
+              next.bhk !== current.bhk ||
+              next.location !== current.location
+            ) {
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
           /*
            * The receptionist is told to ask for the name and the contact number
            * itself, early in the call. Catch those answers deterministically as
@@ -1323,7 +1367,7 @@ export function useCallSession(
         },
         buildSessionConfig(
           connectionData.model ?? config.model,
-          connectionData.voice ?? config.voice ?? "Aoede",
+          connectionData.voice ?? config.voice ?? DEFAULT_VOICE,
           todayRef.current,
         ),
       );
@@ -1535,7 +1579,7 @@ export function useCallSession(
         // dates spoken by the caller always land on the right calendar day.
         buildSessionConfig(
           connection.model,
-          connection.voice ?? "Aoede",
+          connection.voice ?? DEFAULT_VOICE,
           todayRef.current,
         ),
       );
@@ -1545,7 +1589,7 @@ export function useCallSession(
         path: connection.path,
         relayUrl: connection.relayUrl,
         model: connection.model,
-        voice: connection.voice ?? "Aoede",
+        voice: connection.voice ?? DEFAULT_VOICE,
       };
       reconnectAttemptsRef.current = 0;
       isReconnectingRef.current = false;

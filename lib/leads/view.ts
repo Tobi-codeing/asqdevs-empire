@@ -1,7 +1,7 @@
 import { getPropertyById } from "@/lib/data/inventory";
 import type { Property } from "@/lib/data/properties";
 import { budgetSummaryText, formatLocation } from "@/lib/leads/format";
-import { formatPhone } from "@/lib/leads/normalise";
+import { formatPhone, normaliseBhk } from "@/lib/leads/normalise";
 import { missingFields, type Lead } from "@/lib/leads/types";
 import { searchForLead } from "@/lib/leads/match";
 
@@ -32,10 +32,12 @@ export function selectedProperty(lead: Lead): Property | undefined {
 
 /** "2 BHK apartment" — size and format joined the one way everywhere. */
 export function propertyLabel(lead: Lead): string | undefined {
-  const spec = [lead.bhk, lead.propertyType?.toLowerCase()]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
+  const cleanBhk = lead.bhk ? normaliseBhk(lead.bhk) : undefined;
+  let cleanType = lead.propertyType?.toLowerCase();
+  if (cleanType) {
+    cleanType = cleanType.replace(/\b\d*\s*bhk\b/gi, "").trim();
+  }
+  const spec = [cleanBhk, cleanType].filter(Boolean).join(" ").trim();
   return spec || undefined;
 }
 

@@ -4,6 +4,7 @@ import { recompute } from "@/lib/leads/update";
 import { applyToolResult } from "@/lib/demo/phone-lead";
 import { patchFromUtterance, reconcilePatch } from "@/lib/calls/transcript";
 import { PROPERTIES } from "@/lib/data/properties";
+import { propertyLabel } from "@/lib/leads/view";
 import {
   applyConfirmationReply,
   confirmationPrompt,
@@ -111,6 +112,52 @@ describe("phone tool results keep the record internally consistent", () => {
     );
     expect(discussed.selectedPropertyId).toBe("rohini-enclave");
     expect(discussed.matchedPropertyIds).toContain("rohini-enclave");
+  });
+
+  it("does not prematurely assign 1 BHK when caller searches without BHK", () => {
+    const searched = applyToolResult(
+      emptyLead("Phone"),
+      "searchProperties",
+      { budget: 8000000 },
+      { ok: true, properties: [property("dwarka-lofts"), property("rohini-enclave")] },
+    );
+    expect(searched.bhk).toBeUndefined();
+  });
+
+  it("correctly syncs 2 BHK when caller books site visit for Rohini Enclave and avoids BHK BHK duplication", () => {
+    // 1. Initial search with budget only (caller didn't specify BHK)
+    const afterSearch = applyToolResult(
+      emptyLead("Phone"),
+      "searchProperties",
+      { budget: 8000000 },
+      { ok: true, properties: [property("dwarka-lofts"), property("rohini-enclave")] },
+    );
+
+    // 2. Schedule visit for Rohini Enclave (2 BHK in Rohini, 78L)
+    const afterBooking = applyToolResult(
+      afterSearch,
+      "scheduleVisit",
+      { propertyId: "rohini-enclave", date: "tomorrow", time: "10:00 AM" },
+      { ok: true, booked: true, slot: "Wednesday 7 October, 10:00 AM" },
+    );
+
+    expect(afterBooking.selectedPropertyId).toBe("rohini-enclave");
+    expect(afterBooking.bhk).toBe("2 BHK");
+    expect(afterBooking.location).toBe("Rohini");
+    expect(afterBooking.propertyType).toBe("Apartment");
+
+    // 3. Property label formatting
+    const label = propertyLabel(afterBooking);
+    expect(label).toBe("2 BHK apartment");
+    expect(label).not.toContain("BHK BHK");
+  });
+
+  it("extracts Hindi BHK phrases correctly from caller speech", () => {
+    const patch1 = patchFromUtterance("मुझे 2 बीएचके फ्लैट चाहिए") ?? {};
+    expect(patch1.bhk).toBe("2 BHK");
+
+    const patch2 = patchFromUtterance("दो कमरे का मकान देखना है") ?? {};
+    expect(patch2.bhk).toBe("2 BHK");
   });
 });
 
