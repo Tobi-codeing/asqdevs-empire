@@ -123,6 +123,9 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
 
   const currentLeads = load();
   const existingIndex = currentLeads.findIndex((l) => {
+    if (input.id && l.id === input.id) {
+      return true;
+    }
     if (payload.phone && payload.phone !== "Not shared yet" && l.phone === payload.phone) {
       return true;
     }
@@ -141,7 +144,8 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
   const leadId =
     existingIndex >= 0
       ? currentLeads[existingIndex].id
-      : `${payload.source.toLowerCase()}-${Date.now().toString(36)}-${Math.random()
+      : input.id ||
+        `${payload.source.toLowerCase()}-${Date.now().toString(36)}-${Math.random()
           .toString(36)
           .slice(2, 6)}`;
 

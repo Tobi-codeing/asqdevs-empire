@@ -140,6 +140,20 @@ async function loadConsole(): Promise<ConsoleData> {
               .map((l) => l.phone)
               .filter((p) => p && p !== "Not shared yet" && p.trim() !== ""),
           );
+          // If a local lead has the same id as server lead, prefer the local one (has live updates)
+          for (let i = 0; i < combinedLeads.length; i++) {
+            const serverLead = combinedLeads[i];
+            const localMatch = cleanedLocal.find((l) => l.id === serverLead.id);
+            if (localMatch) {
+              combinedLeads[i] = {
+                ...serverLead,
+                ...localMatch,
+                matches: localMatch.matches?.length ? localMatch.matches : serverLead.matches,
+                transcript: localMatch.transcript?.length ? localMatch.transcript : serverLead.transcript,
+              };
+            }
+          }
+
           const toAdd = cleanedLocal.filter(
             (l) =>
               !knownIds.has(l.id) &&
@@ -1021,6 +1035,32 @@ function LeadList({ leads, loading }: { leads: StoredLead[]; loading: boolean })
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {lead.transcript && lead.transcript.length > 0 && (
+            <div className="mt-5 border-t border-[#1f1f1f] pt-5">
+              <p className="eyebrow mb-2 text-[#f5f3f0]/35">
+                Conversation transcript ({lead.transcript.length} turns)
+              </p>
+              <div className="max-h-56 overflow-y-auto space-y-2 border border-[#1f1f1f] bg-[#080808] p-3 text-xs">
+                {lead.transcript.map((t, idx) => (
+                  <div key={idx} className="flex gap-2.5">
+                    <span
+                      className={`font-mono uppercase font-semibold text-[10px] shrink-0 w-16 ${
+                        t.role === "assistant"
+                          ? "text-[#c6ad78]"
+                          : t.role === "user"
+                            ? "text-[#25d366]"
+                            : "text-[#f5f3f0]/40"
+                      }`}
+                    >
+                      {t.role}:
+                    </span>
+                    <span className="text-[#f5f3f0]/85 break-words">{t.text}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </li>

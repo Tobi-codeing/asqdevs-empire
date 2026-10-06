@@ -27,7 +27,7 @@ export const AUTOMATIC_VAD = true;
  * `sendContext` — no reply is requested, so it can never interrupt the caller.
  * Set to false to fall back to pure model memory.
  */
-export const INJECT_LEAD_STATE = true;
+export const INJECT_LEAD_STATE = false;
 
 /** Live model ids we know how to talk to, in order of preference. */
 export const LIVE_MODEL_CANDIDATES = [
@@ -368,7 +368,7 @@ export function buildSessionConfig(
         // Include a little audio before speech onset so the first syllable is
         // never clipped, and end the turn promptly once the caller really stops.
         prefixPaddingMs: 20,
-        silenceDurationMs: 750,
+        silenceDurationMs: 450,
       },
     },
     inputAudioTranscription: {},

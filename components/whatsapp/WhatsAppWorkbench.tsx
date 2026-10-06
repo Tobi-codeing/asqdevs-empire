@@ -228,6 +228,7 @@ export default function WhatsAppWorkbench() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              id: sessionIdRef.current,
               lead: nextState.lead,
               propertyIds: nextState.lead.matchedPropertyIds,
               transcript: (messages || []).map((m) => ({

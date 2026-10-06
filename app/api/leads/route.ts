@@ -23,6 +23,7 @@ export const dynamic = "force-dynamic";
  * unreachable destination is reported, not treated as a failed request.
  */
 type RequestBody = {
+  id?: string;
   lead?: Partial<Lead>;
   propertyIds?: string[];
   transcript?: { role?: string; text?: string }[];
@@ -57,6 +58,7 @@ export async function POST(request: Request) {
     }));
 
   const input = {
+    id: typeof body.id === "string" && body.id.trim() ? body.id.trim() : undefined,
     lead,
     matches: getPropertiesByIds(ids),
     transcript,

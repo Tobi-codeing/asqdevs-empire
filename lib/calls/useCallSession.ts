@@ -33,6 +33,7 @@ import {
   type ToolCall,
 } from "@/lib/realtime/live-events";
 import { applyToolResult } from "@/lib/demo/phone-lead";
+import { executeToolLocally } from "@/lib/calls/local-tools";
 import { emptyLead, type Lead } from "@/lib/leads/types";
 import {
   AUTO_END_NOTE,
@@ -597,14 +598,9 @@ export function useCallSession(
 
         let result: unknown = { ok: false };
         try {
-          const res = await fetch("/api/tools", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: call.name, arguments: call.args }),
-          });
-          if (res.ok) result = await res.json();
+          result = executeToolLocally(call.name, call.args);
         } catch {
-          result = { ok: false, error: "tool_unavailable" };
+          result = { ok: false, error: "tool_error" };
         }
 
         setLead((prev) => {

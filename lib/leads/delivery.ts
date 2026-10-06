@@ -42,6 +42,7 @@ export function leadDeliveryConfigured(): boolean {
 export type DeliveredTurn = { role: string; text: string };
 
 export type LeadDeliveryInput = {
+  id?: string;
   lead: Lead;
   /** The properties offered to the customer, so the agent sees what they saw. */
   matches?: Property[];

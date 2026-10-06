@@ -153,6 +153,18 @@ export async function startMicStreamer(
   const emit = (frame: Float32Array) => {
     if (stopped || !enabled) return;
     const resampled = resample(frame, context.sampleRate, INPUT_SAMPLE_RATE);
+    // Measure peak amplitude in this frame
+    let peak = 0;
+    for (let i = 0; i < resampled.length; i += 1) {
+      const val = Math.abs(resampled[i]);
+      if (val > peak) peak = val;
+    }
+    // If the frame is purely ambient background noise (< 0.018) while caller is not speaking,
+    // send true zero PCM so Gemini's VAD immediately recognises turn completion without hanging
+    if (peak < 0.018 && !speechState.active) {
+      onChunk(new Uint8Array(resampled.length * 2));
+      return;
+    }
     onChunk(floatTo16BitPcm(resampled));
   };
 

@@ -141,11 +141,21 @@ export default function PhoneConsole() {
         );
       } catch {}
 
-      if (currentLead.name || currentLead.phone || currentLead.siteVisit) {
+      if (
+        currentLead.score > 0 ||
+        currentLead.location ||
+        currentLead.budget ||
+        currentLead.bhk ||
+        currentLead.name ||
+        currentLead.phone ||
+        currentLead.siteVisit ||
+        transcriptEntries.length > 0
+      ) {
         void fetch("/api/leads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            id: stableId,
             lead: currentLead,
             propertyIds: currentLead.matchedPropertyIds,
             transcript: transcriptEntries,
@@ -172,9 +182,19 @@ export default function PhoneConsole() {
     setTextLead(emptyLead("Phone"));
   };
 
-  // Proactively sync voice lead during the call whenever name, phone, or visit is updated
+  // Proactively sync voice lead during the call on every update so Admin Console immediately sees live progress
   useEffect(() => {
-    if (mode === "voice" && (call.lead.name || call.lead.phone || call.lead.siteVisit)) {
+    if (
+      mode === "voice" &&
+      (call.lead.score > 0 ||
+        call.lead.location ||
+        call.lead.budget ||
+        call.lead.bhk ||
+        call.lead.name ||
+        call.lead.phone ||
+        call.lead.siteVisit ||
+        call.transcript.some((entry) => entry.role !== "system"))
+    ) {
       syncPhoneLead(
         call.lead,
         call.transcript.map((entry) => ({
