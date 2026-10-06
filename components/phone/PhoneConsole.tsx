@@ -39,8 +39,10 @@ export default function PhoneConsole() {
   const [showLead, setShowLead] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
-  /** Guards the one-time hand-off of a finished call to the CRM. */
+  /** Guards the one-time final hand-off of an ended call to the CRM. */
   const deliveredRef = useRef(false);
+  const phoneSessionIdRef = useRef<string>(`phone-${Date.now().toString(36)}`);
+  const sessionCreatedAtRef = useRef<string>(new Date().toISOString());
 
   const call = useCallSession({
     // When the conversation completes itself, show the admin overview without
@@ -75,58 +77,146 @@ export default function PhoneConsole() {
     };
   }, []);
 
+  const syncPhoneLead = useCallback(
+    (currentLead: Lead, transcriptEntries: { role: string; text: string }[]) => {
+      if (typeof window === "undefined") return;
+      const stableId = currentLead.phone
+        ? `phone-${currentLead.phone.replace(/\D/g, "")}`
+        : phoneSessionIdRef.current;
+
+      const clientLead = {
+        id: stableId,
+        source: "Phone",
+        capturedAt: sessionCreatedAtRef.current,
+        receivedAt: new Date().toISOString(),
+        name: currentLead.name || "Not shared yet",
+        phone: currentLead.phone || "Not shared yet",
+        intent: currentLead.intent || "Buy",
+        location: currentLead.location || "Delhi NCR",
+        preferredLocations: currentLead.preferredLocations || [],
+        propertyType: currentLead.propertyType || "Apartment",
+        bhk: currentLead.bhk || "2 BHK",
+        budget: currentLead.budgetLabel || "Flexible",
+        budgetValue: currentLead.budget ?? null,
+        timeline: currentLead.timeline || "Immediately",
+        preferences: currentLead.preferences || [],
+        requirement:
+          `${currentLead.bhk || ""} ${currentLead.propertyType || "property"} in ${currentLead.location || "Delhi"}`.trim(),
+        siteVisit: currentLead.siteVisit || "None requested",
+        callbackRequested: Boolean(currentLead.callbackRequested),
+        advisorRequested: Boolean(currentLead.advisorRequested),
+        optedOutFollowUps: Boolean(currentLead.optOut),
+        score: currentLead.score,
+        temperature: currentLead.temperature,
+        status: currentLead.status,
+        nextAction: currentLead.nextAction || "Follow up",
+        summary: `${currentLead.name || "Caller"} enquiry from AI Receptionist.`,
+        matches: [],
+        transcript: transcriptEntries,
+        text: `Phone Lead: ${currentLead.name || "Caller"} - ${currentLead.phone || "No phone"}`,
+      };
+
+      try {
+        const raw = localStorage.getItem("asqdevs_client_leads");
+        const existing = raw ? JSON.parse(raw) : [];
+        const filtered = existing.filter(
+          (l: any) =>
+            l.id !== clientLead.id &&
+            !(
+              clientLead.name &&
+              clientLead.name !== "Not shared yet" &&
+              l.name === clientLead.name &&
+              l.source === "Phone" &&
+              (!l.phone || l.phone === "Not shared yet" || l.phone === clientLead.phone)
+            ) &&
+            !(
+              clientLead.phone &&
+              clientLead.phone !== "Not shared yet" &&
+              l.phone === clientLead.phone
+            ),
+        );
+        localStorage.setItem(
+          "asqdevs_client_leads",
+          JSON.stringify([clientLead, ...filtered].slice(0, 50)),
+        );
+      } catch {}
+
+      if (currentLead.name || currentLead.phone || currentLead.siteVisit) {
+        void fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lead: currentLead,
+            propertyIds: currentLead.matchedPropertyIds,
+            transcript: transcriptEntries,
+          }),
+        }).catch(() => undefined);
+      }
+    },
+    [],
+  );
+
   const startVoice = async () => {
     deliveredRef.current = false;
+    phoneSessionIdRef.current = `phone-${Date.now().toString(36)}`;
+    sessionCreatedAtRef.current = new Date().toISOString();
     setMode("voice");
     await call.start();
   };
 
   const startText = () => {
     deliveredRef.current = false;
+    phoneSessionIdRef.current = `phone-${Date.now().toString(36)}`;
+    sessionCreatedAtRef.current = new Date().toISOString();
     setMode("text");
     setTextLead(emptyLead("Phone"));
   };
 
+  // Proactively sync voice lead during the call whenever name, phone, or visit is updated
+  useEffect(() => {
+    if (mode === "voice" && (call.lead.name || call.lead.phone || call.lead.siteVisit)) {
+      syncPhoneLead(
+        call.lead,
+        call.transcript.map((entry) => ({
+          role: entry.role,
+          text: entry.text,
+        })),
+      );
+    }
+  }, [mode, call.lead, call.transcript, syncPhoneLead]);
+
   /**
-   * Hand the finished call to the configured destination, once.
-   *
-   * The phone call ends in the browser, so it posts the completed lead to
-   * `/api/leads`; the WhatsApp path delivers server-side inside the turn. Both
-   * go through the same `deliverLead`, so the two channels cannot disagree about
-   * what the business receives.
+   * Hand the finished call to the configured destination on ended.
    */
   useEffect(() => {
     if (call.status !== "ended" || deliveredRef.current) return;
     if (!call.transcript.some((entry) => entry.role !== "system")) return;
     deliveredRef.current = true;
-    void fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        lead: call.lead,
-        propertyIds: call.lead.matchedPropertyIds,
-        transcript: call.transcript.map((entry) => ({
-          role: entry.role,
-          text: entry.text,
-        })),
-      }),
-    }).catch(() => undefined);
-  }, [call.status, call.lead, call.transcript]);
+    syncPhoneLead(
+      call.lead,
+      call.transcript.map((entry) => ({
+        role: entry.role,
+        text: entry.text,
+      })),
+    );
+  }, [call.status, call.lead, call.transcript, syncPhoneLead]);
 
   const endCall = async () => {
     const hadConversation = call.transcript.some(
       (entry) => entry.role !== "system",
     );
     await call.end();
-    // Show the admin overview whenever something was actually said, even if the
-    // conversation never reached a full qualification.
     if (hadConversation || call.lead.score > 0) setShowLead(true);
   };
 
-  const handleTextComplete = useCallback((completedLead: Lead) => {
-    setTextLead(completedLead);
-    setShowLead(true);
-  }, []);
+  const handleTextComplete = useCallback(
+    (completedLead: Lead) => {
+      setTextLead(completedLead);
+      setShowLead(true);
+      syncPhoneLead(completedLead, []);
+    },
+    [syncPhoneLead],
+  );
 
   const matches = pickProperties(inventory, lead.matchedPropertyIds);
 

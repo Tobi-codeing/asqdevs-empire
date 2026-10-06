@@ -73,6 +73,10 @@ export default function WhatsAppWorkbench() {
   const stateRef = useRef(state);
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoOpened = useRef(false);
+  const sessionIdRef = useRef<string>(
+    `whatsapp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+  );
+  const sessionCreatedAtRef = useRef<string>(new Date().toISOString());
 
   useEffect(() => {
     stateRef.current = state;
@@ -164,9 +168,9 @@ export default function WhatsAppWorkbench() {
       ) {
         try {
           const clientLead = {
-            id: `whatsapp-${(nextState.lead.phone || "anon").replace(/\D/g, "") || Date.now().toString(36)}`,
+            id: sessionIdRef.current,
             source: "WhatsApp",
-            capturedAt: new Date().toISOString(),
+            capturedAt: sessionCreatedAtRef.current,
             receivedAt: new Date().toISOString(),
             name: nextState.lead.name || "Not shared yet",
             phone: nextState.lead.phone || "Not shared yet",
@@ -191,7 +195,10 @@ export default function WhatsAppWorkbench() {
             nextAction: nextState.lead.nextAction || "Follow up",
             summary: `${nextState.lead.name || "Customer"} is looking for properties in ${nextState.lead.location || "Delhi NCR"}.`,
             matches: [],
-            transcript: [],
+            transcript: (messages || []).map((m) => ({
+              role: m.side === "assistant" ? "assistant" : "user",
+              text: m.text,
+            })),
             text: `WhatsApp Lead: ${nextState.lead.name || "Customer"} - ${nextState.lead.phone || "No phone"}`,
           };
           const raw = localStorage.getItem("asqdevs_client_leads");
@@ -199,13 +206,36 @@ export default function WhatsAppWorkbench() {
           const filtered = existing.filter(
             (l: any) =>
               l.id !== clientLead.id &&
-              (clientLead.phone === "Not shared yet" ||
-                l.phone !== clientLead.phone),
+              !(
+                clientLead.name &&
+                clientLead.name !== "Not shared yet" &&
+                l.name === clientLead.name &&
+                l.source === "WhatsApp"
+              ) &&
+              !(
+                clientLead.phone &&
+                clientLead.phone !== "Not shared yet" &&
+                l.phone === clientLead.phone
+              ),
           );
           localStorage.setItem(
             "asqdevs_client_leads",
             JSON.stringify([clientLead, ...filtered].slice(0, 50)),
           );
+
+          // Proactively sync lead to server
+          void fetch("/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              lead: nextState.lead,
+              propertyIds: nextState.lead.matchedPropertyIds,
+              transcript: (messages || []).map((m) => ({
+                role: m.side === "assistant" ? "assistant" : "user",
+                text: m.text,
+              })),
+            }),
+          }).catch(() => undefined);
         } catch {}
       }
 
@@ -270,6 +300,8 @@ export default function WhatsAppWorkbench() {
   };
 
   const restart = () => {
+    sessionIdRef.current = `whatsapp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+    sessionCreatedAtRef.current = new Date().toISOString();
     const fresh = createEngineState("WhatsApp");
     stateRef.current = fresh;
     autoOpened.current = false;

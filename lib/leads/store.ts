@@ -161,6 +161,27 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
 
   inMemoryLeads = updatedList;
 
+  // Clean any stale records for this same customer that lacked a phone number
+  if (
+    payload.phone &&
+    payload.phone !== "Not shared yet" &&
+    payload.name &&
+    payload.name !== "Not shared yet"
+  ) {
+    const normName = payload.name.toLowerCase().trim();
+    updatedList = updatedList.filter(
+      (l) =>
+        l.id === record.id ||
+        !(
+          l.name &&
+          l.name.toLowerCase().trim() === normName &&
+          l.source === payload.source &&
+          (!l.phone || l.phone === "Not shared yet" || l.phone.trim() === "")
+        ),
+    );
+    inMemoryLeads = updatedList;
+  }
+
   // Sync to Render persistent relay service if available
   const relayUrl = getRelayUrl();
   if (relayUrl && !isTest()) {

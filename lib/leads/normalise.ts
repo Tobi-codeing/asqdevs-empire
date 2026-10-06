@@ -205,6 +205,47 @@ export function normaliseBudget(value: unknown): number | undefined {
 }
 
 /**
+ * Convert Devanagari numerals (०, १, २, ३, ४, ५, ६, ७, ८, ९) to standard ASCII digits (0-9).
+ */
+export function normaliseDevanagariDigits(text: string): string {
+  return text.replace(/[\u0966-\u096F]/g, (c) => String(c.charCodeAt(0) - 0x0966));
+}
+
+const HINDI_WORD_DIGITS: [RegExp, string][] = [
+  [/(^|[\s,.-])(?:शून्य|शुन्य)(?=[\s,.-]|$)/g, "$10 "],
+  [/(^|[\s,.-])(?:एक)(?=[\s,.-]|$)/g, "$11 "],
+  [/(^|[\s,.-])(?:दो)(?=[\s,.-]|$)/g, "$12 "],
+  [/(^|[\s,.-])(?:तीन)(?=[\s,.-]|$)/g, "$13 "],
+  [/(^|[\s,.-])(?:चार)(?=[\s,.-]|$)/g, "$14 "],
+  [/(^|[\s,.-])(?:पाँच|पांच)(?=[\s,.-]|$)/g, "$15 "],
+  [/(^|[\s,.-])(?:छह|छः|छे)(?=[\s,.-]|$)/g, "$16 "],
+  [/(^|[\s,.-])(?:सात)(?=[\s,.-]|$)/g, "$17 "],
+  [/(^|[\s,.-])(?:आठ)(?=[\s,.-]|$)/g, "$18 "],
+  [/(^|[\s,.-])(?:नौ)(?=[\s,.-]|$)/g, "$19 "],
+  [/\b(?:zero|shunya|shoonya)\b/gi, "0"],
+  [/\b(?:one|ek)\b/gi, "1"],
+  [/\b(?:two|do)\b/gi, "2"],
+  [/\b(?:three|teen)\b/gi, "3"],
+  [/\b(?:four|char|chaar)\b/gi, "4"],
+  [/\b(?:five|paanch|panch)\b/gi, "5"],
+  [/\b(?:six|chhe|chhah|che)\b/gi, "6"],
+  [/\b(?:seven|saat|sat)\b/gi, "7"],
+  [/\b(?:eight|aath|ath)\b/gi, "8"],
+  [/\b(?:nine|nau)\b/gi, "9"],
+];
+
+/** Convert sequences of spoken number words in text to numeric digits */
+export function convertSpokenDigitWords(text: string): string {
+  let res = text;
+  for (let i = 0; i < 2; i++) {
+    for (const [pattern, repl] of HINDI_WORD_DIGITS) {
+      res = res.replace(pattern, repl);
+    }
+  }
+  return res;
+}
+
+/**
  * A phone number, reduced to the ten-digit Indian mobile it actually is.
  *
  * Callers say "+91 98765 43210", "09876543210" or "9876543210" and all three
@@ -214,15 +255,75 @@ export function normaliseBudget(value: unknown): number | undefined {
  */
 export function normalisePhone(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
-  const digits = value.replace(/\D/g, "");
+  const devanagariFixed = normaliseDevanagariDigits(value);
+  const digits = devanagariFixed.replace(/\D/g, "");
   let local = digits;
-  if (local.length >= 11 && local.startsWith("91")) local = local.slice(2);
+  if (local.length >= 12 && local.startsWith("091")) local = local.slice(3);
+  else if (local.length >= 11 && local.startsWith("91")) local = local.slice(2);
   else if (local.length >= 11 && local.startsWith("0")) local = local.slice(1);
 
-  // Accept 9 to 10 digits starting with 6-9 (handles 9-digit spoken numbers like 748586309 and standard 10-digit Indian mobiles)
-  if ((local.length === 10 || local.length === 9) && /^[6-9]/.test(local)) {
+  // Accept 9 to 10 digits starting with 5-9 (handles 9-digit spoken numbers like 748586309, VoIP, and standard 10-digit Indian mobiles)
+  if ((local.length === 10 || local.length === 9) && /^[5-9]/.test(local)) {
     return local;
   }
+  return undefined;
+}
+
+/**
+ * Extract an Indian contact number from free text (English, Hindi, or mixed sentence).
+ *
+ * Deliberately strict on digits but robust against sentence context:
+ * - Won't greedily eat adjacent numbers (like "2 BHK" or "90L").
+ * - Handles Devanagari numerals (०-९).
+ * - Handles spoken digit words in Hindi and English.
+ */
+export function extractPhone(raw: string): string | undefined {
+  if (!raw) return undefined;
+
+  // 1. Normalise Devanagari numerals (०-९ -> 0-9)
+  let text = normaliseDevanagariDigits(raw);
+
+  // 2. Normalise spoken digit words if any
+  text = convertSpokenDigitWords(text);
+
+  // 3. Direct match for clean input with optional country code (+91, 91, 0)
+  const clean = text.replace(/[\s()-]/g, "");
+  const directMatch = clean.match(/^(?:\+?91|0)?([5-9]\d{8,9})$/);
+  if (directMatch) {
+    const normalised = normalisePhone(directMatch[0]);
+    if (normalised) return normalised;
+  }
+
+  // 4. Pattern matching within free text (with word boundaries / non-digit lookahead):
+  // 10-digit mobile with optional country code and optional spaces/dashes
+  const tenDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9]\d{4}[\s.-]?\d{5}|[5-9]\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|[5-9]\d{3}[\s.-]?\d{3}[\s.-]?\d{4}|[5-9]\d{9})(?!\d)/;
+  const match10 = text.match(tenDigitPattern);
+  if (match10) {
+    const normalised = normalisePhone(match10[0]);
+    if (normalised) return normalised;
+  }
+
+  // 9-digit spoken mobile (voice STT swallowed one digit)
+  const nineDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9]\d{3}[\s.-]?\d{5}|[5-9]\d{8})(?!\d)/;
+  const match9 = text.match(nineDigitPattern);
+  if (match9) {
+    const normalised = normalisePhone(match9[0]);
+    if (normalised) return normalised;
+  }
+
+  // 5. Fallback for pure digit string in case punctuation was unusual
+  const allDigits = text.replace(/\D/g, "");
+  if (
+    allDigits.length === 10 ||
+    allDigits.length === 9 ||
+    (allDigits.length >= 11 &&
+      allDigits.length <= 13 &&
+      (allDigits.startsWith("91") || allDigits.startsWith("0")))
+  ) {
+    const normalised = normalisePhone(allDigits);
+    if (normalised) return normalised;
+  }
+
   return undefined;
 }
 

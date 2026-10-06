@@ -1,6 +1,6 @@
 import { formatBudget, formatBudgetRange } from "@/lib/data/properties";
 import { getKnownLocations } from "@/lib/data/inventory";
-import { normalisePhone } from "@/lib/leads/normalise";
+import { extractPhone, normalisePhone } from "@/lib/leads/normalise";
 import type { Intent, Lead } from "@/lib/leads/types";
 
 const NUMBER_WORDS: Record<string, number> = {
@@ -373,39 +373,29 @@ function parseLocation(text: string): string | undefined {
 /**
  * A contact number the customer stated.
  *
- * Deliberately strict: it looks for a run of digits a person would actually
- * read out as a phone number (optionally with +91, spaces or dashes) and the
- * caller's own words. A bare four-digit number from a garbled transcript must
- * never become the number the sales team dials.
+ * Deliberately strict on mobile digit shapes but robust against sentence context.
  */
 function parsePhone(text: string): string | undefined {
-  if (!text) return undefined;
-  const cleanDigits = text.replace(/\D/g, "");
-  if (cleanDigits.length >= 8 && cleanDigits.length <= 13) {
-    const normalised = normalisePhone(cleanDigits);
-    if (normalised) return normalised;
-  }
-  const match = text.match(/(?:\+?91[\s-]?)?(?:0)?[5-9](?:[\s-]?\d){7,10}/);
-  if (!match) return undefined;
-  return normalisePhone(match[0]);
+  return extractPhone(text);
 }
 
 function parseName(text: string): string | undefined {
+  const cleaned = text.replace(/['"”’]+$/g, "");
   for (const trigger of NAME_TRIGGERS) {
-    const match = text.match(trigger);
+    const match = cleaned.match(trigger);
     if (!match) continue;
-    const candidate = match[1];
+    const candidate = match[1]?.replace(/['"”’]+$/g, "");
     if (!candidate || NAME_STOPWORDS.has(candidate.toLowerCase())) continue;
     return candidate.charAt(0).toUpperCase() + candidate.slice(1).toLowerCase();
   }
 
   // Name correction or trailing name: e.g. "pass on nahi hai pass on nahi Aansu", "nahi Aansu"
   const correction =
-    text.match(/(?:nahi|not|galat|nahi\s+hai)\s+([A-Za-z\u0900-\u097F]{2,})\s*$/i) ||
-    text.match(/naam\s+([A-Za-z\u0900-\u097F]{2,})\s+hai/i) ||
-    text.match(/([A-Za-z\u0900-\u097F]{2,})\s+naam\s+hai/i);
+    cleaned.match(/(?:nahi|not|galat|nahi\s+hai)\s+([A-Za-z\u0900-\u097F]{2,})\s*$/i) ||
+    cleaned.match(/naam\s+([A-Za-z\u0900-\u097F]{2,})\s+hai/i) ||
+    cleaned.match(/([A-Za-z\u0900-\u097F]{2,})\s+naam\s+hai/i);
   if (correction) {
-    const candidate = correction[1];
+    const candidate = correction[1]?.replace(/['"”’]+$/g, "");
     if (candidate && !NAME_STOPWORDS.has(candidate.toLowerCase())) {
       return candidate.charAt(0).toUpperCase() + candidate.slice(1).toLowerCase();
     }

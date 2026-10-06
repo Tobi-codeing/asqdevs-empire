@@ -1,7 +1,9 @@
 import { detectAction, extractLeadFields } from "@/lib/ai/extract";
 import { budgetSummaryText, formatLocation, formatTimeline } from "@/lib/leads/format";
-import { formatPhone, normalisePhone } from "@/lib/leads/normalise";
+import { extractPhone, formatPhone, normalisePhone } from "@/lib/leads/normalise";
 import type { ConfirmationStage, Lead } from "@/lib/leads/types";
+
+export { extractPhone };
 
 /**
  * The end-of-conversation confirmation, shared by WhatsApp and the phone line.
@@ -56,21 +58,6 @@ export function isCorrection(text: string): boolean {
   );
 }
 
-/** A contact number stated in free text, or nothing. */
-export function extractPhone(text: string): string | undefined {
-  if (!text) return undefined;
-  // If the text is purely or mostly digits (e.g. "748586309", "748 586 309", "+91 748586309"):
-  const cleanDigits = text.replace(/\D/g, "");
-  if (cleanDigits.length >= 8 && cleanDigits.length <= 13) {
-    const normalised = normalisePhone(cleanDigits);
-    if (normalised) return normalised;
-  }
-
-  // Matches 8 to 11 digits embedded in a sentence (allowing optional spaces/dashes)
-  const match = text.match(/(?:\+?91[\s-]?)?(?:0)?[5-9](?:[\s-]?\d){7,10}/);
-  return match ? normalisePhone(match[0]) : undefined;
-}
-
 /**
  * The customer's name from an answer to "what name should I save?".
  *
@@ -82,7 +69,7 @@ export function extractPhone(text: string): string | undefined {
 export function readName(text: string): string | undefined {
   const parsed = extractLeadFields(text).name;
   if (parsed) return parsed;
-  const value = text.replace(/[.!।]+$/g, "").trim();
+  const value = text.replace(/[.!।'"]+$/g, "").replace(/^['"]+/g, "").trim();
   if (!value || value.length > 40 || value.length < 2) return undefined;
   const words = value.split(/\s+/);
   if (words.length > 3) return undefined;
@@ -93,7 +80,7 @@ export function readName(text: string): string | undefined {
     return undefined;
   return value
     .split(/\s+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 }
 
@@ -281,8 +268,16 @@ export function advanceConfirmation(
   }
 
   if (stage === "name") {
-    const name = readName(text);
-    if (!name) {
+    const phone = extractPhone(text);
+    const textWithoutPhone = phone
+      ? text
+          .replace(phone, "")
+          .replace(/(?:\+?91|0)/g, "")
+          .replace(/\b(?:phone|number|mobile|contact|naam|name|hai|is|mera|my|pe|par)\b/gi, "")
+          .trim()
+      : text;
+    const name = readName(textWithoutPhone) || readName(text);
+    if (!name && !phone) {
       return {
         kind: "reply",
         lead,
@@ -290,7 +285,11 @@ export function advanceConfirmation(
         quickReplies: [],
       };
     }
-    const withName = { ...lead, name };
+    const withName = {
+      ...lead,
+      ...(name ? { name } : {}),
+      ...(phone ? { phone } : {}),
+    };
     const ask = nextConfirmationAsk(withName);
     return {
       kind: "reply",
@@ -302,6 +301,14 @@ export function advanceConfirmation(
 
   if (stage === "phone") {
     const phone = extractPhone(text);
+    const textWithoutPhone = phone
+      ? text
+          .replace(phone, "")
+          .replace(/(?:\+?91|0)/g, "")
+          .replace(/\b(?:phone|number|mobile|contact|naam|name|hai|is|mera|my|pe|par)\b/gi, "")
+          .trim()
+      : text;
+    const name = !lead.name ? readName(textWithoutPhone) : undefined;
     if (!phone) {
       return {
         kind: "reply",
@@ -310,7 +317,11 @@ export function advanceConfirmation(
         quickReplies: [],
       };
     }
-    const withPhone = { ...lead, phone };
+    const withPhone = {
+      ...lead,
+      phone,
+      ...(name ? { name } : {}),
+    };
     const ask = nextConfirmationAsk(withPhone);
     return {
       kind: "reply",
@@ -335,13 +346,19 @@ export function advanceConfirmation(
     if (isAffirmative(text) && !isCorrection(text)) {
       return { kind: "final", lead: { ...lead, confirmation: "done" } };
     }
-    if (isCorrection(text)) {
+    if (
+      /(?:change|wrong|different)\s*number|नंबर\s*(?:बदलो|बदलना|गलत)/i.test(text)
+    ) {
       return {
         kind: "reply",
         lead: { ...lead, phone: undefined, confirmation: "phone" },
         text: "No problem — what's the correct number?",
         quickReplies: [],
       };
+    }
+    if (isCorrection(text)) {
+      // General correction (budget, locality, etc.) — preserve the phone!
+      return { kind: "change", lead: { ...lead, confirmation: undefined } };
     }
     return { kind: "final", lead: { ...lead, confirmation: "done" } };
   }

@@ -100,13 +100,47 @@ async function loadConsole(): Promise<ConsoleData> {
       if (rawLocal) {
         const localList = JSON.parse(rawLocal) as StoredLead[];
         if (Array.isArray(localList)) {
+          // Map each customer name to their real phone number across all records
+          const cleanKey = (str?: string) =>
+            (str || "")
+              .replace(/['"`]/g, "")
+              .toLowerCase()
+              .trim();
+
+          const phoneByName = new Map<string, string>();
+          for (const l of [...localList, ...combinedLeads]) {
+            const key = cleanKey(l.name);
+            if (
+              key &&
+              key !== "not shared yet" &&
+              key !== "new enquiry" &&
+              key !== "caller" &&
+              l.phone &&
+              l.phone !== "Not shared yet" &&
+              l.phone.trim() !== ""
+            ) {
+              phoneByName.set(key, l.phone);
+            }
+          }
+
+          const cleanedLocal = localList.filter((l) => {
+            const key = cleanKey(l.name);
+            if (!key || key === "not shared yet") return true;
+            const validPhone = phoneByName.get(key);
+            // Drop stale "Not shared yet" record when phone is actually known
+            if (validPhone && (!l.phone || l.phone === "Not shared yet" || l.phone.trim() === "")) {
+              return false;
+            }
+            return true;
+          });
+
           const knownIds = new Set(combinedLeads.map((l) => l.id));
           const knownPhones = new Set(
             combinedLeads
               .map((l) => l.phone)
-              .filter((p) => p && p !== "Not shared yet"),
+              .filter((p) => p && p !== "Not shared yet" && p.trim() !== ""),
           );
-          const toAdd = localList.filter(
+          const toAdd = cleanedLocal.filter(
             (l) =>
               !knownIds.has(l.id) &&
               (!l.phone || l.phone === "Not shared yet" || !knownPhones.has(l.phone)),
@@ -114,6 +148,17 @@ async function loadConsole(): Promise<ConsoleData> {
           if (toAdd.length) {
             combinedLeads = [...toAdd, ...combinedLeads];
           }
+
+          // Clean any duplicate "Not shared yet" in combined leads as well
+          combinedLeads = combinedLeads.filter((l) => {
+            const key = cleanKey(l.name);
+            if (!key || key === "not shared yet") return true;
+            const validPhone = phoneByName.get(key);
+            if (validPhone && (!l.phone || l.phone === "Not shared yet" || l.phone.trim() === "")) {
+              return false;
+            }
+            return true;
+          });
         }
       }
     } catch {}
@@ -912,8 +957,8 @@ function LeadList({ leads, loading }: { leads: StoredLead[]; loading: boolean })
               {lead.source}
             </span>
             <span className="type-title">
-              {lead.name || "New enquiry"}
-              {lead.phone ? ` · ${lead.phone}` : ""}
+              {lead.name && lead.name !== "Not shared yet" ? lead.name : "New enquiry"}
+              {lead.phone && lead.phone !== "Not shared yet" ? ` · ${lead.phone}` : ""}
             </span>
             <span className="type-meta text-[#f5f3f0]/50">
               {lead.temperature} · {lead.score}/100 · {lead.status}

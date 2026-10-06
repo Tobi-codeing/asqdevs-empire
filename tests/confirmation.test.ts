@@ -44,12 +44,19 @@ describe("phone numbers", () => {
     expect(normalisePhone("011 2345 6789")).toBeUndefined();
     expect(normalisePhone("12345")).toBeUndefined();
     expect(normalisePhone("")).toBeUndefined();
+    // Devanagari numerals
+    expect(normalisePhone("७४८५८२६३०९")).toBe("7485826309");
   });
 
   it("reads a number out of a sentence", () => {
     expect(extractPhone("you can reach me on 98 76 54 32 10")).toBe("9876543210");
     expect(extractPhone("mera number 9876543210 hai")).toBe("9876543210");
     expect(extractPhone("748586309")).toBe("748586309");
+    expect(extractPhone("Ashhu 7485826309 2 bhk in dwarka 90L")).toBe("7485826309");
+    expect(extractPhone("mera number 7485826309 hai kal 2 baje call karna")).toBe("7485826309");
+    expect(extractPhone("७४८५८२६३०९")).toBe("7485826309");
+    expect(extractPhone("मेरा नंबर ७४८५८२६३०९ है")).toBe("7485826309");
+    expect(extractPhone("सात चार आठ पांच आठ दो छह तीन शून्य नौ")).toBe("7485826309");
     expect(
       extractPhone(
         "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK अपार्टमेंट के लिए बुधवार 7 अक्टूबर सुबह 10 बजे की विजिट और आपका मोबाइल नंबर 748586309 — क्या यह सब सही है?",
@@ -129,6 +136,26 @@ describe("advanceConfirmation", () => {
     expect(step.kind).toBe("reply");
     if (step.kind !== "reply") throw new Error("expected reply");
     expect(step.lead.phone).toBe("9123456780");
+  });
+
+  it("handles name and phone given in one single message", () => {
+    let lead = base({ confirmation: "name" });
+    let step = advanceConfirmation(lead, "Ashhu 7485826309");
+    expect(step.kind).toBe("reply");
+    if (step.kind !== "reply") throw new Error("expected reply");
+    expect(step.lead.name).toBe("Ashhu");
+    expect(step.lead.phone).toBe("7485826309");
+    expect(step.lead.confirmation).toBe("phoneConfirm");
+  });
+
+  it("preserves phone when caller says a general negative in phoneConfirm", () => {
+    let lead = base({ name: "Ashhu", phone: "7485826309", confirmation: "phoneConfirm" });
+    let step = advanceConfirmation(lead, "nahi kal call karna");
+    // Does NOT wipe phone
+    expect(step.kind).not.toBe("none");
+    if (step.kind !== "none") {
+      expect(step.lead.phone).toBe("7485826309");
+    }
   });
 
   it("hands a correction back to the ordinary turn", () => {
