@@ -80,9 +80,7 @@ export default function PhoneConsole() {
   const syncPhoneLead = useCallback(
     (currentLead: Lead, transcriptEntries: { role: string; text: string }[]) => {
       if (typeof window === "undefined") return;
-      const stableId = currentLead.phone
-        ? `phone-${currentLead.phone.replace(/\D/g, "")}`
-        : phoneSessionIdRef.current;
+      const stableId = phoneSessionIdRef.current;
 
       const clientLead = {
         id: stableId,
@@ -119,22 +117,21 @@ export default function PhoneConsole() {
       try {
         const raw = localStorage.getItem("asqdevs_client_leads");
         const existing = raw ? JSON.parse(raw) : [];
-        const filtered = existing.filter(
-          (l: any) =>
-            l.id !== clientLead.id &&
-            !(
-              clientLead.name &&
-              clientLead.name !== "Not shared yet" &&
-              l.name === clientLead.name &&
-              l.source === "Phone" &&
-              (!l.phone || l.phone === "Not shared yet" || l.phone === clientLead.phone)
-            ) &&
-            !(
-              clientLead.phone &&
-              clientLead.phone !== "Not shared yet" &&
-              l.phone === clientLead.phone
-            ),
-        );
+        const filtered = existing.filter((l: any) => {
+          if (l.id === stableId) return false;
+          const lName = (l.name || "").toLowerCase().trim();
+          if (lName === "así es" || lName === "asi es" || lName === "caller") return false;
+          if (
+            clientLead.phone &&
+            clientLead.phone !== "Not shared yet" &&
+            l.phone &&
+            l.phone !== "Not shared yet" &&
+            l.phone.replace(/\D/g, "") === clientLead.phone.replace(/\D/g, "")
+          ) {
+            return false;
+          }
+          return true;
+        });
         localStorage.setItem(
           "asqdevs_client_leads",
           JSON.stringify([clientLead, ...filtered].slice(0, 50)),

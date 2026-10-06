@@ -112,6 +112,21 @@ async function loadConsole(): Promise<ConsoleData> {
   let combinedLeads = serverLeads;
 
 
+  const isJunkName = (str?: string) => {
+    if (!str) return false;
+    const norm = str
+      .replace(/['"`]/g, "")
+      .toLowerCase()
+      .trim();
+    return (
+      norm === "así es" ||
+      norm === "asi es" ||
+      norm === "caller" ||
+      norm === "¿qué?" ||
+      norm === "man"
+    );
+  };
+
   if (typeof window !== "undefined") {
     try {
       const rawLocal = localStorage.getItem("asqdevs_client_leads");
@@ -130,6 +145,7 @@ async function loadConsole(): Promise<ConsoleData> {
             const key = cleanKey(l.name);
             if (
               key &&
+              !isJunkName(key) &&
               key !== "not shared yet" &&
               key !== "new enquiry" &&
               key !== "caller" &&
@@ -142,22 +158,31 @@ async function loadConsole(): Promise<ConsoleData> {
           }
 
           const cleanedLocal = localList.filter((l) => {
+            if (isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
             const key = cleanKey(l.name);
             if (!key || key === "not shared yet") return true;
             const validPhone = phoneByName.get(key);
-            // Drop stale "Not shared yet" record when phone is actually known
             if (validPhone && (!l.phone || l.phone === "Not shared yet" || l.phone.trim() === "")) {
               return false;
             }
             return true;
           });
 
+          // Write back cleansed local storage without junk names
+          try {
+            localStorage.setItem(
+              "asqdevs_client_leads",
+              JSON.stringify(cleanedLocal.slice(0, 50)),
+            );
+          } catch {}
+
           const knownIds = new Set(combinedLeads.map((l) => l.id));
           const knownPhones = new Set(
             combinedLeads
-              .map((l) => l.phone)
-              .filter((p) => p && p !== "Not shared yet" && p.trim() !== ""),
+              .map((l) => (l.phone || "").replace(/\D/g, ""))
+              .filter(Boolean),
           );
+
           // If a local lead has the same id as server lead, prefer the local one (has live updates)
           for (let i = 0; i < combinedLeads.length; i++) {
             const serverLead = combinedLeads[i];
@@ -166,35 +191,68 @@ async function loadConsole(): Promise<ConsoleData> {
               combinedLeads[i] = {
                 ...serverLead,
                 ...localMatch,
+                name: isJunkName(localMatch.name) ? serverLead.name : localMatch.name,
                 matches: localMatch.matches?.length ? localMatch.matches : serverLead.matches,
                 transcript: localMatch.transcript?.length ? localMatch.transcript : serverLead.transcript,
               };
             }
           }
 
-          const toAdd = cleanedLocal.filter(
-            (l) =>
-              !knownIds.has(l.id) &&
-              (!l.phone || l.phone === "Not shared yet" || !knownPhones.has(l.phone)),
-          );
-          if (toAdd.length) {
-            combinedLeads = [...toAdd, ...combinedLeads];
-          }
-
-          // Clean any duplicate "Not shared yet" in combined leads as well
-          combinedLeads = combinedLeads.filter((l) => {
-            const key = cleanKey(l.name);
-            if (!key || key === "not shared yet") return true;
-            const validPhone = phoneByName.get(key);
-            if (validPhone && (!l.phone || l.phone === "Not shared yet" || l.phone.trim() === "")) {
-              return false;
-            }
+          const toAdd = cleanedLocal.filter((l) => {
+            if (isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
+            if (knownIds.has(l.id)) return false;
+            const num = (l.phone || "").replace(/\D/g, "");
+            if (num && knownPhones.has(num)) return false;
             return true;
           });
+
+          if (toAdd.length) {
+            combinedLeads = [...combinedLeads, ...toAdd];
+          }
         }
       }
     } catch {}
   }
+
+  // Purge junk names and sanitize across all combined leads
+  combinedLeads = combinedLeads
+    .filter((l) => !(isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")))
+    .map((l) => (isJunkName(l.name) ? { ...l, name: "New enquiry" } : l));
+
+  // If a lead has a confirmed phone number, drop any duplicate anonymous records for the same appointment slot
+  const phonesByVisit = new Map<string, string>();
+  for (const l of combinedLeads) {
+    if (l.siteVisit && l.siteVisit !== "None requested" && l.phone && l.phone !== "Not shared yet") {
+      phonesByVisit.set(l.siteVisit.toLowerCase().trim(), l.phone);
+    }
+  }
+  combinedLeads = combinedLeads.filter((l) => {
+    if (!l.phone || l.phone === "Not shared yet") {
+      const slot = (l.siteVisit || "").toLowerCase().trim();
+      if (slot && phonesByVisit.has(slot)) return false;
+    }
+    return true;
+  });
+
+  // Deduplicate by clean phone number keeping the most complete or newest record
+  const seenPhones = new Set<string>();
+  const deduped: StoredLead[] = [];
+  for (const l of combinedLeads) {
+    const rawDigits = (l.phone || "").replace(/\D/g, "");
+    if (rawDigits.length >= 8) {
+      if (seenPhones.has(rawDigits)) continue;
+      seenPhones.add(rawDigits);
+    }
+    deduped.push(l);
+  }
+  combinedLeads = deduped;
+
+  // CRITICAL: Always sort leads with newest receivedAt at the very top (index 0)
+  combinedLeads.sort((a, b) => {
+    const timeA = new Date(a.receivedAt || a.capturedAt || 0).getTime();
+    const timeB = new Date(b.receivedAt || b.capturedAt || 0).getTime();
+    return timeB - timeA;
+  });
 
   return {
     properties: propsData.properties ?? [],

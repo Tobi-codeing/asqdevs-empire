@@ -149,19 +149,31 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
           .toString(36)
           .slice(2, 6)}`;
 
+  const isJunk = (str?: string) => {
+    if (!str) return false;
+    const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
+    return norm === "así es" || norm === "asi es" || norm === "caller";
+  };
+
   const record: StoredLead = {
     ...payload,
+    name: isJunk(payload.name) ? "New enquiry" : payload.name,
     id: leadId,
-    receivedAt: existingIndex >= 0 ? currentLeads[existingIndex].receivedAt : receivedAt,
+    receivedAt: receivedAt,
   };
 
   let updatedList: StoredLead[];
   if (existingIndex >= 0) {
-    updatedList = [...currentLeads];
-    updatedList[existingIndex] = record;
+    const without = currentLeads.filter((_, idx) => idx !== existingIndex);
+    updatedList = [record, ...without].slice(0, MAX_LEADS);
   } else {
     updatedList = [record, ...currentLeads].slice(0, MAX_LEADS);
   }
+
+  // Purge any orphan junk-name records without phones
+  updatedList = updatedList.filter(
+    (l) => !(isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")),
+  );
 
   inMemoryLeads = updatedList;
 

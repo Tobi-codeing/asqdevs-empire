@@ -228,17 +228,32 @@ function loadRelayLeads() {
 function recordRelayLead(lead) {
   if (!lead || typeof lead !== "object") return null;
   loadRelayLeads();
+
+  const isJunk = (str) => {
+    if (!str || typeof str !== "string") return false;
+    const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
+    return norm === "así es" || norm === "asi es" || norm === "caller";
+  };
+
+  const cleanLead = {
+    ...lead,
+    name: isJunk(lead.name) ? "New enquiry" : lead.name,
+    receivedAt: new Date().toISOString(),
+  };
+
   const existingIndex = relayLeads.findIndex((l) => {
-    if (lead.id && l.id === lead.id) return true;
-    if (lead.phone && lead.phone !== "Not shared yet" && l.phone === lead.phone) return true;
+    if (cleanLead.id && l.id === cleanLead.id) return true;
+    if (cleanLead.phone && cleanLead.phone !== "Not shared yet" && l.phone === cleanLead.phone) return true;
     return false;
   });
 
+  const merged = existingIndex >= 0 ? { ...relayLeads[existingIndex], ...cleanLead } : cleanLead;
   if (existingIndex >= 0) {
-    relayLeads[existingIndex] = { ...relayLeads[existingIndex], ...lead };
-  } else {
-    relayLeads = [lead, ...relayLeads].slice(0, 300);
+    relayLeads.splice(existingIndex, 1);
   }
+  relayLeads = [merged, ...relayLeads]
+    .filter((l) => !(isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")))
+    .slice(0, 300);
 
   try {
     const dataDir = path.join(process.cwd(), "data");
@@ -246,7 +261,7 @@ function recordRelayLead(lead) {
     writeFileSync(path.join(dataDir, "leads.json"), JSON.stringify(relayLeads, null, 2), "utf-8");
   } catch {}
 
-  return lead;
+  return merged;
 }
 
 /**
