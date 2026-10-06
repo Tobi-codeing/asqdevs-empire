@@ -103,11 +103,11 @@ const GOODBYE_TAIL_MS = 2200;
 /** Backstop if the model never signs off after being asked to. */
 const WRAP_UP_TIMEOUT_MS = 9000;
 
-/** Silence timeout before asking the caller if they are still on the line (15 seconds). */
-const SILENCE_FIRST_TIMEOUT_MS = 15000;
+/** Silence timeout before asking the caller if they are still on the line (35 seconds). */
+const SILENCE_FIRST_TIMEOUT_MS = 35000;
 
-/** Final silence timeout after warning before cutting off the call (12 seconds). */
-const SILENCE_FINAL_TIMEOUT_MS = 12000;
+/** Final silence timeout after warning before cutting off the call (20 seconds). */
+const SILENCE_FINAL_TIMEOUT_MS = 20000;
 
 /**
  * How many times the receptionist may be pulled back into the closing read-back
@@ -126,7 +126,18 @@ const MAX_CONFIRM_TRIES = 3;
 export function useCallSession(
   options: { onAutoEnd?: (reason: string) => void } = {},
 ) {
-  const [status, setStatus] = useState<CallStatus>("idle");
+  const [status, setStatusState] = useState<CallStatus>("idle");
+  const statusRef = useRef<CallStatus>("idle");
+  const setStatus = useCallback(
+    (s: CallStatus | ((prev: CallStatus) => CallStatus)) => {
+      setStatusState((prev) => {
+        const next = typeof s === "function" ? s(prev) : s;
+        statusRef.current = next;
+        return next;
+      });
+    },
+    [],
+  );
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [lead, setLead] = useState<Lead>(() => emptyLead("Phone"));
   const [muted, setMuted] = useState(false);
@@ -153,6 +164,10 @@ export function useCallSession(
   const outputBuffer = useRef("");
   const endedRef = useRef(false);
   const closingRef = useRef(false);
+  const toolInFlightRef = useRef(false);
+  const toolSafetyTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
@@ -521,8 +536,8 @@ export function useCallSession(
     const isHindi =
       !languageRef.current || languageRef.current.code !== "en";
     const warningPrompt = isHindi
-      ? "[The caller has been silent for 15 seconds. Say warmly: 'क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।' and wait.]"
-      : "[The caller has been silent for 15 seconds. Say warmly: 'Are you still on the line? If there is no response shortly, the call will disconnect automatically.' and wait.]";
+      ? "[The caller has been silent for a while. Say warmly: 'क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।' and wait.]"
+      : "[The caller has been silent for a while. Say warmly: 'Are you still on the line? If there is no response shortly, the call will disconnect automatically.' and wait.]";
 
     sessionRef.current?.sendText(warningPrompt);
 
@@ -533,11 +548,15 @@ export function useCallSession(
   }, [handleFinalSilenceCutoff]);
 
   /**
-   * Schedule the 15-second caller silence timer when the receptionist finishes speaking.
+   * Schedule the caller silence timer when the receptionist finishes speaking.
    */
   const scheduleSilenceTimer = useCallback(() => {
     clearSilenceTimer();
     if (closingRef.current || autoEndingRef.current || endedRef.current) return;
+    if (toolInFlightRef.current) return;
+
+    const spoken = (lastAssistantTextRef.current || prevAssistantTextRef.current).trim();
+    if (!spoken) return;
 
     silenceTimerRef.current = setTimeout(() => {
       if (silenceWarningSentRef.current) {
@@ -692,6 +711,10 @@ export function useCallSession(
         case "audio":
           playerRef.current?.play(event.pcm, event.sampleRate);
           setStatus("speaking");
+          if (toolSafetyTimerRef.current) {
+            clearTimeout(toolSafetyTimerRef.current);
+            toolSafetyTimerRef.current = undefined;
+          }
           break;
 
         case "inputTranscript": {
@@ -722,6 +745,10 @@ export function useCallSession(
         case "outputTranscript": {
           if (endedRef.current) break;
           clearSilenceTimer();
+          if (toolSafetyTimerRef.current) {
+            clearTimeout(toolSafetyTimerRef.current);
+            toolSafetyTimerRef.current = undefined;
+          }
           // Strip Gemini meta tags or brackets like [No verbal response required.]
           const cleaned = event.text
             .replace(/\[[^\]]*\]\.?/gi, "")
@@ -753,7 +780,25 @@ export function useCallSession(
 
         case "toolCall": {
           if (closingRef.current || endedRef.current) break;
+          toolInFlightRef.current = true;
           setStatus("processing");
+          if (toolSafetyTimerRef.current) {
+            clearTimeout(toolSafetyTimerRef.current);
+          }
+          toolSafetyTimerRef.current = setTimeout(() => {
+            if (toolInFlightRef.current) {
+              toolInFlightRef.current = false;
+              if (statusRef.current === "processing") {
+                setStatus("listening");
+              }
+              const spoken = (lastAssistantTextRef.current || outputBuffer.current).trim();
+              if (!spoken) {
+                sessionRef.current?.sendText(
+                  "[You searched properties. Present 1 or 2 matching properties to the caller warmly in Hindi now and ask if they would like to visit.]",
+                );
+              }
+            }
+          }, 8000);
           const preToolSpeech = outputBuffer.current.trim();
           sealBubble();
           outputBuffer.current = "";
@@ -769,6 +814,11 @@ export function useCallSession(
            */
           clearSilenceTimer();
           silenceWarningSentRef.current = false;
+          if (toolSafetyTimerRef.current) {
+            clearTimeout(toolSafetyTimerRef.current);
+            toolSafetyTimerRef.current = undefined;
+          }
+          toolInFlightRef.current = false;
           playerRef.current?.flush();
           sealBubble();
           inputBuffer.current = "";
@@ -778,6 +828,21 @@ export function useCallSession(
           break;
 
         case "turnComplete": {
+          if (
+            toolInFlightRef.current &&
+            !outputBuffer.current.trim() &&
+            !lastAssistantTextRef.current.trim()
+          ) {
+            // Intermediate tool execution turnComplete from Gemini Live API before verbal modelTurn begins.
+            // Do NOT reset buffers, do NOT trigger silence timers, do NOT inject lead state yet.
+            return;
+          }
+          if (toolSafetyTimerRef.current) {
+            clearTimeout(toolSafetyTimerRef.current);
+            toolSafetyTimerRef.current = undefined;
+          }
+          toolInFlightRef.current = false;
+
           // Captured before the buffers are cleared, because both the language
           // choice and the drift check are decisions about this turn.
           const callerText = inputBuffer.current;
@@ -978,8 +1043,10 @@ export function useCallSession(
             // Assistant output must never be echoed back as new input.
             checkCompletion();
             injectLeadState();
-            // Receptionist finished speaking; start 15-second silence timer waiting for caller
-            scheduleSilenceTimer();
+            // Receptionist finished speaking; start silence timer waiting for caller ONLY IF assistant actually spoke
+            if (assistantLine && assistantLine.trim().length > 0) {
+              scheduleSilenceTimer();
+            }
           }
           prevAssistantTextRef.current = assistantLine;
           lastAssistantTextRef.current = "";
@@ -1117,6 +1184,11 @@ export function useCallSession(
     micRef.current = null;
     clearSilenceTimer();
     silenceWarningSentRef.current = false;
+    if (toolSafetyTimerRef.current) {
+      clearTimeout(toolSafetyTimerRef.current);
+      toolSafetyTimerRef.current = undefined;
+    }
+    toolInFlightRef.current = false;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     sessionRef.current?.close();
@@ -1231,6 +1303,11 @@ export function useCallSession(
     closingRef.current = false;
     clearSilenceTimer();
     silenceWarningSentRef.current = false;
+    toolInFlightRef.current = false;
+    if (toolSafetyTimerRef.current) {
+      clearTimeout(toolSafetyTimerRef.current);
+      toolSafetyTimerRef.current = undefined;
+    }
     greetedRef.current = false;
     autoEndingRef.current = false;
     setAutoEnding(false);
@@ -1330,7 +1407,12 @@ export function useCallSession(
       startRecording(playerRef.current.recordingStream);
       const mic = await startMicStreamer(
         stream,
-        (pcm) => sessionRef.current?.sendAudio(pcm),
+        (pcm) => {
+          if (toolInFlightRef.current || statusRef.current === "processing") {
+            return;
+          }
+          sessionRef.current?.sendAudio(pcm);
+        },
         (next) => setLevel(next),
         /*
          * Manual turn boundaries are only sent when the server's own VAD is off.

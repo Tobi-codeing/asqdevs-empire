@@ -232,12 +232,20 @@ function recordRelayLead(lead) {
   const isJunk = (str) => {
     if (!str || typeof str !== "string") return false;
     const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
-    return norm === "así es" || norm === "asi es" || norm === "caller";
+    return norm === "así es" || norm === "asi es";
   };
+
+  const isAnonymous = (str) => {
+    if (!str || typeof str !== "string") return true;
+    const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
+    return norm === "caller" || norm === "not shared yet" || isJunk(str);
+  };
+
+  const cleanName = isAnonymous(lead.name) ? "New enquiry" : lead.name;
 
   const cleanLead = {
     ...lead,
-    name: isJunk(lead.name) ? "New enquiry" : lead.name,
+    name: cleanName,
     receivedAt: new Date().toISOString(),
   };
 
@@ -252,7 +260,18 @@ function recordRelayLead(lead) {
     relayLeads.splice(existingIndex, 1);
   }
   relayLeads = [merged, ...relayLeads]
-    .filter((l) => !(isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")))
+    .filter((l) => {
+      const hasContent = Boolean(
+        (l.score && l.score > 0) ||
+        l.budget ||
+        l.bhk ||
+        l.location ||
+        (l.transcript && l.transcript.length > 0)
+      );
+      if (hasContent) return true;
+      if (isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
+      return true;
+    })
     .slice(0, 300);
 
   try {

@@ -121,9 +121,22 @@ async function loadConsole(): Promise<ConsoleData> {
     return (
       norm === "así es" ||
       norm === "asi es" ||
-      norm === "caller" ||
       norm === "¿qué?" ||
       norm === "man"
+    );
+  };
+
+  const isAnonymousName = (str?: string) => {
+    if (!str) return true;
+    const norm = str
+      .replace(/['"`]/g, "")
+      .toLowerCase()
+      .trim();
+    return (
+      norm === "caller" ||
+      norm === "not shared yet" ||
+      norm === "new enquiry" ||
+      isJunkName(str)
     );
   };
 
@@ -145,10 +158,7 @@ async function loadConsole(): Promise<ConsoleData> {
             const key = cleanKey(l.name);
             if (
               key &&
-              !isJunkName(key) &&
-              key !== "not shared yet" &&
-              key !== "new enquiry" &&
-              key !== "caller" &&
+              !isAnonymousName(key) &&
               l.phone &&
               l.phone !== "Not shared yet" &&
               l.phone.trim() !== ""
@@ -158,6 +168,14 @@ async function loadConsole(): Promise<ConsoleData> {
           }
 
           const cleanedLocal = localList.filter((l) => {
+            const hasContent = Boolean(
+              (l.score && l.score > 0) ||
+              l.budget ||
+              l.bhk ||
+              l.location ||
+              (l.transcript && l.transcript.length > 0)
+            );
+            if (hasContent) return true;
             if (isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
             const key = cleanKey(l.name);
             if (!key || key === "not shared yet") return true;
@@ -199,7 +217,6 @@ async function loadConsole(): Promise<ConsoleData> {
           }
 
           const toAdd = cleanedLocal.filter((l) => {
-            if (isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
             if (knownIds.has(l.id)) return false;
             const num = (l.phone || "").replace(/\D/g, "");
             if (num && knownPhones.has(num)) return false;
@@ -216,8 +233,19 @@ async function loadConsole(): Promise<ConsoleData> {
 
   // Purge junk names and sanitize across all combined leads
   combinedLeads = combinedLeads
-    .filter((l) => !(isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")))
-    .map((l) => (isJunkName(l.name) ? { ...l, name: "New enquiry" } : l));
+    .filter((l) => {
+      const hasContent = Boolean(
+        (l.score && l.score > 0) ||
+        l.budget ||
+        l.bhk ||
+        l.location ||
+        (l.transcript && l.transcript.length > 0)
+      );
+      if (hasContent) return true;
+      if (isJunkName(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
+      return true;
+    })
+    .map((l) => (isAnonymousName(l.name) ? { ...l, name: "New enquiry" } : l));
 
   // If a lead has a confirmed phone number, drop any duplicate anonymous records for the same appointment slot
   const phonesByVisit = new Map<string, string>();

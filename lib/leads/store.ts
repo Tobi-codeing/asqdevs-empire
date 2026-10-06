@@ -152,12 +152,20 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
   const isJunk = (str?: string) => {
     if (!str) return false;
     const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
-    return norm === "así es" || norm === "asi es" || norm === "caller";
+    return norm === "así es" || norm === "asi es";
   };
+
+  const isAnonymous = (str?: string) => {
+    if (!str) return true;
+    const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
+    return norm === "caller" || norm === "not shared yet" || isJunk(str);
+  };
+
+  const cleanName = isAnonymous(payload.name) ? "New enquiry" : payload.name;
 
   const record: StoredLead = {
     ...payload,
-    name: isJunk(payload.name) ? "New enquiry" : payload.name,
+    name: cleanName,
     id: leadId,
     receivedAt: receivedAt,
   };
@@ -170,10 +178,19 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
     updatedList = [record, ...currentLeads].slice(0, MAX_LEADS);
   }
 
-  // Purge any orphan junk-name records without phones
-  updatedList = updatedList.filter(
-    (l) => !(isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")),
-  );
+  // Only purge empty records that have literally zero qualification content AND junk name without a phone
+  updatedList = updatedList.filter((l) => {
+    const hasContent = Boolean(
+      (l.score && l.score > 0) ||
+      l.budget ||
+      l.bhk ||
+      l.location ||
+      (l.transcript && l.transcript.length > 0)
+    );
+    if (hasContent) return true;
+    if (isJunk(l.name) && (!l.phone || l.phone === "Not shared yet")) return false;
+    return true;
+  });
 
   inMemoryLeads = updatedList;
 

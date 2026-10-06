@@ -199,7 +199,7 @@ function parseIntent(text: string): Intent | undefined {
    */
   if (/किराये|किराया|रेंट|किराए/.test(text)) return "Rent";
   if (/बेच|बिक्री|विक्रय/.test(text)) return "Sell";
-  if (/खरीद|क्रय|लेना है|लेने का|ले रहा|चाहता हूँ|चाहती हूँ/.test(text)) return "Buy";
+  if (/खरीद|क्रय|लेना है|लेने का|ले रहा|देखना है|देख रहे|देख रहा|चाहिए|ढूंढ रहा|ढूंढ रहे|खोज रहा|चाहता हूँ|चाहती हूँ/.test(text)) return "Buy";
 
   /*
    * Every keyword here is word-bounded. Without the boundaries, `lease` matched
@@ -223,7 +223,7 @@ function parseIntent(text: string): Intent | undefined {
    * customer actually said "rent" or "sell".
    */
   const hinglishWants =
-    /\b(?:chahiye|chaahiye|chahie|chaiye|lena\s+hai|leni\s+hai|dhoond\s+raha|dhoondh\s+raha|dekh\s+raha)\b/i.test(
+    /\b(?:chahiye|chaahiye|chahie|chaiye|lena\s+hai|leni\s+hai|dhoond\s+raha|dhoondh\s+raha|dekh\s+raha|dekhna\s+hai)\b/i.test(
       lower,
     ) &&
     /\b(?:flat|apartment|property|home|house|ghar|makaan|bhk|villa|studio|penthouse|place|jagah)\b/i.test(
@@ -360,7 +360,7 @@ function parseLocation(text: string): string | undefined {
   if (match) return match;
 
   if (
-    /(?:socha\s+nahi|koi\s+(?:idea|area|jagah)\s+nahi|pata\s+nahi|kuch\s+(?:rakha|fix)\s+nahi|any\s+area|anywhere|flexible|no\s+preference|no\s+specific\s+area|doesn'?t\s+matter|koi\s+bhi|kahi\s+bhi|इलाके\s*(?:का|में|में\s*कोई)?\s*(?:कोई\s*)?(?:सोचा|आईडिया|आइडिया|पता|नहीं\s*सोच)\s*नहीं|कुछ\s*(?:रखा|सोचा|तय)\s*तो\s*नहीं|कोई\s*(?:भी\s*)?(?:सोचा|आईडिया|आइडिया|तय)\s*नहीं|कोई\s+भी\s+चलेगा|कहीं\s+भी|इलाके\s*नहीं\s*सोच\s*रहा)/i.test(
+    /(?:socha\s+nahi|koi\s+(?:idea|area|jagah)\s+nahi|pata\s+nahi|kuch\s+(?:rakha|fix)\s+nahi|any\s+area|anywhere|flexible|no\s+preference|no\s+specific\s+area|doesn'?t\s+matter|koi\s+bhi|kahi\s+bhi|(?:ilaak[ae]|area|location)\s*(?:ka)?\s*(?:koi\s+)?(?:idea|pata|socha)\s*nahi|idea\s*nahi\s*hai|(?:delhi|दिल्ली)\s*(?:में|mein)?\s*(?:kahin|कहीं|anywhere|flexible)|इलाके\s*(?:का|में|में\s*कोई)?\s*(?:कोई\s*)?(?:सोचा|आईडिया|आइडिया|पता|नहीं\s*सोच)\s*नहीं|इलाका\s*(?:का)?\s*(?:कोई\s*)?(?:आईडिया|आइडिया|पता)\s*नहीं|कुछ\s*(?:रखा|सोचा|तय)\s*तो\s*नहीं|कोई\s*(?:भी\s*)?(?:सोचा|आईडिया|आइडिया|तय)\s*नहीं|कोई\s+भी\s+चलेगा|कहीं\s+भी|इलाके\s*नहीं\s*सोच\s*रहा)/i.test(
       text,
     )
   ) {
