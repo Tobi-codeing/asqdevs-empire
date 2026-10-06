@@ -210,6 +210,16 @@ export function useCallSession(
    * current handler rather than the one captured when `start()` ran.
    */
   const handlerRef = useRef<(event: LiveEvent) => void>(() => undefined);
+  const connectionConfigRef = useRef<{
+    path: string;
+    relayUrl?: string;
+    model: string;
+    voice: string;
+  } | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+  const isReconnectingRef = useRef(false);
+  const transcriptRef = useRef<TranscriptEntry[]>([]);
+  const attemptReconnectRef = useRef<() => void>(() => undefined);
 
   const clearAutoEnd = () => {
     if (autoEndTimerRef.current) clearTimeout(autoEndTimerRef.current);
@@ -981,6 +991,15 @@ export function useCallSession(
           break;
 
         case "error":
+          if (
+            !endedRef.current &&
+            !closingRef.current &&
+            reconnectAttemptsRef.current < 2 &&
+            connectionConfigRef.current
+          ) {
+            void attemptReconnectRef.current();
+            break;
+          }
           setError(classifyError(event.message));
           setErrorDetail(event.message);
           cleanupRef.current();
@@ -989,6 +1008,14 @@ export function useCallSession(
 
         case "close":
           if (!endedRef.current) {
+            if (
+              !closingRef.current &&
+              reconnectAttemptsRef.current < 2 &&
+              connectionConfigRef.current
+            ) {
+              void attemptReconnectRef.current();
+              break;
+            }
             cleanupRef.current();
             setStatus((prev) => (prev === "ended" ? prev : "error"));
             setError((prev) => prev ?? "connection_failed");
@@ -1095,7 +1122,89 @@ export function useCallSession(
     sessionRef.current?.close();
     sessionRef.current = null;
     setLevel(0);
+    connectionConfigRef.current = null;
+    reconnectAttemptsRef.current = 0;
+    isReconnectingRef.current = false;
   }, []);
+
+  const attemptReconnect = useCallback(async () => {
+    if (isReconnectingRef.current || endedRef.current || closingRef.current) return;
+    const config = connectionConfigRef.current;
+    if (!config) return;
+
+    isReconnectingRef.current = true;
+    reconnectAttemptsRef.current += 1;
+    setStatus("connecting");
+
+    try {
+      const tokenRes = await fetchSessionTicket("/api/gemini/session");
+      if (!tokenRes.ok) throw new Error("ticket_failed");
+      const connectionData = (await tokenRes.json()) as {
+        ticket?: string;
+        path?: string;
+        relayUrl?: string;
+        model?: string;
+        voice?: string;
+      };
+      if (!connectionData.ticket || !connectionData.path) {
+        throw new Error("invalid_ticket");
+      }
+
+      try {
+        sessionRef.current?.close();
+      } catch {}
+
+      const callId = callIdRef.current;
+      const session = new GeminiLiveSession((event) => {
+        if (callId === callIdRef.current) handlerRef.current(event);
+      });
+      sessionRef.current = session;
+
+      await session.connect(
+        {
+          path: connectionData.path,
+          ticket: connectionData.ticket,
+          relayUrl: connectionData.relayUrl ?? config.relayUrl,
+        },
+        buildSessionConfig(
+          connectionData.model ?? config.model,
+          connectionData.voice ?? config.voice ?? "Aoede",
+          todayRef.current,
+        ),
+      );
+
+      isReconnectingRef.current = false;
+      const currentL = leadRef.current;
+      const recentUserTurns = transcriptRef.current
+        .filter((t) => t.role === "user")
+        .slice(-2)
+        .map((t) => t.text)
+        .join(" | ");
+
+      const contextSummary = `[Session reconnected seamlessly. Lead details so far: Intent=${currentL.intent || "Buy"}, Budget=${currentL.budgetLabel || "Flexible"}, Location=${currentL.location || "Flexible"}. Caller's recent words: "${recentUserTurns || "In conversation"}". Continue smoothly in Hindi (Devanagari) where you left off without mentioning any technical disconnect.]`;
+
+      session.sendContext(contextSummary);
+      setStatus("listening");
+    } catch (reconnectErr) {
+      isReconnectingRef.current = false;
+      cleanup();
+      setStatus("error");
+      setError("connection_failed");
+      setErrorDetail(
+        reconnectErr instanceof Error
+          ? reconnectErr.message
+          : String(reconnectErr),
+      );
+    }
+  }, [cleanup]);
+
+  useEffect(() => {
+    attemptReconnectRef.current = attemptReconnect;
+  }, [attemptReconnect]);
+
+  useEffect(() => {
+    transcriptRef.current = transcript;
+  }, [transcript]);
 
   useEffect(() => {
     cleanupRef.current = cleanup;
@@ -1266,6 +1375,15 @@ export function useCallSession(
         ),
       );
       if (callId !== callIdRef.current) return;
+
+      connectionConfigRef.current = {
+        path: connection.path,
+        relayUrl: connection.relayUrl,
+        model: connection.model,
+        voice: connection.voice ?? "Aoede",
+      };
+      reconnectAttemptsRef.current = 0;
+      isReconnectingRef.current = false;
 
       startedAt.current = Date.now();
     } catch (err) {

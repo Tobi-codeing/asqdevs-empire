@@ -373,8 +373,8 @@ export function buildSessionConfig(
         disabled: false,
         // Include a little audio before speech onset so the first syllable is
         // never clipped, and end the turn promptly once the caller really stops.
-        prefixPaddingMs: 10,
-        silenceDurationMs: 260,
+        prefixPaddingMs: 40,
+        silenceDurationMs: 500,
       },
     },
     inputAudioTranscription: {},

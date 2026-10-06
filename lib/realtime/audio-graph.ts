@@ -93,7 +93,7 @@ export type MicStreamer = {
  * 2048 frames is about 43 ms at 48 kHz — still well under the perceptual
  * threshold for speech onset, at roughly 1/20th of the message count.
  */
-const WORKLET_BLOCK_FRAMES = 1024;
+const WORKLET_BLOCK_FRAMES = 2048;
 
 /**
  * Capture microphone audio and emit 16 kHz PCM frames via `onChunk`.
@@ -153,18 +153,6 @@ export async function startMicStreamer(
   const emit = (frame: Float32Array) => {
     if (stopped || !enabled) return;
     const resampled = resample(frame, context.sampleRate, INPUT_SAMPLE_RATE);
-    // Measure peak amplitude in this frame
-    let peak = 0;
-    for (let i = 0; i < resampled.length; i += 1) {
-      const val = Math.abs(resampled[i]);
-      if (val > peak) peak = val;
-    }
-    // If the frame is purely ambient background noise (< 0.025) while caller is not speaking,
-    // send true zero PCM so Gemini's VAD immediately recognises turn completion without hanging
-    if (peak < 0.025 && !speechState.active) {
-      onChunk(new Uint8Array(resampled.length * 2));
-      return;
-    }
     onChunk(floatTo16BitPcm(resampled));
   };
 

@@ -83,7 +83,7 @@ const PREFERENCE_MAP: { test: RegExp; label: string }[] = [
   { test: /park facing|facing park|पार्क\s*(?:की|की तरफ|के सामने)/i, label: "Park facing" },
   { test: /\bvastu\b|वास्तु/i, label: "Vastu" },
   { test: /\bmetro\b|मेट्रो/i, label: "Near metro" },
-  { test: /\bschool\b|स्कूल|स्कुल/i, label: "Near school" },
+  { test: /\bschool\b|\bcollege\b|स्कूल|स्कुल|कॉलेज|कॉलेजेस/i, label: "Near school" },
   { test: /\bgym\b|जिम/i, label: "Gym" },
   { test: /\bmarket\b|मार्केट|बाज़ार|बाजार/i, label: "Market nearby" },
   { test: /\blift\b|elevator|लिफ्ट/i, label: "Lift" },
@@ -360,7 +360,7 @@ function parseLocation(text: string): string | undefined {
   if (match) return match;
 
   if (
-    /(?:socha\s+nahi|koi\s+(?:idea|area|jagah)\s+nahi|pata\s+nahi|kuch\s+(?:rakha|fix)\s+nahi|any\s+area|anywhere|flexible|no\s+preference|no\s+specific\s+area|doesn'?t\s+matter|koi\s+bhi|kahi\s+bhi|इलाके\s*(?:का|में|में\s*कोई)\s*(?:कोई\s*)?(?:सोचा|आईडिया|आइडिया|पता)\s*नहीं|कुछ\s*(?:रखा|सोचा|तय)\s*तो\s*नहीं|कोई\s*(?:भी\s*)?(?:सोचा|आईडिया|आइडिया|तय)\s*नहीं|कोई\s+भी\s+चलेगा|कहीं\s+भी)/i.test(
+    /(?:socha\s+nahi|koi\s+(?:idea|area|jagah)\s+nahi|pata\s+nahi|kuch\s+(?:rakha|fix)\s+nahi|any\s+area|anywhere|flexible|no\s+preference|no\s+specific\s+area|doesn'?t\s+matter|koi\s+bhi|kahi\s+bhi|इलाके\s*(?:का|में|में\s*कोई)?\s*(?:कोई\s*)?(?:सोचा|आईडिया|आइडिया|पता|नहीं\s*सोच)\s*नहीं|कुछ\s*(?:रखा|सोचा|तय)\s*तो\s*नहीं|कोई\s*(?:भी\s*)?(?:सोचा|आईडिया|आइडिया|तय)\s*नहीं|कोई\s+भी\s+चलेगा|कहीं\s+भी|इलाके\s*नहीं\s*सोच\s*रहा)/i.test(
       text,
     )
   ) {
@@ -546,17 +546,18 @@ export function extractLeadFields(raw: string): Extraction {
       result.budgetMax = range.max;
       result.budgetLabel = formatBudgetRange(range.min, range.max);
       result.budget = range.max;
-      return result;
     }
   }
 
-  const budget = firstBudgetToken(text);
-  if (budget) {
-    result.budget = budget.value;
-    result.budgetLabel = budget.label;
-    if (result.budgetMin == null && result.budgetMax == null) {
-      result.budgetMin = budget.value;
-      result.budgetMax = budget.value;
+  if (result.budget == null) {
+    const budget = firstBudgetToken(text);
+    if (budget) {
+      result.budget = budget.value;
+      result.budgetLabel = budget.label;
+      if (result.budgetMin == null && result.budgetMax == null) {
+        result.budgetMin = budget.value;
+        result.budgetMax = budget.value;
+      }
     }
   }
 

@@ -9,7 +9,7 @@ export function detectSpeechActivity({
   active,
   lastSpeechAt,
   threshold = 0.05,
-  silenceMs = 240,
+  silenceMs = 500,
 }: {
   level: number;
   now: number;
