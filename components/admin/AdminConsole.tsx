@@ -213,6 +213,10 @@ async function loadConsole(): Promise<ConsoleData> {
                 name: isJunkName(localMatch.name) ? serverLead.name : localMatch.name,
                 matches: localMatch.matches?.length ? localMatch.matches : serverLead.matches,
                 transcript: localMatch.transcript?.length ? localMatch.transcript : serverLead.transcript,
+                summary:
+                  (localMatch.summary && !localMatch.summary.endsWith("enquiry from AI Receptionist.")
+                    ? localMatch.summary
+                    : serverLead.summary) || localMatch.summary || serverLead.summary,
                 recordingUrl: localMatch.recordingUrl || serverLead.recordingUrl,
               };
             }

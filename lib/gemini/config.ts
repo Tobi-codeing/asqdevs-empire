@@ -115,6 +115,10 @@ ONE QUESTION AT A TIME & NEVER REPEAT (CRITICAL):
   - When calling searchProperties: call it SILENTLY, receive the results, and THEN speak the property recommendation.
   - Never start describing a property while simultaneously asking a question!
 - If the caller only says a hesitation word like "मुझे...", "actually...", "uh...", or pauses to think, DO NOT fire a new question! Say gently "जी बताइए?" or wait for them to finish speaking.
+- PATIENT LISTENING — NEVER INTERRUPT OR CUT OFF THE CALLER (CRITICAL):
+  - When the caller is speaking, stating their preferred time, date, name or number (e.g. "मैं कल... सुबह 10 से 12 बजे"), WAIT PATIENTLY for them to complete their full thought!
+  - NEVER jump in or ask questions in the middle of their sentence!
+  - Do not treat short natural speech pauses as end of turn.
 - Do not stack multiple questions with "and" or a long list.
 
 LOCATION FLEXIBILITY / NO SPECIFIC AREA (CRITICAL):
@@ -372,9 +376,9 @@ export function buildSessionConfig(
       automaticActivityDetection: {
         disabled: false,
         // Include a little audio before speech onset so the first syllable is
-        // never clipped, and end the turn promptly once the caller really stops.
-        prefixPaddingMs: 40,
-        silenceDurationMs: 500,
+        // never clipped, and allow natural conversational pauses so the caller is not cut off.
+        prefixPaddingMs: 120,
+        silenceDurationMs: 900,
       },
     },
     inputAudioTranscription: {},

@@ -126,7 +126,11 @@ const MAX_CONFIRM_TRIES = 3;
 export function useCallSession(
   options: {
     onAutoEnd?: (reason: string) => void;
-    onRecordingReady?: (url: string) => void;
+    onRecordingReady?: (
+      url: string,
+      lead: Lead,
+      transcript: TranscriptEntry[],
+    ) => void;
   } = {},
 ) {
   const [status, setStatusState] = useState<CallStatus>("idle");
@@ -217,9 +221,12 @@ export function useCallSession(
   const onAutoEndRef = useRef<((reason: string) => void) | undefined>(
     undefined,
   );
-  const onRecordingReadyRef = useRef<((url: string) => void) | undefined>(
-    undefined,
-  );
+  const onRecordingReadyRef = useRef<
+    | ((url: string, lead: Lead, transcript: TranscriptEntry[]) => void)
+    | undefined
+  >(undefined);
+  onAutoEndRef.current = options.onAutoEnd;
+  onRecordingReadyRef.current = options.onRecordingReady;
   const pushEntryRef = useRef<
     (role: TranscriptEntry["role"], text: string) => void
   >(() => undefined);
@@ -374,6 +381,13 @@ export function useCallSession(
     confirmKeyRef.current = key;
 
     const recentSpoken = `${prevAssistantTextRef.current} ${lastAssistantTextRef.current} ${outputBuffer.current}`.trim();
+    if (
+      !force &&
+      (/\?\s*$/.test(recentSpoken) ||
+      /(?:चाहेंगे|सकते हैं|बताइए|बता दीजिए|जान सकती|पूछ सकती|समय|दिन|तारीख|नंबर)\s*\??\s*$/i.test(recentSpoken))
+    ) {
+      return false;
+    }
     const hasAskedConfirm = /कन्फर्म|कन्फॄम|confirm|जानकारी सही|सब सही|सही है|ठीक है|फाइनल करें|final kare|details correct|all correct/i.test(recentSpoken);
     const hasAskedPhone = /number|नंबर|फ़ोन|फोन|phone|contact|mobile|मोबाइल|संपर्क/i.test(recentSpoken);
     const hasAskedName = /नाम|name|naam|who am i speaking with|may i have your name/i.test(recentSpoken);
@@ -414,12 +428,21 @@ export function useCallSession(
     if (endedRef.current) return;
     const current = leadRef.current;
 
+    // CRITICAL: If the assistant just asked a question or is waiting for caller input,
+    // NEVER inject a competing text prompt that interrupts or talks over the caller!
+    const lastSpoken = (lastAssistantTextRef.current || prevAssistantTextRef.current).trim();
+    if (
+      isGoodbye(lastSpoken) ||
+      /\?\s*$/.test(lastSpoken) ||
+      /(?:सही है|कन्फर्म|बता सकते|बताइए|पसंद करेंगे|चाहेंगे|फाइनल करें|जान सकती|बता दीजिए|पूछ सकती|समय|दिन|तारीख|नंबर)\s*\??\s*$/i.test(lastSpoken)
+    ) {
+      return;
+    }
+
     /*
      * The read-back may already be running. Keep advancing it regardless of the
      * qualification gate — the caller is mid-confirmation, and the next field (or
-     * the number re-read) must still go out. This is what made the confirmation
-     * stall after the name was taken: the next prompt only ever fired from a
-     * "ready to close" state that no longer applied.
+     * the number re-read) must still go out.
      */
     if (awaitingConfirmRef.current && needsConfirmation(current)) {
       startConfirmation();
@@ -452,18 +475,6 @@ export function useCallSession(
      */
     if (needsConfirmation(current)) {
       startConfirmation();
-      return;
-    }
-
-    // CRITICAL FIX: If the assistant just ended its turn with a question or confirmation prompt,
-    // it is actively waiting for the caller's response!
-    // NEVER send WRAP_UP_PROMPT over an unanswered question!
-    const lastSpoken = (lastAssistantTextRef.current || prevAssistantTextRef.current).trim();
-    if (
-      isGoodbye(lastSpoken) ||
-      /\?\s*$/.test(lastSpoken) ||
-      /(?:सही है|कन्फर्म|बता सकते|बताइए|पसंद करेंगे|चाहेंगे|फाइनल करें)\s*\??\s*$/i.test(lastSpoken)
-    ) {
       return;
     }
 
@@ -1203,14 +1214,25 @@ export function useCallSession(
           }
 
           const resolvedAudioUrl = uploadedUrl || localUrl;
+          if (uploadedUrl) {
+            setRecordingUrl(uploadedUrl);
+          }
           setLead((prev) => {
             const next = { ...prev, recordingUrl: resolvedAudioUrl };
             leadRef.current = next;
             return next;
           });
-          onRecordingReadyRef.current?.(resolvedAudioUrl);
+          onRecordingReadyRef.current?.(
+            resolvedAudioUrl,
+            leadRef.current,
+            transcriptRef.current,
+          );
         } catch {
-          onRecordingReadyRef.current?.(localUrl);
+          onRecordingReadyRef.current?.(
+            localUrl,
+            leadRef.current,
+            transcriptRef.current,
+          );
         }
       };
       recorder.start();

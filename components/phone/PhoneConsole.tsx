@@ -48,10 +48,10 @@ export default function PhoneConsole() {
     // When the conversation completes itself, show the admin overview without
     // the visitor having to press anything.
     onAutoEnd: () => setShowLead(true),
-    onRecordingReady: (url) => {
+    onRecordingReady: (url, finishedLead, finishedTranscript) => {
       syncPhoneLead(
-        { ...call.lead, recordingUrl: url },
-        call.transcript.map((entry) => ({
+        { ...finishedLead, recordingUrl: url },
+        finishedTranscript.map((entry) => ({
           role: entry.role,
           text: entry.text,
         })),
@@ -127,7 +127,12 @@ export default function PhoneConsole() {
         temperature: currentLead.temperature,
         status: currentLead.status,
         nextAction: currentLead.nextAction || "Follow up",
-        summary: `${currentLead.name || "Caller"} enquiry from AI Receptionist.`,
+        summary:
+          buildCallOutcome(
+            currentLead,
+            pickProperties(inventory, currentLead.matchedPropertyIds),
+            transcriptEntries.map((t, idx) => ({ id: String(idx), role: t.role as any, text: t.text })),
+          ).summary || `${currentLead.name || "Caller"} enquiry from AI Receptionist.`,
         matches: [],
         transcript: transcriptEntries,
         recordingUrl: recUrl,
