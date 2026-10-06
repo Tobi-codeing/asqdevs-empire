@@ -138,6 +138,8 @@ export function safeLead(input?: Partial<Lead>): Lead {
   if (nextAction) lead.nextAction = nextAction;
   if (typeof input.recapSent === "boolean") lead.recapSent = input.recapSent;
   if (typeof input.optOut === "boolean") lead.optOut = input.optOut;
+  const recordingUrl = typeof input.recordingUrl === "string" ? input.recordingUrl.trim().slice(0, 1000) : undefined;
+  if (recordingUrl) lead.recordingUrl = recordingUrl;
 
   if (Array.isArray(input.matchedPropertyIds)) {
     lead.matchedPropertyIds = Array.from(

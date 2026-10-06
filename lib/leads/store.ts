@@ -168,6 +168,7 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
     name: cleanName,
     id: leadId,
     receivedAt: receivedAt,
+    recordingUrl: payload.recordingUrl || (existingIndex >= 0 ? currentLeads[existingIndex].recordingUrl : undefined),
   };
 
   let updatedList: StoredLead[];

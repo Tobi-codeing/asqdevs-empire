@@ -48,6 +48,16 @@ export default function PhoneConsole() {
     // When the conversation completes itself, show the admin overview without
     // the visitor having to press anything.
     onAutoEnd: () => setShowLead(true),
+    onRecordingReady: (url) => {
+      syncPhoneLead(
+        { ...call.lead, recordingUrl: url },
+        call.transcript.map((entry) => ({
+          role: entry.role,
+          text: entry.text,
+        })),
+        url,
+      );
+    },
   });
 
   const lead = mode === "voice" ? call.lead : textLead;
@@ -78,9 +88,18 @@ export default function PhoneConsole() {
   }, []);
 
   const syncPhoneLead = useCallback(
-    (currentLead: Lead, transcriptEntries: { role: string; text: string }[]) => {
+    (
+      currentLead: Lead,
+      transcriptEntries: { role: string; text: string }[],
+      overrideRecordingUrl?: string,
+    ) => {
       if (typeof window === "undefined") return;
       const stableId = phoneSessionIdRef.current;
+      const recUrl =
+        overrideRecordingUrl ||
+        currentLead.recordingUrl ||
+        call.recordingUrl ||
+        undefined;
 
       const clientLead = {
         id: stableId,
@@ -111,6 +130,7 @@ export default function PhoneConsole() {
         summary: `${currentLead.name || "Caller"} enquiry from AI Receptionist.`,
         matches: [],
         transcript: transcriptEntries,
+        recordingUrl: recUrl,
         text: `Phone Lead: ${currentLead.name || "Caller"} - ${currentLead.phone || "No phone"}`,
       };
 
@@ -120,7 +140,7 @@ export default function PhoneConsole() {
         const filtered = existing.filter((l: any) => {
           if (l.id === stableId) return false;
           const lName = (l.name || "").toLowerCase().trim();
-          if (lName === "así es" || lName === "asi es" || lName === "caller") return false;
+          if (lName === "así es" || lName === "asi es") return false;
           if (
             clientLead.phone &&
             clientLead.phone !== "Not shared yet" &&
@@ -146,6 +166,7 @@ export default function PhoneConsole() {
         currentLead.name ||
         currentLead.phone ||
         currentLead.siteVisit ||
+        recUrl ||
         transcriptEntries.length > 0
       ) {
         void fetch("/api/leads", {
@@ -153,9 +174,10 @@ export default function PhoneConsole() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: stableId,
-            lead: currentLead,
+            lead: { ...currentLead, recordingUrl: recUrl },
             propertyIds: currentLead.matchedPropertyIds,
             transcript: transcriptEntries,
+            recordingUrl: recUrl,
           }),
         }).catch(() => undefined);
 
@@ -166,7 +188,7 @@ export default function PhoneConsole() {
         }).catch(() => undefined);
       }
     },
-    [],
+    [call.recordingUrl],
   );
 
   const startVoice = async () => {
@@ -212,17 +234,17 @@ export default function PhoneConsole() {
    * Hand the finished call to the configured destination on ended.
    */
   useEffect(() => {
-    if (call.status !== "ended" || deliveredRef.current) return;
+    if (call.status !== "ended") return;
     if (!call.transcript.some((entry) => entry.role !== "system")) return;
-    deliveredRef.current = true;
     syncPhoneLead(
       call.lead,
       call.transcript.map((entry) => ({
         role: entry.role,
         text: entry.text,
       })),
+      call.recordingUrl || undefined,
     );
-  }, [call.status, call.lead, call.transcript, syncPhoneLead]);
+  }, [call.status, call.lead, call.transcript, call.recordingUrl, syncPhoneLead]);
 
   const endCall = async () => {
     const hadConversation = call.transcript.some(

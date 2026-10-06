@@ -22,7 +22,7 @@
 
 import { createServer } from "node:http";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, createReadStream, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { WebSocketServer, WebSocket } from "ws";
@@ -255,7 +255,11 @@ function recordRelayLead(lead) {
     return false;
   });
 
-  const merged = existingIndex >= 0 ? { ...relayLeads[existingIndex], ...cleanLead } : cleanLead;
+  const merged = existingIndex >= 0 ? {
+    ...relayLeads[existingIndex],
+    ...cleanLead,
+    recordingUrl: cleanLead.recordingUrl || relayLeads[existingIndex].recordingUrl || undefined,
+  } : cleanLead;
   if (existingIndex >= 0) {
     relayLeads.splice(existingIndex, 1);
   }
@@ -349,6 +353,118 @@ export function startStandaloneRelay(options = {}) {
             sendJson(res, 400, { error: "invalid_lead_payload" });
           }
         });
+        return;
+      }
+    }
+
+    if (url.pathname.startsWith("/api/recordings")) {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Range, X-Filename, X-Lead-Id");
+
+      if (req.method === "OPTIONS") {
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+
+      const recordingsDir = path.join(process.cwd(), "data", "recordings");
+      if (!existsSync(recordingsDir)) {
+        try { mkdirSync(recordingsDir, { recursive: true }); } catch {}
+      }
+
+      if (req.method === "POST") {
+        const chunks = [];
+        let totalSize = 0;
+        req.on("data", (chunk) => {
+          totalSize += chunk.length;
+          if (totalSize < 20 * 1024 * 1024) chunks.push(chunk);
+        });
+        req.on("end", () => {
+          try {
+            const buf = Buffer.concat(chunks);
+            const contentType = req.headers["content-type"] || "";
+            let audioBuffer = buf;
+            const reqFilename = req.headers["x-filename"];
+            let filename = reqFilename
+              ? path.basename(reqFilename)
+              : `rec-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.webm`;
+
+            if (contentType.includes("application/json")) {
+              const body = JSON.parse(buf.toString("utf-8"));
+              if (body.audioBase64) {
+                audioBuffer = Buffer.from(body.audioBase64, "base64");
+              }
+              if (body.filename) filename = path.basename(body.filename);
+            } else if (contentType.includes("multipart/form-data")) {
+              const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i);
+              const boundary = boundaryMatch ? (boundaryMatch[1] || boundaryMatch[2]) : "";
+              if (boundary) {
+                const parts = buf.toString("latin1").split(`--${boundary}`);
+                for (const part of parts) {
+                  if (part.includes("filename=")) {
+                    const headerEnd = part.indexOf("\r\n\r\n");
+                    if (headerEnd !== -1) {
+                      const fileContent = part.substring(headerEnd + 4).replace(/\r\n$/, "");
+                      audioBuffer = Buffer.from(fileContent, "latin1");
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+
+            const filePath = path.join(recordingsDir, filename);
+            writeFileSync(filePath, audioBuffer);
+
+            const host = req.headers.host || "asqdevs-empire.onrender.com";
+            const protocol = req.headers["x-forwarded-proto"] || "https";
+            const fileUrl = `${protocol}://${host}/api/recordings/${filename}`;
+
+            sendJson(res, 200, { ok: true, filename, url: fileUrl });
+          } catch (err) {
+            sendJson(res, 500, { error: "recording_save_failed", detail: String(err) });
+          }
+        });
+        return;
+      }
+
+      if (req.method === "GET") {
+        const parts = url.pathname.split("/").filter(Boolean);
+        const filename = path.basename(parts[parts.length - 1] || "");
+        const filePath = path.join(recordingsDir, filename);
+
+        if (!filename || !existsSync(filePath)) {
+          sendJson(res, 404, { error: "recording_not_found" });
+          return;
+        }
+
+        const stat = statSync(filePath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunkSize = end - start + 1;
+          const fileStream = createReadStream(filePath, { start, end });
+
+          res.writeHead(206, {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunkSize,
+            "Content-Type": "audio/webm",
+          });
+          fileStream.pipe(res);
+        } else {
+          res.writeHead(200, {
+            "Content-Length": fileSize,
+            "Content-Type": "audio/webm",
+            "Accept-Ranges": "bytes",
+          });
+          createReadStream(filePath).pipe(res);
+        }
         return;
       }
     }

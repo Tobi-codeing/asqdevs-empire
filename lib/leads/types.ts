@@ -80,6 +80,8 @@ export type Lead = {
   temperature: Temperature;
   status: LeadStatus;
   source: LeadSource;
+  /** Audio recording of phone calls */
+  recordingUrl?: string;
 };
 
 /** Alias used where the canonical state is passed between systems. */

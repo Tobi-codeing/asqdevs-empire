@@ -28,6 +28,7 @@ type RequestBody = {
   propertyIds?: string[];
   transcript?: { role?: string; text?: string }[];
   optOut?: boolean;
+  recordingUrl?: string;
 };
 
 export async function POST(request: Request) {
@@ -38,7 +39,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
 
-  const lead = safeLead(body.lead);
+  const rawLead = {
+    ...body.lead,
+    recordingUrl: body.recordingUrl || body.lead?.recordingUrl,
+  };
+  const lead = safeLead(rawLead);
 
   const ids = Array.isArray(body.propertyIds)
     ? body.propertyIds.filter((id): id is string => typeof id === "string")
@@ -63,6 +68,7 @@ export async function POST(request: Request) {
     matches: getPropertiesByIds(ids),
     transcript,
     optOut: body.optOut,
+    recordingUrl: body.recordingUrl || lead.recordingUrl,
   };
   // The phone call ends in the browser, so its record is written here.
   const record = recordLead(input);

@@ -14,6 +14,7 @@ import {
   Star,
   Trash2,
   Users,
+  Volume2,
   X,
 } from "lucide-react";
 import type { StoredProperty } from "@/lib/data/store";
@@ -212,6 +213,7 @@ async function loadConsole(): Promise<ConsoleData> {
                 name: isJunkName(localMatch.name) ? serverLead.name : localMatch.name,
                 matches: localMatch.matches?.length ? localMatch.matches : serverLead.matches,
                 transcript: localMatch.transcript?.length ? localMatch.transcript : serverLead.transcript,
+                recordingUrl: localMatch.recordingUrl || serverLead.recordingUrl,
               };
             }
           }
@@ -1140,6 +1142,35 @@ function LeadList({ leads, loading }: { leads: StoredLead[]; loading: boolean })
             <p className="eyebrow mb-2 text-[#f5f3f0]/35">AI summary</p>
             <p className="type-body text-[#f5f3f0]/75">{lead.summary}</p>
           </div>
+
+          {lead.recordingUrl && (
+            <div className="mt-5 border-t border-[#1f1f1f] pt-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="eyebrow text-[#c6ad78] flex items-center gap-2">
+                  <Volume2 className="h-4 w-4" /> Call recording
+                </p>
+                <a
+                  href={lead.recordingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="type-meta text-xs text-[#c6ad78] underline-offset-2 hover:underline"
+                >
+                  Open audio ↗
+                </a>
+              </div>
+              <div className="rounded border border-[#2a2a2a] bg-[#141414] p-3">
+                <audio
+                  controls
+                  src={lead.recordingUrl}
+                  className="w-full h-10 accent-[#c6ad78]"
+                  preload="metadata"
+                />
+                <p className="type-meta mt-2 text-xs text-[#f5f3f0]/45">
+                  Full audio captured during the call (caller and AI receptionist).
+                </p>
+              </div>
+            </div>
+          )}
 
           {lead.matches.length > 0 && (
             <div className="mt-5 border-t border-[#1f1f1f] pt-5">

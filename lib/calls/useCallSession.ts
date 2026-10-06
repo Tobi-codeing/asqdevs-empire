@@ -124,7 +124,10 @@ const MAX_CONFIRM_TRIES = 3;
  * phone components only read the state this returns.
  */
 export function useCallSession(
-  options: { onAutoEnd?: (reason: string) => void } = {},
+  options: {
+    onAutoEnd?: (reason: string) => void;
+    onRecordingReady?: (url: string) => void;
+  } = {},
 ) {
   const [status, setStatusState] = useState<CallStatus>("idle");
   const statusRef = useRef<CallStatus>("idle");
@@ -212,6 +215,9 @@ export function useCallSession(
    */
   const languageRef = useRef<Language | null>(null);
   const onAutoEndRef = useRef<((reason: string) => void) | undefined>(
+    undefined,
+  );
+  const onRecordingReadyRef = useRef<((url: string) => void) | undefined>(
     undefined,
   );
   const pushEntryRef = useRef<
@@ -1125,6 +1131,10 @@ export function useCallSession(
   }, [options.onAutoEnd]);
 
   useEffect(() => {
+    onRecordingReadyRef.current = options.onRecordingReady;
+  }, [options.onRecordingReady]);
+
+  useEffect(() => {
     endRef.current = () => {
       void end();
     };
@@ -1142,15 +1152,66 @@ export function useCallSession(
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) chunks.push(event.data);
       };
-      recorder.onstop = () => {
+      recorder.onstop = async () => {
         if (!chunks.length) return;
         const blob = new Blob(chunks, {
           type: recorder.mimeType || "audio/webm",
         });
+        const localUrl = URL.createObjectURL(blob);
         setRecordingUrl((prev) => {
           if (prev) URL.revokeObjectURL(prev);
-          return URL.createObjectURL(blob);
+          return localUrl;
         });
+
+        // Upload recording to persistent relay / server so admin receives call audio
+        try {
+          const reqFilename = `call-${Date.now().toString(36)}.webm`;
+          let uploadedUrl = "";
+
+          // 1. Try persistent Render relay directly
+          try {
+            const relayRes = await fetch("https://asqdevs-empire.onrender.com/api/recordings", {
+              method: "POST",
+              headers: {
+                "Content-Type": "audio/webm",
+                "X-Filename": reqFilename,
+              },
+              body: blob,
+            });
+            if (relayRes.ok) {
+              const resData = await relayRes.json();
+              if (resData.url) uploadedUrl = resData.url;
+            }
+          } catch {}
+
+          // 2. Fall back to local app route
+          if (!uploadedUrl) {
+            try {
+              const localRes = await fetch("/api/recordings", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "audio/webm",
+                  "X-Filename": reqFilename,
+                },
+                body: blob,
+              });
+              if (localRes.ok) {
+                const resData = await localRes.json();
+                if (resData.url) uploadedUrl = resData.url;
+              }
+            } catch {}
+          }
+
+          const resolvedAudioUrl = uploadedUrl || localUrl;
+          setLead((prev) => {
+            const next = { ...prev, recordingUrl: resolvedAudioUrl };
+            leadRef.current = next;
+            return next;
+          });
+          onRecordingReadyRef.current?.(resolvedAudioUrl);
+        } catch {
+          onRecordingReadyRef.current?.(localUrl);
+        }
       };
       recorder.start();
       recorderRef.current = recorder;

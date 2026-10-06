@@ -50,6 +50,7 @@ export type LeadDeliveryInput = {
   transcript?: DeliveredTurn[];
   /** Set when the customer has asked not to be contacted again. */
   optOut?: boolean;
+  recordingUrl?: string;
 };
 
 /** One matched property, flattened for a spreadsheet row or a CRM field. */
@@ -88,6 +89,8 @@ export type LeadPayload = {
   summary: string;
   matches: DeliveredMatch[];
   transcript: DeliveredTurn[];
+  /** Audio recording of the call */
+  recordingUrl?: string;
   /** The summary as one line — convenient for Slack, email or a Sheet cell. */
   text: string;
 };
@@ -121,6 +124,7 @@ export function buildLeadPayload({
   matches = [],
   transcript = [],
   optOut,
+  recordingUrl,
 }: LeadDeliveryInput): LeadPayload {
   const summary = buildSummary(lead, matches, lead.source);
 
@@ -159,6 +163,7 @@ export function buildLeadPayload({
       role: turn.role,
       text: turn.text,
     })),
+    recordingUrl: recordingUrl || lead.recordingUrl || undefined,
     text: summary,
   };
 }
