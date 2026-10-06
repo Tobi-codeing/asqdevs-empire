@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { deliverLead } from "@/lib/leads/delivery";
-import { recordLead } from "@/lib/leads/store";
+import { recordLead, syncLeadToRelay } from "@/lib/leads/store";
 import { getPropertiesByIds } from "@/lib/data/inventory";
 import "@/lib/data/store";
 import { safeLead } from "@/lib/whatsapp/lead-guard";
@@ -65,11 +65,22 @@ export async function POST(request: Request) {
     optOut: body.optOut,
   };
   // The phone call ends in the browser, so its record is written here.
-  recordLead(input);
-  const result = await deliverLead(input);
+  const record = recordLead(input);
+
+  // Both delivery and persistent relay sync MUST be awaited before Vercel serverless freezes
+  const [deliveryResult] = await Promise.allSettled([
+    deliverLead(input),
+    syncLeadToRelay(record),
+  ]);
+
+  const result =
+    deliveryResult.status === "fulfilled"
+      ? deliveryResult.value
+      : { ok: false, error: "delivery_failed" };
 
   return NextResponse.json({
     delivered: result.ok,
     reason: result.ok ? undefined : "skipped" in result ? "not_configured" : result.error,
   });
 }
+

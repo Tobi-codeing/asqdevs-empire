@@ -186,14 +186,10 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
     inMemoryLeads = updatedList;
   }
 
-  // Sync to Render persistent relay service if available
+  // Fire-and-forget sync to Render persistent relay service if available
   const relayUrl = getRelayUrl();
   if (relayUrl && !isTest()) {
-    fetch(`${relayUrl}/api/leads`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(record),
-    }).catch(() => undefined);
+    void syncLeadToRelay(record).catch(() => undefined);
   }
 
   if (isTest()) return record;
@@ -201,3 +197,25 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
   persist(updatedList);
   return record;
 }
+
+/**
+ * Explicitly awaitable sync to persistent relay. Critical on serverless (Vercel)
+ * where the container freezes immediately when the request handler returns.
+ */
+export async function syncLeadToRelay(record: StoredLead): Promise<boolean> {
+  const relayUrl = getRelayUrl();
+  if (!relayUrl || isTest()) return false;
+  try {
+    const res = await fetch(`${relayUrl}/api/leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(record),
+      signal: AbortSignal.timeout(3500),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn("[leads] relay sync error:", err);
+    return false;
+  }
+}
+

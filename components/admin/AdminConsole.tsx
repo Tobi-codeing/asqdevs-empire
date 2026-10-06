@@ -9,6 +9,7 @@ import {
   LogOut,
   Pencil,
   Plus,
+  RefreshCw,
   Search,
   Star,
   Trash2,
@@ -92,7 +93,24 @@ async function loadConsole(): Promise<ConsoleData> {
     leads?: StoredLead[];
   };
 
-  let combinedLeads = leadsData.leads ?? [];
+  let serverLeads = leadsData.leads ?? [];
+  try {
+    const relayRes = await fetch("https://asqdevs-empire.onrender.com/api/leads", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(3000),
+    });
+    if (relayRes.ok) {
+      const relayJson = (await relayRes.json()) as { leads?: StoredLead[] };
+      if (Array.isArray(relayJson.leads) && relayJson.leads.length > 0) {
+        const existingIds = new Set(serverLeads.map((l) => l.id));
+        const relayOnly = relayJson.leads.filter((l) => !existingIds.has(l.id));
+        serverLeads = [...serverLeads, ...relayOnly];
+      }
+    }
+  } catch {}
+
+  let combinedLeads = serverLeads;
+
 
   if (typeof window !== "undefined") {
     try {
@@ -228,8 +246,19 @@ export default function AdminConsole({ onLogout }: { onLogout: () => void }) {
       .finally(() => {
         if (alive) setLoading(false);
       });
+
+    // Automatically poll every 4 seconds so live calls and WhatsApp leads stream in seamlessly
+    const timer = setInterval(() => {
+      loadConsole()
+        .then((data) => {
+          if (alive) apply(data);
+        })
+        .catch(() => {});
+    }, 4000);
+
     return () => {
       alive = false;
+      clearInterval(timer);
     };
   }, [apply]);
 
@@ -360,13 +389,31 @@ export default function AdminConsole({ onLogout }: { onLogout: () => void }) {
             the WhatsApp assistant, the AI receptionist and the property pages.
           </p>
         </div>
-        <button
-          onClick={onLogout}
-          className="type-meta flex items-center gap-2 border border-[#2a2a2a] px-4 py-2.5 text-[#f5f3f0]/60 transition-colors hover:border-[#c6ad78] hover:text-[#c6ad78]"
-        >
-          <LogOut className="h-3.5 w-3.5" />
-          Sign out
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={async () => {
+              setLoading(true);
+              try {
+                const data = await loadConsole();
+                apply(data);
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+            className="type-meta flex items-center gap-2 border border-[#2a2a2a] px-4 py-2.5 text-[#f5f3f0]/70 transition-colors hover:border-[#c6ad78] hover:text-[#c6ad78] disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#c6ad78]" : ""}`} />
+            Refresh
+          </button>
+          <button
+            onClick={onLogout}
+            className="type-meta flex items-center gap-2 border border-[#2a2a2a] px-4 py-2.5 text-[#f5f3f0]/60 transition-colors hover:border-[#c6ad78] hover:text-[#c6ad78]"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Sign out
+          </button>
+        </div>
       </header>
 
       <div className="mb-8 flex flex-wrap items-center gap-3 border-b border-[#1f1f1f]">

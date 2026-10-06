@@ -20,7 +20,7 @@ import {
   REVIEW_REPLIES,
 } from "@/lib/leads/confirmation";
 import { deliverLead } from "@/lib/leads/delivery";
-import { recordLead } from "@/lib/leads/store";
+import { recordLead, syncLeadToRelay } from "@/lib/leads/store";
 import { missingFields, type Lead } from "@/lib/leads/types";
 import { broadenSearchFor } from "@/lib/leads/match";
 import { nextActionKey } from "@/lib/leads/view";
@@ -659,12 +659,13 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
     Boolean(lead.optOut);
 
   if (hasActionableInfo) {
-    recordLead({
+    const rec = recordLead({
       lead,
       matches: matches.length ? matches : getPropertiesByIds(lead.matchedPropertyIds),
       transcript: asTurns(history),
       optOut: lead.optOut,
     });
+    void syncLeadToRelay(rec).catch(() => undefined);
   }
 
   await deliverIfFinished(priorLead, lead, history, matches);
@@ -701,8 +702,11 @@ async function deliverIfFinished(
     transcript: asTurns(transcript),
   };
   // Keep the admin's record in step with whatever the destination receives.
-  recordLead(input);
-  await deliverLead(input);
+  const rec = recordLead(input);
+  await Promise.allSettled([
+    deliverLead(input),
+    syncLeadToRelay(rec),
+  ]);
 }
 
 /** The chat history in the shape a CRM record expects. */

@@ -237,6 +237,12 @@ export default function WhatsAppWorkbench() {
               })),
             }),
           }).catch(() => undefined);
+
+          void fetch("https://asqdevs-empire.onrender.com/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(clientLead),
+          }).catch(() => undefined);
         } catch {}
       }
 

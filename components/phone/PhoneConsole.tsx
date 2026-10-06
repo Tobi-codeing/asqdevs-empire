@@ -161,6 +161,12 @@ export default function PhoneConsole() {
             transcript: transcriptEntries,
           }),
         }).catch(() => undefined);
+
+        void fetch("https://asqdevs-empire.onrender.com/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(clientLead),
+        }).catch(() => undefined);
       }
     },
     [],
