@@ -16,11 +16,16 @@ import {
   type Lead,
 } from "@/lib/leads/types";
 import { budgetSummaryText } from "@/lib/leads/format";
-import { buildReviewMessage, REVIEW_REPLIES } from "@/lib/leads/confirmation";
+import {
+  advanceConfirmation,
+  buildReviewMessage,
+  REVIEW_REPLIES,
+} from "@/lib/leads/confirmation";
 import { RESTART_REPLIES, suggestedReplies } from "@/lib/whatsapp/options";
 import {
   additionalMatchesMessage,
   broadenedMessage,
+  finalRecapMessage,
   NO_EXACT_MATCH,
   propertyLinkMessage,
   toSentLink,
@@ -184,6 +189,7 @@ export function hasSettledNextStep(lead: Lead): boolean {
  */
 export function isConversationComplete(lead: Lead): boolean {
   if (lead.advisorRequested || lead.callbackRequested) return true;
+  if (lead.siteVisit && !isVisitTimePending(lead) && canMatchLead(lead)) return true;
   return missingFields(lead).length === 0 && hasSettledNextStep(lead);
 }
 
@@ -299,14 +305,16 @@ export function openingMessages(
   return [];
 }
 
-/**
- * The customer is signalling the conversation is done — "thanks, that's all",
- * "what next". Used to close with a recap instead of another question.
- */
-const isWrapUp = (text: string) =>
-  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done|anything else|what next|whats next|next step)\b/i.test(
-    text,
+const isWrapUp = (text: string) => {
+  const trimmed = text.trim();
+  if (isQuestion(trimmed)) return false;
+  if (asksForPropertyList(trimmed) || asksForOptions(trimmed)) return false;
+  return (
+    /\b(?:thats all|that.s all|bye|goodbye|done|nothing else|bas itna hi)\b/i.test(trimmed) ||
+    /^(?:thanks|thank you|shukriya|dhanyawad)[.!,\s]*$/i.test(trimmed) ||
+    /^(?:what(?:'?s)? next|next step|anything else)\??$/i.test(trimmed)
   );
+};
 
 /**
  * "Show me something suitable", "show me anything".
@@ -322,20 +330,21 @@ const asksForOptions = (text: string) =>
     text,
   );
 
+export const isGreetingOnly = (text: string) =>
+  /^(?:hi|hello|hey|heyy|namaste|namaskar|pranam|ram\s*ram|good\s*(?:morning|afternoon|evening)|hola|greeting|greetings|hlo|hii)[.!,?\s]*$/i.test(
+    text.trim(),
+  );
+
+export const isHindiGreeting = (text: string) =>
+  /namaste|namaskar|pranam|ram\s*ram|kese ho|kaise ho|नमस्ते|प्रणाम|राम\s*राम/i.test(text);
+
 /**
  * One well-phrased question per field.
- *
- * A single phrasing, not a pool. The fallback only asks about a field the
- * customer has not answered, and a field is only re-asked when their previous
- * reply genuinely did not contain it — in which case repeating the question is
- * the natural thing to do, not a glitch. (An earlier version kept three
- * variants per field and passed the array straight into the sentence, which is
- * how the fallback ended up reading three questions out at once.)
  */
 const questionFor: Record<CoreField, string> = {
-  intent: "Are you looking to buy or rent?",
-  location: "Which area are you looking in?",
-  bhk: "What size are you after?",
+  intent: "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?",
+  location: "Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?",
+  bhk: "What size of home are you looking for — 1, 2, 3 BHK or larger?",
   budget: "What budget range should I work with?",
   timeline: "When are you hoping to move forward?",
 };
@@ -380,10 +389,49 @@ export function respond(state: EngineState, userText: string): EngineReply {
     return { messages, state: fresh };
   }
 
-  const action = detectAction(text);
   const before = state.lead;
-  const completed = completedActions(before);
-  let lead = applyExtraction(before, extractLeadFields(text));
+  if (before.confirmation) {
+    const step = advanceConfirmation(before, text);
+    if (step.kind === "final") {
+      const finalMatches = getPropertiesByIds(step.lead.matchedPropertyIds);
+      const finalLead = recompute(
+        { ...step.lead, recapSent: true, confirmation: "done" },
+        { keepMatches: true },
+      );
+      const built = finalRecapMessage(finalLead, finalMatches);
+      messages.push(
+        assistant(built.text, {
+          kind: "recap",
+          links: built.links,
+        }),
+      );
+      return {
+        messages,
+        state: {
+          ...state,
+          lead: finalLead,
+          finished: true,
+        },
+      };
+    }
+    if (step.kind === "reply") {
+      messages.push(assistant(step.text, { quickReplies: step.quickReplies }));
+      return {
+        messages,
+        state: {
+          ...state,
+          lead: step.lead,
+        },
+      };
+    }
+    if (step.kind === "change") {
+      state = { ...state, lead: step.lead };
+    }
+  }
+
+  const action = detectAction(text);
+  const completed = completedActions(state.lead);
+  let lead = applyExtraction(state.lead, extractLeadFields(text));
 
   /**
    * Close the conversation once the requirement is captured and the agreed next
@@ -586,11 +634,16 @@ export function respond(state: EngineState, userText: string): EngineReply {
     const top = named;
 
     if (top) {
+      lead = { ...lead, selectedPropertyId: top.id };
+      const matched = getPropertiesByIds(lead.matchedPropertyIds);
+      const otherNames = matched
+        .filter((property) => property.id !== top.id)
+        .map((property) => property.name);
       const sentLinks = mergeLinks(state.sentLinks, [toSentLink(top)]);
       const { text: copy, link } = propertyLinkMessage(top);
       messages.push(
         assistant(copy, {
-          quickReplies: matchButtons(completed, true, [top.name]),
+          quickReplies: matchButtons(completed, true, otherNames),
           links: [link],
         }),
       );
@@ -777,18 +830,18 @@ export function respond(state: EngineState, userText: string): EngineReply {
       ),
     );
     messages.push(
-      missing.length
-        ? assistant(questionFor[missing[0]], { quickReplies: buttonsFor(false) })
-        : assistant(
-            "Would you like to arrange a site visit, or speak with an advisor?",
-            {
-              quickReplies: matchButtons(
-                completed,
-                true,
-                offered.map((property) => property.name),
-              ),
-            },
+      assistant(
+        missing.length
+          ? "Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+          : "Would you like to arrange a site visit, or speak with an advisor?",
+        {
+          quickReplies: matchButtons(
+            completed,
+            true,
+            offered.map((property) => property.name),
           ),
+        },
+      ),
     );
     return {
       messages,
@@ -810,8 +863,21 @@ export function respond(state: EngineState, userText: string): EngineReply {
     action !== "broaden" &&
     (!wantsProperties || !searchable)
   ) {
+    let questionText = questionFor[missing[0]];
+    if (missing[0] === "intent") {
+      if (isHindiGreeting(text)) {
+        questionText =
+          "Namaste! Delhi Homes में आपका स्वागत है 🏡 मैं आपकी प्रॉपर्टी खोजने में मदद करूँगा। क्या आप प्रॉपर्टी खरीदना (Buy) चाहते हैं या किराए (Rent) पर देख रहे हैं?";
+      } else {
+        questionText =
+          "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?";
+      }
+    } else if (isGreetingOnly(text)) {
+      questionText = `Hello! ${questionText}`;
+    }
+
     messages.push(
-      assistant(withAck(questionFor[missing[0]]), {
+      assistant(withAck(questionText), {
         quickReplies: buttonsFor(false),
       }),
     );

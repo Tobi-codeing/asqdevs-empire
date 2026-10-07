@@ -189,6 +189,12 @@ describe("readName", () => {
     expect(readName("is")).toBeUndefined();
     expect(readName("A")).toBeUndefined();
     expect(readName("un")).toBeUndefined();
+    // Languages chosen at the start of call are NEVER names:
+    expect(readName("हिंदी")).toBeUndefined();
+    expect(readName("Hindi")).toBeUndefined();
+    expect(readName("English")).toBeUndefined();
+    expect(readName("अंग्रेजी")).toBeUndefined();
+    expect(readName("Rohini")).toBeUndefined();
   });
 });
 

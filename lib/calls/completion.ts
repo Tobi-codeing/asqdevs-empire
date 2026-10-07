@@ -104,6 +104,9 @@ const GOODBYE_PATTERNS = [
   /(?:कॉल|संपर्क)\s*करने के लिए\s*(?:धन्यवाद|शुक्रिया)/,
   /(?:धन्यवाद|शुक्रिया)[^।!?\n]{0,35}(?:कॉल|संपर्क)\s*करने के लिए/,
   /(?:अपना\s*)?(?:ख्याल|ध्यान)\s*रखें|ख्याल रखना/,
+  /(?:बात|जुड़ने|जुड़ने|बातचीत)\s*करने के लिए\s*(?:धन्यवाद|शुक्रिया)/,
+  /\b(?:thank you|thanks)\s+(?:for\s+)?(?:calling|contacting|reaching out)\b/i,
+  /(?:दिन\s+शुभ\s+हो|शुभ\s+दिन)/,
 ];
 
 /**
@@ -116,11 +119,50 @@ const GOODBYE_PATTERNS = [
  */
 const CLOSING_TAIL = /(?:शुक्रिया|धन्यवाद|thanks|thank you)[\s!.,…|।]*$/i;
 
+const NOT_GOODBYE_QUESTIONS = /\?|(?:चाहेंगे|सकते हैं|बताइए|बताएं|बता दीजिए|जान सकती|पूछ सकती|क्या आप|कितना|कहाँ|कब|समय|दिन|तारीख|नंबर|फ़ोन|फोन|नाम)\s*[\??|।!.\s]*$/i;
+
 export function isGoodbye(text: string): boolean {
   const value = text.trim();
   if (!value) return false;
+  // If the sentence asks a question or prompts for information, it is NEVER a goodbye
+  if (NOT_GOODBYE_QUESTIONS.test(value)) return false;
   if (GOODBYE_PATTERNS.some((pattern) => pattern.test(value))) return true;
   return CLOSING_TAIL.test(value);
+}
+
+/** True when the lead has a valid phone number and an agreed next step / qualification. */
+export function hasPhoneAndNextStep(lead: Lead): boolean {
+  const cleanPhone = (lead.phone ?? "").replace(/\D/g, "");
+  const hasPhone = cleanPhone.length >= 10;
+  const hasNextStep = Boolean(
+    lead.siteVisit ||
+      lead.advisorRequested ||
+      lead.callbackRequested ||
+      isFullyQualified(lead),
+  );
+  return hasPhone && hasNextStep;
+}
+
+/**
+ * True only when all required lead data has been cleanly captured and confirmed:
+ * - Valid phone number (10 digits)
+ * - Real caller name
+ * - Core requirement fully qualified
+ * - Final confirmation agreed
+ */
+export function isCallReadyToEnd(lead: Lead): boolean {
+  const cleanPhone = (lead.phone ?? "").replace(/\D/g, "");
+  const hasPhone = cleanPhone.length >= 10;
+  const name = (lead.name ?? "").trim();
+  const hasName =
+    name.length >= 2 &&
+    !/^(?:not shared|caller|new enquiry|enquiry|बिल्कुल|बताइए|ज़रूर|अच्छा)/i.test(name);
+  const qualified =
+    isFullyQualified(lead) ||
+    Boolean(lead.advisorRequested) ||
+    Boolean(lead.callbackRequested);
+  const confirmed = lead.confirmation === "done";
+  return hasPhone && hasName && qualified && confirmed;
 }
 
 /**
@@ -150,8 +192,8 @@ export function confirmationPrompt(
     ? ` Speak strictly in ${langLabel}${langNative}. Do NOT speak English.`
     : "";
 
-  if (!lead.name && !lead.phone) {
-    return `[Before you close, take the caller's NAME once, naturally in ${langLabel}${langNative}: ask what name you should note for them.${lock} Then continue.]`;
+  if (!lead.name) {
+    return `[Before you close, take the caller's NAME once, naturally in ${langLabel}${langNative}: ask what name you should note for them (e.g. "क्या मैं आपका शुभ नाम जान सकती हूँ?").${lock} Then continue.]`;
   }
   if (!lead.phone) {
     return `[Now ask for the caller's CONTACT NUMBER once, naturally in ${langLabel}${langNative}: what is the best number for the advisor to reach them on? Then read it back to confirm.${lock}]`;
@@ -196,17 +238,26 @@ export type ConfirmationReply =
  */
 const HONORIFIC_STOPWORDS = new Set([
   "sir", "madam", "yes", "no", "ok", "okay", "thanks", "thank", "ji",
-  "सर", "मैडम", "हाँ", "हां", "जी", "ठीक", "सही", "धन्यवाद", "शुक्रिया", "नमस्ते", "नमस्कार", "है", "था", "थी", "थे"
+  "सर", "मैडम", "हाँ", "हां", "जी", "ठीक", "सही", "धन्यवाद", "शुक्रिया", "नमस्ते", "नमस्कार", "है", "था", "थी", "थे",
+  "बिल्कुल", "बताइए", "बताएं", "बताओ", "ज़रूर", "जरूर", "अच्छा", "achha", "accha", "सुनिए", "दीजिए", "लीजिए",
+  "साहब", "भैया", "मैम", "mam", "ma'am", "bilkul", "zaroor", "bataiye", "batao", "suniye", "dekhie", "dekhiye",
+  "dekho", "kahiye", "bolo", "boliye", "kripya", "kripaya", "alvida", "han", "haan", "theek", "sahi", "karein", "karo",
+  // Languages are never caller names:
+  "hindi", "हिंदी", "हिन्दी", "english", "इंग्लिश", "अंग्रेजी",
+  "punjabi", "पंजाबी", "gujarati", "गुजराती", "marathi", "मराठी",
+  "bengali", "बंगाली", "tamil", "तमिल", "telugu", "तेलुगु",
+  "kannada", "कन्नड़", "malayalam", "मलयालम", "urdu", "उर्दू",
+  "language", "bhasha", "भाषा"
 ]);
 
 export function extractHonorificName(text: string): string | undefined {
   if (!text) return undefined;
-  const match = text.match(/(?:^|[,\s।!?])([A-Za-z\u0900-\u097F]{2,})\s*जी\b/u) ||
-                text.match(/(?:^|[,\s।!?])([A-Za-z]{2,})\s+ji\b/i);
+  const match = text.match(/(?:^|[,\s।!?])([A-Za-z\u0900-\u097F]{2,})\s*जी(?=$|[,\s।!?])/u) ||
+                text.match(/(?:^|[,\s।!?])([A-Za-z]{2,})\s+ji(?=$|[,\s।!?])/i);
   if (!match) return undefined;
   const candidate = match[1].trim();
   const lower = candidate.toLowerCase();
-  if (HONORIFIC_STOPWORDS.has(lower)) return undefined;
+  if (HONORIFIC_STOPWORDS.has(lower) || HONORIFIC_STOPWORDS.has(candidate)) return undefined;
   return candidate.charAt(0).toUpperCase() + candidate.slice(1);
 }
 

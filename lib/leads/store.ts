@@ -152,7 +152,7 @@ export function recordLead(input: LeadDeliveryInput): StoredLead {
   const isJunk = (str?: string) => {
     if (!str) return false;
     const norm = str.replace(/['"`]/g, "").toLowerCase().trim();
-    return norm === "así es" || norm === "asi es";
+    return norm === "así es" || norm === "asi es" || norm === "hindi" || norm === "हिंदी" || norm === "english";
   };
 
   const isAnonymous = (str?: string) => {

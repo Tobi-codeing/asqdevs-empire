@@ -27,8 +27,8 @@ function externalRelayUrl(): string | undefined {
 }
 
 function relayMode(): RelayMode {
-  if (externalRelayUrl()) return "external";
   if (process.env.LIVE_RELAY_ENABLED === "1") return "same-origin";
+  if (externalRelayUrl()) return "external";
   return "none";
 }
 

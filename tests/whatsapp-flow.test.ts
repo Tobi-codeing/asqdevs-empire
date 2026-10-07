@@ -229,6 +229,20 @@ describe("advisor handoff is terminal", () => {
     expect(run.lead.recapSent).toBe(true);
     expect(texts(run)).toMatch(/here's what I have/i);
   });
+
+  it("does not wrap up when user says 'thanks, show me options'", async () => {
+    let run = await qualified();
+    run = await step(run, "thanks, show me options");
+    expect(run.lead.confirmation).toBeUndefined();
+    expect(texts(run)).not.toMatch(/confirm I have it right/i);
+  });
+
+  it("does not wrap up when user asks a question with 'thank you'", async () => {
+    let run = await qualified();
+    run = await step(run, "thank you, what is the maintenance charge?");
+    expect(run.lead.confirmation).toBeUndefined();
+    expect(texts(run)).not.toMatch(/confirm I have it right/i);
+  });
 });
 
 describe("no backward loops after completion", () => {

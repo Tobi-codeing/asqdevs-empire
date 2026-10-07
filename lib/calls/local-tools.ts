@@ -56,7 +56,7 @@ export function executeToolLocally(
           ok: true,
           count: results.length,
           properties: results.map(brief),
-          note: "These are matching listings from Delhi Homes inventory. Recommend 1 or 2 options warmly in your consistent female voice in Hindi (Devanagari) and ask if they would like to book a site visit.",
+          note: "These are matching listings from Delhi Homes inventory. Recommend 1 or 2 options warmly in your consistent female voice in Hindi (Devanagari) and ask if they would like to book a site visit. CRITICAL: NEVER call the caller 'Hindi ji' or by any language name!",
         };
       }
 
@@ -120,7 +120,7 @@ export function executeToolLocally(
         ok: true,
         booked: true,
         slot: requestedLabel,
-        note: `Visit scheduled for ${requestedLabel}. If you do not have their contact number, ask for it in Hindi: "बहुत बढ़िया! कृपया अपना मोबाइल नंबर बता दीजिए ताकि हमारी टीम आपसे संपर्क कर सके।" If you already have their number, proceed to the final confirmation.`,
+        note: `Visit scheduled for ${requestedLabel}. If you do not have the caller's name and contact number, ask for them warmly in Hindi now: "बहुत बढ़िया! कन्फर्मेशन के लिए क्या मैं आपका शुभ नाम और मोबाइल नंबर जान सकती हूँ?" If you have their name, ask for their mobile number: "कृपया अपना मोबाइल नंबर बता दीजिए ताकि हमारी टीम आपसे संपर्क कर सके।" If you already have both, proceed to the final confirmation.`,
       };
     }
 

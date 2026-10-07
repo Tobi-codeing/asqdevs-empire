@@ -2,6 +2,7 @@ import {
   asksForPropertyList,
   detectAction,
   extractLeadFields,
+  isQuestion,
 } from "@/lib/ai/extract";
 import { resolveDate, resolveTime } from "@/lib/ai/dates";
 import {
@@ -150,10 +151,16 @@ const asksForOptions = (text: string) =>
     text,
   );
 
-const isWrapUp = (text: string) =>
-  /\b(?:thanks|thank you|thats all|that.s all|bye|goodbye|done|anything else|what next|whats next|next step)\b/i.test(
-    text,
+const isWrapUp = (text: string) => {
+  const trimmed = text.trim();
+  if (isQuestion(trimmed)) return false;
+  if (asksForPropertyList(trimmed) || asksForOptions(trimmed)) return false;
+  return (
+    /\b(?:thats all|that.s all|bye|goodbye|done|nothing else|bas itna hi)\b/i.test(trimmed) ||
+    /^(?:thanks|thank you|shukriya|dhanyawad)[.!,\s]*$/i.test(trimmed) ||
+    /^(?:what(?:'?s)? next|next step|anything else)\??$/i.test(trimmed)
   );
+};
 
 export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnResult> {
   const { text, history } = input;
@@ -599,10 +606,17 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
    * customer is shown homes while a question they were owed silently disappears.
    * The question is only appended when the model did not already ask something.
    */
+  const replyAlreadyAsks =
+    isQuestion(reply) ||
+    /\?|कब|कहाँ|कितना|कौन|क्या/i.test(reply);
+
   if (!review && !listReply && !isVisitTimePending(lead) && (becameSearchable || replyPropertyIds.length > 0)) {
     const stillMissing = missingFields(lead);
-    if (stillMissing.length && !/\?\s*$/.test(reply.trim())) {
-      const question = fieldQuestion[stillMissing[0]];
+    if (stillMissing.length && !replyAlreadyAsks && !/\?\s*$/.test(reply.trim())) {
+      const question =
+        stillMissing[0] === "timeline"
+          ? "Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+          : fieldQuestion[stillMissing[0]];
       reply = reply.trim() ? `${reply.trim()} ${question}` : question;
     }
   }
@@ -623,6 +637,7 @@ export async function runTurn(input: TurnInput, apiKey: string): Promise<TurnRes
     !lead.confirmation &&
     !isVisitTimePending(lead) &&
     replyPropertyIds.length > 0 &&
+    !replyAlreadyAsks &&
     !/\?\s*$/.test(reply.trim());
   if (wantsName) {
     reply = `${reply.trim()} Also, what name should I use for you?`.trim();

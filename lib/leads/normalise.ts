@@ -213,8 +213,10 @@ export function normaliseDevanagariDigits(text: string): string {
 
 const HINDI_WORD_DIGITS: [RegExp, string][] = [
   [/(^|[\s,.-])(?:शून्य|शुन्य)(?=[\s,.-]|$)/g, "$10 "],
-  [/(^|[\s,.-])(?:एक)(?=[\s,.-]|$)/g, "$11 "],
-  [/(^|[\s,.-])(?:दो)(?=[\s,.-]|$)/g, "$12 "],
+  [/(^|[\s,.-])(?:एक)(?=\s*(?:शून्य|शुन्य|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|\d))/g, "$11 "],
+  [/(?<=(?:शून्य|शुन्य|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|\d)\s*)(?:एक)(?=[\s,.-]|$)/g, "1 "],
+  [/(^|[\s,.-])(?:दो)(?=\s*(?:शून्य|शुन्य|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|\d))/g, "$12 "],
+  [/(?<=(?:शून्य|शुन्य|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|\d)\s*)(?:दो)(?=[\s,.-]|$)/g, "2 "],
   [/(^|[\s,.-])(?:तीन)(?=[\s,.-]|$)/g, "$13 "],
   [/(^|[\s,.-])(?:चार)(?=[\s,.-]|$)/g, "$14 "],
   [/(^|[\s,.-])(?:पाँच|पांच)(?=[\s,.-]|$)/g, "$15 "],
@@ -223,12 +225,16 @@ const HINDI_WORD_DIGITS: [RegExp, string][] = [
   [/(^|[\s,.-])(?:आठ)(?=[\s,.-]|$)/g, "$18 "],
   [/(^|[\s,.-])(?:नौ)(?=[\s,.-]|$)/g, "$19 "],
   [/\b(?:zero|shunya|shoonya)\b/gi, "0"],
-  [/\b(?:one|ek)\b/gi, "1"],
-  [/\b(?:two|do)\b/gi, "2"],
+  [/\b(?:one)\b/gi, "1"],
+  [/\b(?:ek)\b(?=\s*(?:zero|shunya|shoonya|one|ek|two|do|three|teen|four|char|chaar|five|paanch|panch|six|chhe|seven|saat|eight|aath|nine|nau|\d))/gi, "1"],
+  [/(?<=(?:zero|shunya|shoonya|one|ek|two|do|three|teen|four|char|chaar|five|paanch|panch|six|chhe|seven|saat|eight|aath|nine|nau|\d)\s*)\b(?:ek)\b/gi, "1"],
+  [/\b(?:two)\b/gi, "2"],
+  [/\b(?:do)\b(?=\s*(?:zero|shunya|shoonya|one|ek|two|do|three|teen|four|char|chaar|five|paanch|panch|six|chhe|seven|saat|eight|aath|nine|nau|\d))/gi, "2"],
+  [/(?<=(?:zero|shunya|shoonya|one|ek|two|do|three|teen|four|char|chaar|five|paanch|panch|six|chhe|seven|saat|eight|aath|nine|nau|\d)\s*)\b(?:do)\b/gi, "2"],
   [/\b(?:three|teen)\b/gi, "3"],
   [/\b(?:four|char|chaar)\b/gi, "4"],
   [/\b(?:five|paanch|panch)\b/gi, "5"],
-  [/\b(?:six|chhe|chhah|che)\b/gi, "6"],
+  [/\b(?:six|chhe|chhah)\b/gi, "6"],
   [/\b(?:seven|saat|sat)\b/gi, "7"],
   [/\b(?:eight|aath|ath)\b/gi, "8"],
   [/\b(?:nine|nau)\b/gi, "9"],
@@ -295,8 +301,8 @@ export function extractPhone(raw: string): string | undefined {
   }
 
   // 4. Pattern matching within free text (with word boundaries / non-digit lookahead):
-  // 10-digit mobile with optional country code and optional spaces/dashes
-  const tenDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9]\d{4}[\s.-]?\d{5}|[5-9]\d{2}[\s.-]?\d{3}[\s.-]?\d{4}|[5-9]\d{3}[\s.-]?\d{3}[\s.-]?\d{4}|[5-9]\d{9})(?!\d)/;
+  // 10-digit mobile with optional country code and optional spaces/dashes (e.g. 98 76 54 32 10, 98765 43210)
+  const tenDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9](?:[\s.-]*\d){9})(?!\d)/;
   const match10 = text.match(tenDigitPattern);
   if (match10) {
     const normalised = normalisePhone(match10[0]);
@@ -304,24 +310,36 @@ export function extractPhone(raw: string): string | undefined {
   }
 
   // 9-digit spoken mobile (voice STT swallowed one digit)
-  const nineDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9]\d{3}[\s.-]?\d{5}|[5-9]\d{8})(?!\d)/;
+  const nineDigitPattern = /(?:(?:\+?91|0)[\s.-]?)?([5-9](?:[\s.-]*\d){8})(?!\d)/;
   const match9 = text.match(nineDigitPattern);
   if (match9) {
     const normalised = normalisePhone(match9[0]);
     if (normalised) return normalised;
   }
 
-  // 5. Fallback for pure digit string in case punctuation was unusual
+  // 5. Fallback for pure digit string in case punctuation was unusual.
+  // CRITICAL: NEVER combine scattered digits from property/budget sentences (e.g. "Sector 62 me 3 BHK 95 lakh 2026")!
+  const hasPropertyOrBudgetWords =
+    /\b(?:bhk|lakh|lakhs|crore|crores|cr|lac|sector|sq\s*ft|feet|floor|manzil|budget|price|year|saal|mahine|month)\b|लाख|करोड़|सेक्टर|बीएचके|कमरे|मंजिल/i.test(
+      raw,
+    );
+  const isExplicitPhoneContext =
+    /(?:phone|mobile|number|contact|call|नंबर|फ़ोन|फोन|कॉल|संपर्क)/i.test(raw);
+  const nonSpaceLen = text.replace(/\s+/g, "").length || 1;
   const allDigits = text.replace(/\D/g, "");
-  if (
-    allDigits.length === 10 ||
-    allDigits.length === 9 ||
-    (allDigits.length >= 11 &&
-      allDigits.length <= 13 &&
-      (allDigits.startsWith("91") || allDigits.startsWith("0")))
-  ) {
-    const normalised = normalisePhone(allDigits);
-    if (normalised) return normalised;
+  const isMostlyDigits = allDigits.length / nonSpaceLen >= 0.6;
+
+  if (!hasPropertyOrBudgetWords && (isMostlyDigits || isExplicitPhoneContext)) {
+    if (
+      allDigits.length === 10 ||
+      allDigits.length === 9 ||
+      (allDigits.length >= 11 &&
+        allDigits.length <= 13 &&
+        (allDigits.startsWith("91") || allDigits.startsWith("0")))
+    ) {
+      const normalised = normalisePhone(allDigits);
+      if (normalised) return normalised;
+    }
   }
 
   return undefined;

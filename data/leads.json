@@ -1,5 +1,4152 @@
 [
   {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:40:07.245Z",
+    "name": "Ashu",
+    "phone": "7485042906",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7485042906. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice. What is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Dwarka is a solid budget for a 2BHK. Let me show you what we have available right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, and 24x7 security. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to show you around! What day and time works best for your visit?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: immediately\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashu"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7485042906"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74850 42906. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7485042906. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyg7c1e-w465",
+    "receivedAt": "2026-10-07T18:40:07.245Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:46.576Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 92,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice. What is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Dwarka is a solid budget for a 2BHK. Let me show you what we have available right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, and 24x7 security. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to show you around! What day and time works best for your visit?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muygchhu-spkg",
+    "receivedAt": "2026-10-07T18:39:46.576Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:44.233Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Confirm the requested site visit — Visit requested — time to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice. What is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Dwarka is a solid budget for a 2BHK. Let me show you what we have available right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, and 24x7 security. Would you like to schedule a site visit?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muygcfos-dxqy",
+    "receivedAt": "2026-10-07T18:39:44.233Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:40.962Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Dwarka Heights",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice. What is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Dwarka is a solid budget for a 2BHK. Let me show you what we have available right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muygcd5x-dgcu",
+    "receivedAt": "2026-10-07T18:39:40.962Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:37.611Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice. What is your budget for this?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muygcakt-t2f8",
+    "receivedAt": "2026-10-07T18:39:37.611Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:34.383Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great choice with some lovely residential pockets. What size of property are you looking for, like a 2BHK or 3BHK?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muygc836-6och",
+    "receivedAt": "2026-10-07T18:39:34.383Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:39:32.159Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 27,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask what size they need",
+    "summary": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great step. Which area in Delhi NCR are you exploring?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only deal in Delhi, Noida, Gurugram, Dwarka, and Rohini. Which of these areas would you like to explore?"
+      }
+    ],
+    "text": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muygc6dd-g0xp",
+    "receivedAt": "2026-10-07T18:39:32.159Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-07T18:39:06.000Z",
+    "name": "आशीष",
+    "phone": "7986795246",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Delhi (Flexible)"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹27L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Delhi (Flexible)",
+    "siteVisit": "Friday 9 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Friday 9 October, 10:00 AM",
+    "summary": "आशीष is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹27L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986795246. A site visit was requested for Friday 9 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      },
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "जी, दिल्ली होम्स में आपका स्वागत है। बताइए, मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे दिल्ली में फ्लैट लेना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! क्या आप किसी खास इलाक़े में फ्लैट देख रहे हैं, या आपका कोई बजट तय है?"
+      },
+      {
+        "role": "user",
+        "text": "इलाके का कोई आईडिया नहीं है, बट मेरा बजट 27 से 90 लाख के बीच है। बट इलाका ऐसा चाहिए जहां पे कि आसपास स्कूल हो और अच्छी सुविधाएं हो बस आसपास बच्चों के लिए।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, रोहिणी में एक अच्छा 2 BHK फ्लैट है जो आपके बजट में फिट बैठता है। क्या आप इसके बारे में जानना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "आप बताओ।"
+      },
+      {
+        "role": "assistant",
+        "text": "यह रोहिणी एन्क्लेव में स्थित है और इसकी कीमत 78 लाख रुपये है। क्या मैं आपका शुभ नाम जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मेरा नाम आशीष है।"
+      },
+      {
+        "role": "assistant",
+        "text": "आशीष जी, क्या आप इस फ्लैट को देखने के लिए कोई विजिट प्लान करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "कल के दिन सुबह 10:00 बजे।"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया, आशीष जी! आपकी विजिट शेड्यूल हो गई है। कन्फर्मेशन के लिए कृपया अपना मोबाइल नंबर बता दीजिए।"
+      },
+      {
+        "role": "user",
+        "text": "Mera number 7986795246."
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK फ्लैट के लिए कल सुबह 10 बजे की विजिट और आपका नंबर 7986795246 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां, सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "recordingUrl": "https://asqdevs-empire.onrender.com/api/recordings/call-muygbhz2.webm",
+    "text": "आशीष is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹27L–₹90L and wants to move forward immediately. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Contact number: 7986795246. A site visit was requested for Friday 9 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muyg9c62",
+    "receivedAt": "2026-10-07T18:39:06.000Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-07T18:34:46.227Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Delhi (Flexible)",
+    "preferredLocations": [
+      "Delhi (Flexible)"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹70L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Delhi (Flexible)",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 64,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹70L–₹90L. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      },
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "Hindi"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे दिल्ली में फ्लैट चाहिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! क्या आपके मन में कोई खास इलाका है या आप कहीं भी देख सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "Aisa ilake ka koi idea nahi hai bas aas paas school aur college vagera ho, aisi jagah honi chahiye. Bachon ke liye."
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। क्या आप मुझे फ्लैट का साइज़ बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "तू बेच के"
+      },
+      {
+        "role": "assistant",
+        "text": "ठीक है, 2 BHK। क्या आप अपना बजट बता सकती हैं ताकि मैं सही विकल्प दिखा सकूँ?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत अच्छे! क्या आपका कोई बजट तय है?"
+      },
+      {
+        "role": "user",
+        "text": "Mera budget around 70 to 90 lakhs hai."
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया, मुझे रोहिणी में 78 लाख में एक 2 BHK फ्लैट मिला है। क्या आप इसे देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, जरूर।"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत अच्छे। आप कब तक यह फ्लैट लेने का प्लान बना रहे हैं?"
+      },
+      {
+        "role": "user",
+        "text": "लेने का प्लान नहीं है। पहले मुझे देखना है, फिर मैं लेने का सोचूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप कब तक यह फ्लैट देखने के लिए जाना चाहेंगे?"
+      },
+      {
+        "role": "assistant",
+        "text": "क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी तरफ से कोई जवाब न मिलने के कारण कॉल समाप्त की जा रही है। दिल्ली होम्स में संपर्क करने के लिए धन्यवाद।"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — caller inactivity"
+      }
+    ],
+    "recordingUrl": "https://asqdevs-empire.onrender.com/api/recordings/call-muyfqhq5.webm",
+    "text": "The customer is looking to buy a 2 BHK Apartment in Delhi (Flexible) with a budget of approximately ₹70L–₹90L. Preferences noted: Near school. 3 matching properties were identified from the demo inventory. Lead source: Phone.",
+    "id": "phone-muyfmrtu",
+    "receivedAt": "2026-10-07T18:34:46.227Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:19:28.603Z",
+    "name": "Ashish",
+    "phone": "7404296309",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "Ashish is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and wants to move forward immediately. 1 matching property was identified from the demo inventory. Contact number: 7404296309. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Rohini — perfect. What is your budget for this property?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Rohini gives us some good options, check this one out. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Rohini Enclave"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini Enclave is a nice 2 BHK apartment priced at ₹78L with covered parking, a lift, and security. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can definitely set that up! What day and time works best for you?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Rohini\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: immediately\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashish"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7404296309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74042 96309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashish is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and wants to move forward immediately. 1 matching property was identified from the demo inventory. Contact number: 7404296309. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyfl31l-ecrf",
+    "receivedAt": "2026-10-07T18:19:28.603Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:19:05.284Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 92,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and wants to move forward immediately. 1 matching property was identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Rohini — perfect. What is your budget for this property?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Rohini gives us some good options, check this one out. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Rohini Enclave"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini Enclave is a nice 2 BHK apartment priced at ₹78L with covered parking, a lift, and security. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can definitely set that up! What day and time works best for you?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L and wants to move forward immediately. 1 matching property was identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflvph-a9oz",
+    "receivedAt": "2026-10-07T18:19:05.284Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:19:02.102Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Confirm the requested site visit — Visit requested — time to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Rohini — perfect. What is your budget for this property?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Rohini gives us some good options, check this one out. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Rohini Enclave"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini Enclave is a nice 2 BHK apartment priced at ₹78L with covered parking, a lift, and security. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflt94-lt9k",
+    "receivedAt": "2026-10-07T18:19:02.102Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:18:58.389Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Rohini Enclave",
+    "summary": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Rohini — perfect. What is your budget for this property?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L in Rohini gives us some good options, check this one out. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflqe0-stvz",
+    "receivedAt": "2026-10-07T18:18:58.389Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:18:55.007Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Rohini — perfect. What is your budget for this property?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Rohini with a budget of approximately ₹90L. 1 matching property was identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflns2-t6lf",
+    "receivedAt": "2026-10-07T18:18:55.007Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:18:52.282Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Rohini",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Rohini. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Rohini"
+      },
+      {
+        "role": "assistant",
+        "text": "Rohini is a great choice! What size property are you looking for, like a 2BHK or 3BHK?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Rohini. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflloc-5feh",
+    "receivedAt": "2026-10-07T18:18:52.282Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T18:18:49.099Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Rohini"
+    ],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Rohini",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 27,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask what size they need",
+    "summary": "The customer is looking to buy a property in Rohini. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We only operate in Dwarka, Rohini, South Delhi, Noida, and Gurugram right now — would any of those work for you?"
+      }
+    ],
+    "text": "The customer is looking to buy a property in Rohini. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyflj7y-cebd",
+    "receivedAt": "2026-10-07T18:18:49.099Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-07T18:00:10.397Z",
+    "name": "Ashish",
+    "phone": "7484962954",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹80L–₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school",
+      "Gym"
+    ],
+    "requirement": "2 BHK apartment in Rohini",
+    "siteVisit": "Thursday 8 October, 1:00 PM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 100,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Thursday 8 October, 1:00 PM",
+    "summary": "Ashish is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹90L and wants to move forward immediately. Preferences noted: Near school, Gym. 1 matching property was identified from the demo inventory. Contact number: 7484962954. A site visit was requested for Thursday 8 October, 1:00 PM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "नमस्ते! दिल्ली होम्स में आपका स्वागत है। मैं आपकी किस तरह से सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे दिल्ली में फ्लैट लेना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल। क्या आपने दिल्ली में कोई खास इलाका सोचा है जहाँ आप फ्लैट देखना चाहते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "नहीं, इलाका तो सोचा नहीं। कोई आईडिया है नहीं मेरे को इलाके का दिल्ली का। अभी मैं बैंगलोर में हूं। और मुझे बैंगलोर से दिल्ली शिफ्ट होना है। लेकिन मुझे आसपास ना सुविधाएं अच्छी चाहिए। जैसे जिम हो गया और स्कूल, कॉलेज वगैरह हो आसपास ही।"
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई। दिल्ली में ऐसी कई जगहें हैं जो अच्छी सुविधाओं और स्कूलों के पास हैं। क्या आप मुझे फ्लैट का साइज़ बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे 2 BHK चाहिए।"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत अच्छे! क्या आपका कोई बजट तय है 2 BHK फ्लैट के लिए?"
+      },
+      {
+        "role": "user",
+        "text": "80 से 90 लाख"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "हिंदी जी, मुझे रोहिणी में एक 2 BHK अपार्टमेंट मिला है जो आपके बजट के अंदर है। क्या आप इस प्रॉपर्टी को देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, मैं देखना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया! क्या आप इस प्रॉपर्टी को देखने के लिए कोई खास दिन और समय बता सकते हैं?"
+      },
+      {
+        "role": "user",
+        "text": "कल दोपहर"
+      },
+      {
+        "role": "assistant",
+        "text": "दोपहर में कोई खास समय बता सकते हैं, जैसे दो बजे या तीन बजे?"
+      },
+      {
+        "role": "user",
+        "text": "दोपहर को 1:00 बजे"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया! कन्फर्मेशन के लिए क्या मैं आपका शुभ नाम और मोबाइल नंबर जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Mera naam Ashish hai aur mera number hai 7484962954."
+      },
+      {
+        "role": "assistant",
+        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK अपार्टमेंट के लिए कल दोपहर 1:00 बजे की विजिट और आपका नंबर 7484962954 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां, सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "system",
+        "text": "Call ended — requirement captured"
+      }
+    ],
+    "recordingUrl": "https://asqdevs-empire.onrender.com/api/recordings/call-muyexc5v.webm",
+    "text": "Ashish is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹90L and wants to move forward immediately. Preferences noted: Near school, Gym. 1 matching property was identified from the demo inventory. Contact number: 7484962954. A site visit was requested for Thursday 8 October, 1:00 PM. Lead source: Phone.",
+    "id": "phone-muyetymq",
+    "receivedAt": "2026-10-07T18:00:10.398Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:57:06.809Z",
+    "name": "Ashi",
+    "phone": "7404296309",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "Ashi is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7404296309. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L for a 2BHK in Dwarka — totally doable. Let me show you what we have right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK in Dwarka priced at ₹96L with a gym, clubhouse, and covered parking. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can set up that site visit for Sky Residency right away — what day and time works best for you?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: immediately\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashi"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7404296309"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74042 96309. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashi is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7404296309. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyermkn-fjxq",
+    "receivedAt": "2026-10-07T17:57:06.809Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:46.391Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 92,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L for a 2BHK in Dwarka — totally doable. Let me show you what we have right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK in Dwarka priced at ₹96L with a gym, clubhouse, and covered parking. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We can set up that site visit for Sky Residency right away — what day and time works best for you?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyet6m1-n1dd",
+    "receivedAt": "2026-10-07T17:56:46.391Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:43.446Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Confirm the requested site visit — Visit requested — time to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L for a 2BHK in Dwarka — totally doable. Let me show you what we have right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK in Dwarka priced at ₹96L with a gym, clubhouse, and covered parking. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyet4c8-fi6b",
+    "receivedAt": "2026-10-07T17:56:43.446Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:39.640Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Sky Residency",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what is your budget for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L for a 2BHK in Dwarka — totally doable. Let me show you what we have right now. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyet1ei-a4ci",
+    "receivedAt": "2026-10-07T17:56:39.640Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:33.406Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what is your budget for this?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeswlc-k9n7",
+    "receivedAt": "2026-10-07T17:56:33.406Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:25.622Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — great choice, there's some nice inventory there. What size of property are you looking for, like a 2BHK or 3BHK?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyesql5-kh2o",
+    "receivedAt": "2026-10-07T17:56:25.622Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:56:19.277Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 27,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask what size they need",
+    "summary": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "We currently don't list properties in Shimla — we cover Dwarka, Rohini, South Delhi, Noida, and Gurugram. Would you like to check out one of those instead?"
+      }
+    ],
+    "text": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeslou-zjax",
+    "receivedAt": "2026-10-07T17:56:19.277Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:55:21.732Z",
+    "name": "Ash",
+    "phone": "7496096390",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "Ash is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7496096390. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what budget do you have in mind for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, around ₹90L is a solid budget for a 2BHK in Dwarka. Check out Dwarka Heights (₹92L) and Sky Residency (₹96L) — do either of these catch your eye?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, 24x7 security, and power backup. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to show you Dwarka Heights — what day and time works best for your site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: immediately\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ash"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7496096390"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 74960 96390. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ash is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7496096390. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyatux5-htfc",
+    "receivedAt": "2026-10-07T17:55:21.732Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:58.954Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 92,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what budget do you have in mind for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, around ₹90L is a solid budget for a 2BHK in Dwarka. Check out Dwarka Heights (₹92L) and Sky Residency (₹96L) — do either of these catch your eye?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, 24x7 security, and power backup. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to show you Dwarka Heights — what day and time works best for your site visit?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqvpp-ffob",
+    "receivedAt": "2026-10-07T17:54:58.954Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:55.618Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Confirm the requested site visit — Visit requested — time to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what budget do you have in mind for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, around ₹90L is a solid budget for a 2BHK in Dwarka. Check out Dwarka Heights (₹92L) and Sky Residency (₹96L) — do either of these catch your eye?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L with covered parking, lift, 24x7 security, and power backup. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqt50-tg8p",
+    "receivedAt": "2026-10-07T17:54:55.618Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:52.242Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Dwarka Heights",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what budget do you have in mind for this?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "Got it, around ₹90L is a solid budget for a 2BHK in Dwarka. Check out Dwarka Heights (₹92L) and Sky Residency (₹96L) — do either of these catch your eye?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqqj9-5lvo",
+    "receivedAt": "2026-10-07T17:54:52.242Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:47.137Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — what budget do you have in mind for this?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqmlf-2eiu",
+    "receivedAt": "2026-10-07T17:54:47.137Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:43.339Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka — excellent choice, there's solid inventory there. What size are you looking for, like a 2BHK or 3BHK?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqjnx-3e0t",
+    "receivedAt": "2026-10-07T17:54:43.339Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T17:54:33.435Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 27,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask what size they need",
+    "summary": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "namashkR"
+      },
+      {
+        "role": "assistant",
+        "text": "Namaste! Delhi Homes mein aapka swagat hai 🏡 Kya aap property khareedna (Buy) chahte hain ya kiraye (Rent) par dekh rahe hain?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Buying is a great decision. Which area in Delhi NCR are you looking at?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Delhi NCR mein hum Dwarka, Rohini, South Delhi, Noida aur Gurugram me deal karte hain — inme se koi area pasand hai kya?"
+      }
+    ],
+    "text": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muyeqc0t-09ai",
+    "receivedAt": "2026-10-07T17:54:33.435Z"
+  },
+  {
+    "source": "Phone",
+    "capturedAt": "2026-10-07T16:04:07.836Z",
+    "name": "New enquiry",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Rohini",
+    "preferredLocations": [
+      "Delhi"
+    ],
+    "propertyType": "Apartment",
+    "bhk": "2 BHK",
+    "budget": "₹1Cr",
+    "budgetValue": 10000000,
+    "timeline": "Immediately",
+    "preferences": [
+      "Near school"
+    ],
+    "requirement": "2 BHK apartment in Delhi",
+    "siteVisit": "Thursday 8 October, 10:00 AM",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Prepare for the site visit — Thursday 8 October, 10:00 AM",
+    "summary": "The customer is looking to buy a 2 BHK Apartment in Delhi with a budget of approximately ₹1Cr and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Thursday 8 October, 10:00 AM. Lead source: Phone.",
+    "matches": [
+      {
+        "name": "Rohini Enclave",
+        "bhk": "2 BHK Apartment",
+        "location": "Rohini",
+        "price": "₹78L",
+        "url": "http://localhost:3000/demo/properties/rohini-enclave"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
+      },
+      {
+        "role": "user",
+        "text": "हिंदी"
+      },
+      {
+        "role": "system",
+        "text": "Language · Hindi"
+      },
+      {
+        "role": "assistant",
+        "text": "जी, बताइए। मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे दिल्ली में फ्लैट लेना है।"
+      },
+      {
+        "role": "assistant",
+        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी देख रहे हैं और आपका बजट क्या है?"
+      },
+      {
+        "role": "user",
+        "text": "Oh, mera budget around 90 lakhs to 1 crore hai aur maine ilaka nahi socha kyunki mujhe ilake ka kuch idea nahi hai Delhi ka. Main darasal Bangalore se hun to mere ko Delhi shift hona hai aur mujhe Delhi mein koi aisi jagah chahiye jahan aas-pass college ho, school vagera ho aas-pass."
+      },
+      {
+        "role": "assistant",
+        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। क्या आप मुझे बता सकते हैं कि आपको कितने BHK का फ्लैट चाहिए?"
+      },
+      {
+        "role": "user",
+        "text": "मुझे 2 BHK चाहिए।"
+      },
+      {
+        "role": "system",
+        "text": "search Properties"
+      },
+      {
+        "role": "assistant",
+        "text": "बहुत बढ़िया! मुझे रोहिणी एन्क्लेव में 78 लाख में और द्वारका में 92 लाख से 96 लाख तक के 2 BHK फ्लैट्स मिले हैं। क्या आप इनमें से कोई प्रॉपर्टी देखना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "Inmein se achha jo hai uske wahi bata do jo matlab jo achha ho aas paas achhi suvidhaen ho aur added to move ho main seedha wahan ja sakun."
+      },
+      {
+        "role": "assistant",
+        "text": "रोहिणी एन्क्लेव आपके लिए अच्छा विकल्प रहेगा, ये रेडी टू मूव है और यहाँ सुविधाएं भी अच्छी हैं। क्या आप इसकी विजिट करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "Aap pehle iske bare mein thoda bata do fir visit ka dekhte hain."
+      },
+      {
+        "role": "system",
+        "text": "get Property Details"
+      },
+      {
+        "role": "assistant",
+        "text": "यह रोहिणी में एक रेडी टू मूव 2 BHK फ्लैट है, जहाँ कवर्ड पार्किंग, लिफ्ट और सुरक्षा की सुविधाएँ हैं। इसका दाम अठत्तर लाख रुपये है। क्या आप इसकी विजिट करना चाहेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "हां, कहना चाहूंगा।"
+      },
+      {
+        "role": "assistant",
+        "text": "विजिट के लिए आप कौन सा दिन और समय पसंद करेंगे?"
+      },
+      {
+        "role": "user",
+        "text": "मैं कल के दिन सुबह 10:00 से 12:00 बजे"
+      },
+      {
+        "role": "system",
+        "text": "schedule Visit"
+      },
+      {
+        "role": "assistant",
+        "text": "आपकी विजिट गुरुवार सुबह 10 बजे के लिए शेड्यूल हो गई है। कंफरमेशन के लिए क्या मैं आपका मोबाइल नंबर जान सकती हूँ?"
+      },
+      {
+        "role": "user",
+        "text": "Oh mobile number 7986794586."
+      },
+      {
+        "role": "assistant",
+        "text": "तो रोहिणी एन्क्लेव में 2 BHK फ्लैट के लिए गुरुवार सुबह 10 बजे की विजिट और आपका नंबर 7986794586 — क्या यह सब सही है?"
+      },
+      {
+        "role": "user",
+        "text": "हां, सब सही है।"
+      },
+      {
+        "role": "assistant",
+        "text": "शुक्रिया जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
+      },
+      {
+        "role": "user",
+        "text": "OK."
+      }
+    ],
+    "recordingUrl": "https://asqdevs-empire.onrender.com/api/recordings/call-muyarxit.webm",
+    "text": "The customer is looking to buy a 2 BHK Apartment in Delhi with a budget of approximately ₹1Cr and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Thursday 8 October, 10:00 AM. Lead source: Phone.",
+    "id": "phone-muyanotu",
+    "receivedAt": "2026-10-07T16:04:07.836Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:46:33.023Z",
+    "name": "Ashu",
+    "phone": "7986794586",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 96,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L is a practical budget for Dwarka, let's look at what we have. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L, featuring covered parking, a lift, and 24x7 security. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK apartment in Dwarka for ₹96L with a gym, clubhouse, and covered parking. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to set up a site visit for Sky Residency! What day and time works best for you?"
+      },
+      {
+        "role": "user",
+        "text": "Tomorrow afternoon"
+      },
+      {
+        "role": "assistant",
+        "text": "Before I pass this to our advisor, just confirm I have it right:\nLooking to: Buying\nArea: Dwarka\nSize: 2 BHK\nBudget: around ₹90L\nTimeline: immediately\nSite visit: Tomorrow afternoon visit requested — to confirm\nReply \"Yes, that's correct\", or tell me what to change."
+      },
+      {
+        "role": "user",
+        "text": "Yes, that's correct"
+      },
+      {
+        "role": "assistant",
+        "text": "Thanks! And what name should I save with your requirement?"
+      },
+      {
+        "role": "user",
+        "text": "ashu"
+      },
+      {
+        "role": "assistant",
+        "text": "Great. What's the best number for our advisor to reach you on?"
+      },
+      {
+        "role": "user",
+        "text": "7986794586"
+      },
+      {
+        "role": "assistant",
+        "text": "I'll have our advisor call you on 79867 94586. Is this the right number to reach you on, or would you like to change it?"
+      }
+    ],
+    "text": "Ashu is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. Contact number: 7986794586. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muy9lscn-33yb",
+    "receivedAt": "2026-10-07T15:46:33.023Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:44:08.839Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "Immediately",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Tomorrow afternoon visit requested — to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 92,
+    "temperature": "HOT",
+    "status": "Qualified",
+    "nextAction": "Confirm the requested site visit — Tomorrow afternoon visit requested — to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L is a practical budget for Dwarka, let's look at what we have. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L, featuring covered parking, a lift, and 24x7 security. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK apartment in Dwarka for ₹96L with a gym, clubhouse, and covered parking. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Book a site visit"
+      },
+      {
+        "role": "assistant",
+        "text": "We'd love to set up a site visit for Sky Residency! What day and time works best for you?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L and wants to move forward immediately. 2 matching properties were identified from the demo inventory. A site visit was requested for Tomorrow afternoon visit requested — to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muya2mix-h2xi",
+    "receivedAt": "2026-10-07T15:44:08.839Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:44:02.744Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "Visit requested — time to confirm",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 80,
+    "temperature": "HOT",
+    "status": "Qualifying",
+    "nextAction": "Confirm the requested site visit — Visit requested — time to confirm",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L is a practical budget for Dwarka, let's look at what we have. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L, featuring covered parking, a lift, and 24x7 security. Would you like to schedule a site visit?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Sky Residency"
+      },
+      {
+        "role": "assistant",
+        "text": "Sky Residency is a furnished 2 BHK apartment in Dwarka for ₹96L with a gym, clubhouse, and covered parking. Would you like to schedule a site visit?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. A site visit was requested for Visit requested — time to confirm. Lead source: WhatsApp.",
+    "id": "whatsapp-muya2htm-upty",
+    "receivedAt": "2026-10-07T15:44:02.744Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:43:57.501Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Sky Residency",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L is a practical budget for Dwarka, let's look at what we have. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      },
+      {
+        "role": "user",
+        "text": "Tell me about Dwarka Heights"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka Heights is a ready-to-move 2 BHK apartment priced at ₹92L, featuring covered parking, a lift, and 24x7 security. Would you like to schedule a site visit?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muya2dry-oz1t",
+    "receivedAt": "2026-10-07T15:43:57.501Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:43:47.631Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Send full details of Dwarka Heights",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      },
+      {
+        "role": "user",
+        "text": "Around ₹90L"
+      },
+      {
+        "role": "assistant",
+        "text": "₹90L is a practical budget for Dwarka, let's look at what we have. Would you like more details on either of these properties, or to arrange a site visit? When are you hoping to move forward?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muya265t-bman",
+    "receivedAt": "2026-10-07T15:43:47.631Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:43:36.595Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there is solid inventory there. What is your budget?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muya1xnj-3ufn",
+    "receivedAt": "2026-10-07T15:43:36.596Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:43:28.994Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Dwarka is a great spot, we have some solid options there. What size are you looking for, like a 2BHK or 3BHK?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muya1rs4-z3fi",
+    "receivedAt": "2026-10-07T15:43:28.994Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:43:21.428Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 27,
+    "temperature": "COLD",
+    "status": "Qualifying",
+    "nextAction": "Ask what size they need",
+    "summary": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Sure — buy. Which area in Delhi NCR are you looking in (e.g. Dwarka, Rohini, South Delhi, Noida, Gurugram)?"
+      },
+      {
+        "role": "user",
+        "text": "agra"
+      },
+      {
+        "role": "assistant",
+        "text": "We mostly focus on Dwarka, Rohini, South Delhi, Noida, and Gurugram — would any of those work for you?"
+      }
+    ],
+    "text": "The customer is looking to buy a property in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muya1ly4-os6v",
+    "receivedAt": "2026-10-07T15:43:21.428Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:12:04.624Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "₹90L",
+    "budgetValue": 9000000,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 60,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Offer the matched properties and a site visit",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "matches": [
+      {
+        "name": "Dwarka Heights",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹92L",
+        "url": "http://localhost:3000/demo/properties/dwarka-heights"
+      },
+      {
+        "name": "Sky Residency",
+        "bhk": "2 BHK Apartment",
+        "location": "Dwarka",
+        "price": "₹96L",
+        "url": "http://localhost:3000/demo/properties/sky-residency"
+      }
+    ],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Shimla is a lovely place, but we currently only deal in Delhi, Noida, Gurugram, Dwarka, Rohini, and South Delhi. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Okay — Dwarka. What size of home are you looking for — 1, 2, 3 BHK or larger?"
+      },
+      {
+        "role": "user",
+        "text": "2 BHK"
+      },
+      {
+        "role": "assistant",
+        "text": "2BHK in Dwarka — good choice, there's solid inventory there. What sort of budget do you have in mind?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹90L. 2 matching properties were identified from the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muy8vv4b-zqtl",
+    "receivedAt": "2026-10-07T15:12:04.625Z"
+  },
+  {
+    "source": "WhatsApp",
+    "capturedAt": "2026-10-07T15:11:52.814Z",
+    "name": "New enquiry",
+    "phone": "",
+    "intent": "Buy",
+    "location": "Dwarka",
+    "preferredLocations": [
+      "Dwarka"
+    ],
+    "propertyType": "",
+    "bhk": "2 BHK",
+    "budget": "",
+    "budgetValue": null,
+    "timeline": "",
+    "preferences": [],
+    "requirement": "2 BHK in Dwarka",
+    "siteVisit": "",
+    "callbackRequested": false,
+    "advisorRequested": false,
+    "optedOutFollowUps": false,
+    "score": 39,
+    "temperature": "WARM",
+    "status": "Qualifying",
+    "nextAction": "Ask what budget to work within",
+    "summary": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "matches": [],
+    "transcript": [
+      {
+        "role": "user",
+        "text": "hi"
+      },
+      {
+        "role": "assistant",
+        "text": "Welcome to Delhi Homes! 🏡 How can I help you today — are you looking to buy or rent a property in Delhi NCR?"
+      },
+      {
+        "role": "user",
+        "text": "Buy"
+      },
+      {
+        "role": "assistant",
+        "text": "Great! Which area in Delhi NCR are you looking to buy in?"
+      },
+      {
+        "role": "user",
+        "text": "shimla"
+      },
+      {
+        "role": "assistant",
+        "text": "Shimla is a lovely place, but we currently only deal in Delhi, Noida, Gurugram, Dwarka, Rohini, and South Delhi. Would you like to check out one of those instead?"
+      },
+      {
+        "role": "user",
+        "text": "Dwarka"
+      },
+      {
+        "role": "assistant",
+        "text": "Okay — Dwarka. What size of home are you looking for — 1, 2, 3 BHK or larger?"
+      }
+    ],
+    "text": "The customer is looking to buy a 2 BHK in Dwarka. No matching listings were found in the demo inventory. Lead source: WhatsApp.",
+    "id": "whatsapp-muy8x4og-74pi",
+    "receivedAt": "2026-10-07T15:11:52.814Z"
+  },
+  {
     "source": "Phone",
     "capturedAt": "2026-10-05T20:48:32.639Z",
     "name": "Ashish",
@@ -123,159 +4270,6 @@
     "text": "Ashish is looking to buy a 1 BHK BHK Apartment in Rohini with a budget of approximately ₹75L–₹90L and wants to move forward immediately. Preferences noted: Near school. No matching listings were found in the demo inventory. Contact number: 7485826309. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
     "id": "phone-muvq2dmq-h7iz",
     "receivedAt": "2026-10-05T20:48:32.642Z"
-  },
-  {
-    "source": "Phone",
-    "capturedAt": "2026-10-05T20:32:21.072Z",
-    "name": "आशीष",
-    "phone": "",
-    "intent": "Buy",
-    "location": "Rohini",
-    "preferredLocations": [],
-    "propertyType": "Apartment",
-    "bhk": "2 BHK",
-    "budget": "₹80L–₹95L",
-    "budgetValue": 9500000,
-    "timeline": "Immediately",
-    "preferences": [
-      "Near school"
-    ],
-    "requirement": "2 BHK apartment in Rohini",
-    "siteVisit": "Wednesday 7 October, 10:00 AM",
-    "callbackRequested": false,
-    "advisorRequested": false,
-    "optedOutFollowUps": false,
-    "score": 100,
-    "temperature": "HOT",
-    "status": "Qualified",
-    "nextAction": "Prepare for the site visit — Wednesday 7 October, 10:00 AM",
-    "summary": "आशीष is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹95L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
-    "matches": [
-      {
-        "name": "Rohini Enclave",
-        "bhk": "2 BHK Apartment",
-        "location": "Rohini",
-        "price": "₹78L",
-        "url": "http://localhost:3000/demo/properties/rohini-enclave"
-      }
-    ],
-    "transcript": [
-      {
-        "role": "assistant",
-        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
-      },
-      {
-        "role": "user",
-        "text": "ti"
-      },
-      {
-        "role": "system",
-        "text": "Language · Hindi"
-      },
-      {
-        "role": "assistant",
-        "text": "नमस्ते। मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
-      },
-      {
-        "role": "user",
-        "text": "घर देखना है दिल्ली में। प्रॉपर्टी"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई। आप किस इलाके में प्रॉपर्टी देख रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "काका का उतना नहीं पता मुझे लेकिन दिल्ली में कहीं चाहिए जहां स्कूल वगैरह पास में हो और पार्क भी।"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई, दिल्ली में अच्छी सुविधाओं और स्कूलों के पास कई विकल्प हैं। क्या आपका कोई बजट फिक्स है?"
-      },
-      {
-        "role": "system",
-        "text": "search Properties"
-      },
-      {
-        "role": "user",
-        "text": "Mera budget kareeb 80 se 95 lakh tak hai."
-      },
-      {
-        "role": "assistant",
-        "text": "बहुत अच्छे। किस तरह का घर—जैसे 2 BHK या 3 BHK देख रहे हैं आप, और क्या मैं आपका नाम जान सकती हूँ?"
-      },
-      {
-        "role": "user",
-        "text": "मेरा नाम आशीष है और मैं 2 BHK देख रहा हूं।"
-      },
-      {
-        "role": "assistant",
-        "text": "बहुत बढ़िया आशीष जी। क्या आप इस प्रॉपर्टी को खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "खरीदना चाहता हूं।"
-      },
-      {
-        "role": "system",
-        "text": "search Properties"
-      },
-      {
-        "role": "assistant",
-        "text": "आशीष जी, मुझे रोहिणी एन्क्लेव में 78 लाख में और द्वारका हाइट्स में 92 लाख में 2 BHK अपार्टमेंट्स मिले हैं। क्या आप इनमें से कोई देखना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "पहले दोनों के बारे में बताओ।"
-      },
-      {
-        "role": "assistant",
-        "text": "रोहिणी एन्क्लेव में 78 लाख में अनफर्निश्ड 2 BHK है और द्वारका हाइट्स में 92 लाख में सेमी-फर्निश्ड 2 BHK। क्या आप इन्हें देखने का समय तय करना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "मैं दोनों को कल देखना चाहूंगा।"
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है आशीष जी। क्या आप कल यानी बुधवार, 7 अक्टूबर को किस समय इन्हें देखना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "10:00 बजे से"
-      },
-      {
-        "role": "system",
-        "text": "schedule Visit"
-      },
-      {
-        "role": "assistant",
-        "text": "बहुत बढ़िया आशीष जी, आपकी विजिट बुधवार 7 अक्टूबर को सुबह 10 बजे के लिए शेड्यूल हो गई है। कन्फर्मेशन के लिए क्या आप अपना मोबाइल नंबर बता सकते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "748586309"
-      },
-      {
-        "role": "assistant",
-        "text": "तो आशीष जी, रोहिणी एन्क्लेव में 2 BHK अपार्टमेंट के लिए बुधवार 7 अक्टूबर सुबह 10 बजे की विजिट और आपका मोबाइल नंबर 748586309 — क्या यह सब सही है?"
-      },
-      {
-        "role": "user",
-        "text": "सब सही है।"
-      },
-      {
-        "role": "assistant",
-        "text": "शुक्रिया आशीष जी, दिल्ली होम्स में संपर्क करने के लिए धन्यवाद। आपका दिन शुभ हो!"
-      },
-      {
-        "role": "system",
-        "text": "Call ended — requirement captured"
-      }
-    ],
-    "text": "आशीष is looking to buy a 2 BHK Apartment in Rohini with a budget of approximately ₹80L–₹95L and wants to move forward immediately. Preferences noted: Near school. 1 matching property was identified from the demo inventory. A site visit was requested for Wednesday 7 October, 10:00 AM. Lead source: Phone.",
-    "id": "phone-muvphjyo-0os5",
-    "receivedAt": "2026-10-05T20:32:21.072Z"
   },
   {
     "source": "Phone",
@@ -3350,302 +7344,6 @@
     "text": "The customer is looking to buy a 2 BHK in Dwarka with a budget of approximately ₹60L. No matching listings were found in the demo inventory. The caller asked to speak with a human advisor. Lead source: WhatsApp.",
     "id": "whatsapp-muv1ki9i-ini3",
     "receivedAt": "2026-10-05T09:22:48.054Z"
-  },
-  {
-    "source": "Phone",
-    "capturedAt": "2026-10-05T09:21:08.905Z",
-    "name": "आशीष",
-    "intent": "Buy",
-    "location": "",
-    "preferredLocations": [],
-    "propertyType": "Apartment",
-    "bhk": "",
-    "budget": "₹75L",
-    "budgetValue": 7500000,
-    "timeline": "",
-    "preferences": [],
-    "requirement": "apartment",
-    "siteVisit": "Tuesday 6 October, 10:00 AM",
-    "callbackRequested": false,
-    "advisorRequested": false,
-    "optedOutFollowUps": false,
-    "score": 54,
-    "temperature": "HOT",
-    "status": "Qualifying",
-    "nextAction": "Prepare for the site visit — Tuesday 6 October, 10:00 AM",
-    "summary": "आशीष is looking to buy a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
-    "matches": [],
-    "transcript": [
-      {
-        "role": "user",
-        "text": "Hindi"
-      },
-      {
-        "role": "assistant",
-        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
-      },
-      {
-        "role": "system",
-        "text": "Language · Hindi"
-      },
-      {
-        "role": "assistant",
-        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
-      },
-      {
-        "role": "user",
-        "text": "मुझे प्रॉपर्टी खरीदना है।"
-      },
-      {
-        "role": "assistant",
-        "text": "जी बिल्कुल! आप किस इलाके में प्रॉपर्टी खरीदना चाहते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मैंने सोचा नहीं।"
-      },
-      {
-        "role": "assistant",
-        "text": "कोई बात नहीं। क्या आप दिल्ली में कुछ खास इलाके या प्रॉपर्टी का प्रकार सोच रहे हैं? tatay"
-      },
-      {
-        "role": "user",
-        "text": "नहीं।"
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है, आपका बजट लगभग कितना है?"
-      },
-      {
-        "role": "user",
-        "text": "75 lakhs"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई। क्या आप किसी खास तरह की प्रॉपर्टी, जैसे अपार्टमेंट या बिल्डर फ्लोर, ढूंढ रहे हैं, और क्या मैं आपका नाम जान सकती हूँ?"
-      },
-      {
-        "role": "user",
-        "text": "Mera naam Manish hai aur main flat dekh raha hun."
-      },
-      {
-        "role": "assistant",
-        "text": "शुक्रिया मनीष जी! क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मेरा नाम आशीष है।"
-      },
-      {
-        "role": "assistant",
-        "text": "क्षमा कीजिए मनीष जी, पर क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मेरा नाम आशीष है, तुमने गलत सुना है।"
-      },
-      {
-        "role": "assistant",
-        "text": "माफ़ी चाहती हूँ आशीष जी। क्या आप किसी खास इलाके में फ्लैट देख रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मैंने बोला तो मुझे इलाकों का आईडिया नहीं है, बट मुझे ऐसी जगह चाहिए जिसके आसपास काफी सर्विस प्रोवाइडेड हो जैसे कि जिम हो गया और फिर काफी सारी स्कूल, जिम ये सब चीजें पास में हो। मार्केट भी।"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई, आपको ऐसी जगह चाहिए जहाँ सारी सुविधाएँ पास हों। क्या आप कोई खास साइज़ या BHK का फ्लैट सोच रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "medic"
-      },
-      {
-        "role": "system",
-        "text": "search Properties"
-      },
-      {
-        "role": "assistant",
-        "text": "मेरी नजर में रोहिणी में एक फ्लैट है, पर इसका बजट अठत्तर लाख के आस-पास है। क्या आप इसके बारे में जानना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "बताओ।"
-      },
-      {
-        "role": "system",
-        "text": "get Property Details"
-      },
-      {
-        "role": "assistant",
-        "text": "यह रोहिणी एनक्लेव में एक टू-बीएचके फ्लैट है, जो अठत्तर लाख का है और इसमें कवर्ड पार्किंग और लिफ्ट की सुविधा है। क्या आप इसे देखने जाना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "देखने जाना चाहूंगा।"
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है, आप किस दिन जाना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "Mhm. Kal ka din sahi hoga."
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है, कल यानी छह अक्टूबर को आप किस समय पर जाना चाहेंगे?"
-      },
-      {
-        "role": "user",
-        "text": "tribo"
-      },
-      {
-        "role": "assistant",
-        "text": "मुझे आपकी बात ठीक से समझ नहीं आई। क्या आप समय के बारे में दोबारा बता सकते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "10:00 सुबह को"
-      },
-      {
-        "role": "assistant",
-        "text": "मैं कल यानी छह अक्टूबर को सुबह दस बजे के लिए आपकी विजिट बुक कर रही हूँ। क्या यह सही है?"
-      },
-      {
-        "role": "user",
-        "text": "哦"
-      },
-      {
-        "role": "assistant",
-        "text": "क्या मैं आपकी विजिट कल यानी छह अक्टूबर को सुबह दस बजे के लिए बुक कर दूँ?"
-      },
-      {
-        "role": "user",
-        "text": "हां।"
-      },
-      {
-        "role": "system",
-        "text": "schedule Visit"
-      },
-      {
-        "role": "assistant",
-        "text": "आपकी विजिट मंगलवार छह अक्टूबर को सुबह दस बजे के लिए बुक कर दी गई है। आपका दिन शुभ हो!"
-      },
-      {
-        "role": "system",
-        "text": "Call ended — requirement captured"
-      }
-    ],
-    "text": "आशीष is looking to buy a Apartment with a budget of approximately ₹75L. No matching listings were found in the demo inventory. A site visit was requested for Tuesday 6 October, 10:00 AM. Lead source: Phone.",
-    "id": "phone-muv1idrd-v3tf",
-    "receivedAt": "2026-10-05T09:21:08.905Z"
-  },
-  {
-    "source": "Phone",
-    "capturedAt": "2026-10-05T04:30:51.521Z",
-    "name": "आशीष",
-    "intent": "",
-    "location": "",
-    "preferredLocations": [],
-    "propertyType": "Apartment",
-    "bhk": "2 BHK",
-    "budget": "₹50L–₹70L",
-    "budgetValue": 7000000,
-    "timeline": "",
-    "preferences": [],
-    "requirement": "2 BHK apartment",
-    "siteVisit": "",
-    "callbackRequested": false,
-    "advisorRequested": false,
-    "optedOutFollowUps": false,
-    "score": 31,
-    "temperature": "COLD",
-    "status": "Qualifying",
-    "nextAction": "Ask whether they are buying, renting or selling",
-    "summary": "आशीष has enquired about a property a 2 BHK Apartment with a budget of approximately ₹50L–₹70L. No matching listings were found in the demo inventory. Lead source: Phone.",
-    "matches": [],
-    "transcript": [
-      {
-        "role": "user",
-        "text": "vedonath"
-      },
-      {
-        "role": "assistant",
-        "text": "Welcome to Delhi Homes. Please select your preferred language — press 1 for Hindi, 2 for English, 3 for other languages."
-      },
-      {
-        "role": "user",
-        "text": "Hindi"
-      },
-      {
-        "role": "assistant",
-        "text": "नमस्ते! मैं आपकी किस प्रकार सहायता कर सकती हूँ?"
-      },
-      {
-        "role": "system",
-        "text": "Language · Hindi"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई जी। आप प्रॉपर्टी खरीदना चाहते हैं या"
-      },
-      {
-        "role": "user",
-        "text": "मुझे मुझे प्रॉपर्टी खरीदना है।"
-      },
-      {
-        "role": "assistant",
-        "text": "जी बिल्कुल। आप किस एरिया में प्रॉपर्टी देख रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "कोई आईडिया नहीं है लेकिन आसपास अच्छे खासे फैसिलिटीज होनी चाहिए जैसे पार्क हो गया, जिम हो गया एंड स्कूल वगैरह पास में हो।"
-      },
-      {
-        "role": "assistant",
-        "text": "मैं समझ गई। आपको अच्छी सुविधाओं वाली जगह चाहिए। क्या आप मुझे बता सकती हैं आप कितने बीएचके की प्रॉपर्टी देख रहे हैं और आपका नाम क्या है?"
-      },
-      {
-        "role": "user",
-        "text": "2 BHK देख रहा हूं। मेरा नाम आशीष है।"
-      },
-      {
-        "role": "assistant",
-        "text": "शुक्रिया आशीष जी। क्या आप मुझे अपना बजट बता सकते हैं ताकि मैं आपके लिए कुछ विकल्प ढूँढ सकूँ?"
-      },
-      {
-        "role": "user",
-        "text": "budget around 50 to 70 lakhs"
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है आशीष जी, क्या आप प्रॉपर्टी खरीदना चाहते हैं या किराए पर लेना चाहते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मैं खरीदना चाहता हूं।"
-      },
-      {
-        "role": "assistant",
-        "text": "समझ गई। आप किस एरिया में प्रॉपर्टी खरीदना चाहते हैं?"
-      },
-      {
-        "role": "user",
-        "text": "मैंने बोला था मुझे प्रॉपर्टी का आईडिया नहीं कि मुझे किस तरफ लेना है। बस आसपास सुविधाएं अच्छी होनी चाहिए। जैसे जिम हो गया। स्कूल हो गया।"
-      },
-      {
-        "role": "assistant",
-        "text": "ठीक है, आशीष जी। क्या आप किसी खास तरह की प्रॉपर्टी जैसे अपार्टमेंट या बिल्डर फ्लोर के बारे में सोच रहे हैं?"
-      },
-      {
-        "role": "user",
-        "text": "flat"
-      }
-    ],
-    "text": "आशीष has enquired about a property a 2 BHK Apartment with a budget of approximately ₹50L–₹70L. No matching listings were found in the demo inventory. Lead source: Phone.",
-    "id": "phone-muur52f5-kiwb",
-    "receivedAt": "2026-10-05T04:30:51.521Z"
   },
   {
     "source": "WhatsApp",

@@ -58,6 +58,28 @@ export function isCorrection(text: string): boolean {
   );
 }
 
+const NOT_NAME_WORDS = new Set([
+  "flat", "apartment", "house", "ghar", "makan", "property", "bhk", "room",
+  "price", "rate", "budget", "lakh", "crore", "cr", "lac", "rent", "buy", "sell",
+  "chahiye", "chaahiye", "chahie", "chaiye", "batana", "bataye", "bataiye", "batao",
+  "pehle", "kya", "kyun", "kyon", "kaise", "dena", "details", "options",
+  "dikhao", "dekho", "dekhna", "bhai", "bhaiya", "sir", "madam", "mam",
+  "mujhe", "mera", "meri", "mere", "hum", "hume", "aap", "aapka", "karo", "karein",
+  "skip", "later", "baad", "mein", "me", "par", "pe", "se", "ko", "ka", "ki", "ke",
+  "nhi", "nahi", "nahin", "naa", "mat", "no", "dont", "know", "want",
+  // Languages are NEVER customer names:
+  "hindi", "हिंदी", "हिन्दी", "english", "इंग्लिश", "अंग्रेजी",
+  "punjabi", "पंजाबी", "gujarati", "गुजराती", "marathi", "मराठी",
+  "bengali", "बंगाली", "tamil", "तमिल", "telugu", "तेलुगु",
+  "kannada", "कन्नड़", "malayalam", "मलयालम", "urdu", "उर्दू",
+  "language", "bhasha", "भाषा",
+  // Common locations, days, and time words:
+  "delhi", "dilli", "दिल्ली", "rohini", "रोहिणी", "dwarka", "द्वारका",
+  "noida", "नोएडा", "gurgaon", "गुड़गांव", "gurugram", "गुरुग्राम",
+  "bangalore", "bengaluru", "बैंगलोर", "बेंगलुरु",
+  "kal", "कल", "aaj", "आज", "subah", "सुबह", "dopahar", "दोपहर", "shaam", "शाम"
+]);
+
 /**
  * The customer's name from an answer to "what name should I save?".
  *
@@ -74,6 +96,12 @@ export function readName(text: string): string | undefined {
   const words = value.split(/\s+/);
   if (words.length > 3) return undefined;
   if (!/^[\p{L}\p{M}][\p{L}\p{M}\s'-]*$/u.test(value)) return undefined;
+
+  // Real estate queries, objections or refusal phrases are NEVER customer names!
+  if (words.some((word) => NOT_NAME_WORDS.has(word.toLowerCase()))) {
+    return undefined;
+  }
+
   // An acknowledgement is not a name: "ok thanks" and "yes" must not be saved
   // as the customer's name just because they answer the question with one.
   if (words.every((word) => ACKNOWLEDGEMENTS.has(word.toLowerCase())))

@@ -43,7 +43,7 @@ export const LANGUAGES: Language[] = [
     key: "1",
     tag: "hi-IN",
     instruction:
-      "Continue the entire call in Hindi (हिन्दी), using natural conversational Hindi as spoken in Delhi. Keep property and locality names in their usual form.",
+      "Continue the entire call in sweet, polite, natural conversational Hindi (हिन्दी) as spoken in Delhi in your pleasant female receptionist voice. Speak clearly, warmly and courteously. Keep property and locality names in their usual form.",
   },
   {
     code: "en",
@@ -354,7 +354,7 @@ export function inferLanguage(
 
       // Common Hinglish words indicating Hindi preference
       if (
-        /\b(?:kharidna|khareedna|dekhna|chahiye|karna|bataiye|batao|shukriya|namaste|ghar|makan|flat|jagah)\b/i.test(
+        /\b(?:kharidna|khareedna|dekhna|chahiye|chaahiye|karna|bataiye|batao|shukriya|namaste|ghar|makan|jagah)\b/i.test(
           trimmed,
         )
       ) {

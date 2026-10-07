@@ -35,7 +35,7 @@ import {
 } from "@/lib/realtime/live-events";
 import { applyToolResult } from "@/lib/demo/phone-lead";
 import { executeToolLocally } from "@/lib/calls/local-tools";
-import { emptyLead, type Lead } from "@/lib/leads/types";
+import { emptyLead, missingFields, type Lead } from "@/lib/leads/types";
 import {
   AUTO_END_NOTE,
   TRANSFER_NOTE,
@@ -45,13 +45,16 @@ import {
   evaluateCompletion,
   extractHonorificName,
   hasNextStep,
+  hasPhoneAndNextStep,
   hasSettledCore,
   hasUnresolvedAction,
+  isCallReadyToEnd,
   isGoodbye,
   needsConfirmation,
   stateMessageIfChanged,
   wrapUpPrompt,
 } from "@/lib/calls/completion";
+import { extractLeadFields } from "@/lib/ai/extract";
 import { extractPhone, readName } from "@/lib/leads/confirmation";
 import { normaliseBhk } from "@/lib/leads/normalise";
 import { getActiveProperties } from "@/lib/data/inventory";
@@ -106,11 +109,11 @@ const GOODBYE_TAIL_MS = 2200;
 /** Backstop if the model never signs off after being asked to. */
 const WRAP_UP_TIMEOUT_MS = 9000;
 
-/** Silence timeout before asking the caller if they are still on the line (35 seconds). */
-const SILENCE_FIRST_TIMEOUT_MS = 35000;
+/** Silence timeout before gently checking if the caller needs time (2 minutes). */
+const SILENCE_FIRST_TIMEOUT_MS = 120000;
 
-/** Final silence timeout after warning before cutting off the call (20 seconds). */
-const SILENCE_FINAL_TIMEOUT_MS = 20000;
+/** Final silence timeout after gentle check-in before disconnecting (90 seconds). */
+const SILENCE_FINAL_TIMEOUT_MS = 90000;
 
 /**
  * How many times the receptionist may be pulled back into the closing read-back
@@ -397,7 +400,7 @@ export function useCallSession(
 
     if (hasAskedConfirm) {
       confirmStageRef.current = "confirm";
-    } else if (!current.name && !hasAskedPhone) {
+    } else if (!current.name) {
       confirmStageRef.current = "name";
     } else if (!current.phone) {
       confirmStageRef.current = "phone";
@@ -534,8 +537,8 @@ export function useCallSession(
     const isHindi =
       !languageRef.current || languageRef.current.code !== "en";
     const msg = isHindi
-      ? "आपकी तरफ से कोई जवाब न मिलने के कारण कॉल समाप्त की जा रही है। दिल्ली होम्स में संपर्क करने के लिए धन्यवाद।"
-      : "Due to inactivity, this call is now ending. Thank you for calling Delhi Homes.";
+      ? "काफी देर से आपकी आवाज़ नहीं आ रही है, इसलिए कॉल डिस्कनेक्ट हो रही है। जब भी आपको ज़रूरत हो, आप दिल्ली होम्स में दोबारा संपर्क कर सकते हैं। धन्यवाद!"
+      : "We haven't heard from you in a while, so this call is now ending. Please feel free to reach back out to Delhi Homes anytime. Thank you!";
 
     pushEntryRef.current("assistant", msg);
     pushEntryRef.current("system", "Call ended — caller inactivity");
@@ -547,7 +550,7 @@ export function useCallSession(
   }, []);
 
   /**
-   * Warn the caller once after 15 seconds of silence that the call will cut off.
+   * Gently check in with the caller after 2 minutes of silence in case they need time.
    */
   const handleSilenceWarning = useCallback(() => {
     if (closingRef.current || autoEndingRef.current || endedRef.current) return;
@@ -556,8 +559,8 @@ export function useCallSession(
     const isHindi =
       !languageRef.current || languageRef.current.code !== "en";
     const warningPrompt = isHindi
-      ? "[The caller has been silent for a while. Say warmly: 'क्या आप मुझे सुन पा रहे हैं? अगर कुछ देर में आपकी तरफ से कोई जवाब नहीं आया तो कॉल अपने आप कट जाएगी।' and wait.]"
-      : "[The caller has been silent for a while. Say warmly: 'Are you still on the line? If there is no response shortly, the call will disconnect automatically.' and wait.]";
+      ? "[The caller has been silent for a while and might be thinking or checking their schedule. Say gently and warmly: 'कोई बात नहीं, आप आराम से समय ले सकते हैं — जब चाहें बताइए, मैं यहीं हूँ।' Then wait patiently. Do NOT mention any call disconnection or warnings.]"
+      : "[The caller has been quiet for a while and might be thinking. Say gently: 'Take your time, I am here whenever you are ready.' Then wait patiently. Do NOT mention any disconnection.]";
 
     sessionRef.current?.sendText(warningPrompt);
 
@@ -790,9 +793,14 @@ export function useCallSession(
             }
           }
 
-          // If the model produces a clear closing sign-off while speaking, stop mic immediately
-          // to prevent background noise from interrupting or initiating new turns
-          if (isGoodbye(outputBuffer.current)) {
+          // If the model produces a clear closing sign-off while speaking, ONLY stop mic if
+          // all required lead data has been cleanly captured and confirmed, or confirmation is done, or next step is settled.
+          if (
+            isGoodbye(outputBuffer.current) &&
+            (isCallReadyToEnd(leadRef.current) ||
+              leadRef.current.confirmation === "done" ||
+              hasPhoneAndNextStep(leadRef.current))
+          ) {
             micRef.current?.stop();
           }
           break;
@@ -982,6 +990,17 @@ export function useCallSession(
             }
           }
 
+          // Direct caller name capture: whenever the caller explicitly introduces themselves (e.g. "मेरा नाम आशीष है" / "My name is...")
+          if (callerText && !leadRef.current.name) {
+            const directName = extractLeadFields(callerText).name;
+            if (directName) {
+              const next: Lead = { ...leadRef.current, name: directName };
+              leadRef.current = next;
+              setLead(next);
+              confirmKeyRef.current = "";
+            }
+          }
+
           // If assistant stated or confirmed a specific BHK (e.g. "2 BHK फ्लैट के लिए कल सुबह 10 बजे की विजिट")
           const bhkInAssistant = assistantLine.match(
             /(\d+)\s*(?:bhk|बीएचके|बी\s*एच\s*के)/i,
@@ -1055,9 +1074,13 @@ export function useCallSession(
 
           /*
            * Catch verbal site visit or budget confirmation in the assistant's speech
-           * if the tool call was omitted.
+           * if the tool call was omitted, ONLY when explicitly confirmed.
            */
-          if (!leadRef.current.siteVisit && /(?:विजिट|visit)/i.test(assistantLine)) {
+          const isConfirmedBooking =
+            /(?:शेड्यूल हो गई|बुक हो गई|शेड्यूल कर दी|कंफर्म कर दी|has been scheduled|is scheduled|booked for)/i.test(
+              assistantLine,
+            );
+          if (!leadRef.current.siteVisit && isConfirmedBooking) {
             const timeMatch = assistantLine.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm|बजे))/i);
             const dateMatch = assistantLine.match(/(कल(?:\s+सुबह)?|today|tomorrow|\d{1,2}\s+(?:october|अक्टूबर|[a-z]+))/i);
             if (dateMatch || timeMatch) {
@@ -1091,18 +1114,42 @@ export function useCallSession(
 
           /*
            * An explicit receptionist sign-off is the model's signal that the
-           * call is over. When the receptionist says goodbye / thank you, end the call
-           * smoothly. Do not interrupt or re-ask once goodbye has been spoken.
+           * call is over. ONLY end the call when ALL required lead data has been cleanly
+           * captured and confirmed (isCallReadyToEnd). If details or confirmation are still
+           * missing, do NOT cut the call!
            */
           const isAssistantGoodbye =
             (Boolean(assistantLine) && isGoodbye(assistantLine)) ||
             (Boolean(lastAssistantTextRef.current) && isGoodbye(lastAssistantTextRef.current));
 
-          if (isAssistantGoodbye) {
+          const allDataCapturedAndConfirmed = isCallReadyToEnd(leadRef.current);
+          const canEndCall =
+            allDataCapturedAndConfirmed ||
+            leadRef.current.confirmation === "done" ||
+            hasPhoneAndNextStep(leadRef.current);
+
+          if (isAssistantGoodbye && canEndCall) {
             endAfterGoodbye();
           } else {
-            // Assistant output must never be echoed back as new input.
-            checkCompletion();
+            if (isAssistantGoodbye && !allDataCapturedAndConfirmed) {
+              // Assistant tried to sign off before all data was captured and confirmed!
+              // Steer the assistant to ask for what is missing instead of cutting off or going silent.
+              if (needsConfirmation(leadRef.current)) {
+                startConfirmation(true);
+              } else {
+                const missing = missingFields(leadRef.current);
+                if (missing.length) {
+                  const isHindi = !languageRef.current || languageRef.current.code !== "en";
+                  sessionRef.current?.sendText(
+                    isHindi
+                      ? `[अभी कॉल समाप्त मत कीजिए। बातचीत पूरी करने से पहले कॉलर से उनका ${missing.join(", ")} पूछिए।]`
+                      : `[Do not end the call yet. Ask the caller for their ${missing.join(", ")} before concluding.]`,
+                  );
+                }
+              }
+            } else {
+              checkCompletion();
+            }
             injectLeadState();
             // Receptionist finished speaking; start silence timer waiting for caller ONLY IF assistant actually spoke
             if (assistantLine && assistantLine.trim().length > 0) {
@@ -1540,7 +1587,14 @@ export function useCallSession(
           }
           sessionRef.current?.sendAudio(pcm);
         },
-        (next) => setLevel(next),
+        (next) => {
+          setLevel(next);
+          // If the caller speaks or makes sounds into the microphone, clear silence timer immediately!
+          if (next > 0.06) {
+            clearSilenceTimer();
+            silenceWarningSentRef.current = false;
+          }
+        },
         /*
          * Manual turn boundaries are only sent when the server's own VAD is off.
          * With `AUTOMATIC_VAD` on, Gemini segments the audio itself; sending our
@@ -1548,6 +1602,10 @@ export function useCallSession(
          * the model's turn detection and makes every reply feel delayed.
          */
         (active) => {
+          if (active) {
+            clearSilenceTimer();
+            silenceWarningSentRef.current = false;
+          }
           if (AUTOMATIC_VAD) return;
           if (active) {
             sessionRef.current?.sendActivityStart();

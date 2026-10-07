@@ -9,6 +9,8 @@ import {
   applyConfirmationReply,
   confirmationPrompt,
   evaluateCompletion,
+  extractHonorificName,
+  isCallReadyToEnd,
   isGoodbye,
   needsConfirmation,
 } from "@/lib/calls/completion";
@@ -271,3 +273,78 @@ describe("the closing read-back confirms the record and applies any change", () 
     expect(decision.kind).toBe("none");
   });
 });
+
+describe("call only ends when AI has captured and confirmed all required data", () => {
+  const readyLead = (): Lead => ({
+    ...booked(),
+    name: "Rahul",
+    phone: "9876543210",
+  });
+
+  it("rejects call end if phone number is missing or less than 10 digits", () => {
+    const lead: Lead = {
+      ...readyLead(),
+      name: "Rohit",
+      phone: "12345",
+      confirmation: "done",
+    };
+    expect(isCallReadyToEnd(lead)).toBe(false);
+  });
+
+  it("rejects call end if name is missing or an invalid honorific/filler placeholder", () => {
+    const lead: Lead = {
+      ...readyLead(),
+      name: "बिल्कुल जी",
+      phone: "9876543210",
+      confirmation: "done",
+    };
+    expect(isCallReadyToEnd(lead)).toBe(false);
+  });
+
+  it("rejects call end if confirmation is not 'done'", () => {
+    const lead: Lead = {
+      ...readyLead(),
+      name: "Rohit",
+      phone: "9876543210",
+      confirmation: "review",
+    };
+    expect(isCallReadyToEnd(lead)).toBe(false);
+  });
+
+  it("permits call end only when name, 10-digit phone, qualification, and confirmation are all settled", () => {
+    const lead: Lead = {
+      ...readyLead(),
+      name: "Rohit",
+      phone: "9876543210",
+      confirmation: "done",
+    };
+    expect(isCallReadyToEnd(lead)).toBe(true);
+  });
+
+  it("permits call end when advisor was requested and name, phone, and confirmation are settled", () => {
+    const lead: Lead = {
+      ...emptyLead("Phone"),
+      advisorRequested: true,
+      name: "Rohit",
+      phone: "9876543210",
+      confirmation: "done",
+    };
+    expect(isCallReadyToEnd(lead)).toBe(true);
+  });
+});
+
+describe("extractHonorificName", () => {
+  it("extracts genuine caller names followed by 'जी'", () => {
+    expect(extractHonorificName("तो आशीष जी, रोहिणी में 2 BHK")).toBe("आशीष");
+    expect(extractHonorificName("राहुल जी, क्या आप देखना चाहेंगे?")).toBe("राहुल");
+    expect(extractHonorificName("Rahul ji, would you like to visit?")).toBe("Rahul");
+  });
+
+  it("never extracts languages or stopwords followed by 'जी'", () => {
+    expect(extractHonorificName("हिंदी जी, मुझे रोहिणी में एक 2 BHK अपार्टमेंट मिला है")).toBeUndefined();
+    expect(extractHonorificName("English ji, please confirm")).toBeUndefined();
+    expect(extractHonorificName("सर जी, नमस्ते")).toBeUndefined();
+    expect(extractHonorificName("हां जी, बताइए")).toBeUndefined();
+  });
+});
+

@@ -27,35 +27,23 @@ export type GeminiTurn = {
  */
 export type ProviderStatus = "ok" | "degraded" | "cooldown";
 
-const FAILURES_BEFORE_COOLDOWN = 2;
-const COOLDOWN_MS = 60_000;
+const FAILURES_BEFORE_COOLDOWN = 3;
+const COOLDOWN_MS = 30_000;
 
 /**
  * Text models to try, in order, for one WhatsApp turn.
  *
- * A single hardcoded model is the reason the WhatsApp demo kept falling back to
- * the script engine: free-tier quota is per model, so whichever flash model the
- * key has exhausted returns `429` on every turn while its siblings on the very
- * same key answer normally. Gemini's own "latest" aliases also drift, so the
- * code walks the list until one answers. This is the same `GEMINI_API_KEY` the
- * voice call uses — only the model id differs, because a Live session and a
- * `generateContent` turn are different endpoints.
- *
- * The order is by *first-response speed and availability*, not by version
- * number. That distinction is the whole point: the newest flash model is
- * frequently overloaded (`503 ... high demand`), and because the list is walked
- * in order, a flaky head made every single turn wait through a failed request
- * before a healthy sibling answered — the difference between a reply that feels
- * instant and one that takes ten seconds. The fastest reliable models lead; the
- * heavy ones stay as fallbacks.
+ * The order is by *first-response speed and availability*, putting verified
+ * low-latency, active models first.
  */
 const DEFAULT_TEXT_MODELS = [
-  "gemini-3-flash-preview",
   "gemini-flash-lite-latest",
-  "gemini-3.1-flash-lite",
-  "gemini-3.8-flash",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3.5-flash-lite",
   "gemini-flash-latest",
-  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3-flash-preview",
+  "gemini-3.8-flash",
   "gemini-3.7-flash",
 ] as const;
 
